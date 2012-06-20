@@ -22,9 +22,13 @@ import com.as.db.provider.AsContent.SawarecodeColumns;
 import com.as.db.provider.AsContent.Type1;
 import com.as.db.provider.AsContent.Type1Columns;
 import com.as.order.activity.DaLeiZongheAnalysisActivity;
+import com.as.order.activity.ShangxiazuangZongheAnalysisAcitivity;
 import com.as.order.activity.XiaoleiZongheAnalysisActivity;
+import com.as.order.activity.YanseZongheAnalysisActivity;
 import com.as.order.dao.DaleiFenxiDAO;
+import com.as.order.dao.SxzFenxiDAO;
 import com.as.order.dao.XiaoleiFenxiDAO;
+import com.as.order.dao.YanseFenxiDAO;
 
 public class CommonDataUtils {
 
@@ -153,8 +157,8 @@ public class CommonDataUtils {
 					dao.setWareCnt(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_WARE_CNT));
 					dao.setWareAll(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_WARE_ALL));
 					data.add(dao);
+					cursor.moveToNext();
 				}
-				cursor.moveToNext();
 			}
 		} finally {
 			if(cursor != null) {
@@ -196,7 +200,7 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartXiaoleiFenxi(Context context, String where) {
+	public static Map<String, Double> chartXiaoleiFenxi(Context context, String where, int opt) {
 		String sql = 
 			" select "
 			+ " (select type1 from type1 where rtrim(id) = rtrim(sawarecode.id)) xiaolei, "
@@ -218,6 +222,12 @@ public class CommonDataUtils {
 				while(!cursor.isAfterLast()) {
 					XiaoleiFenxiDAO dao = new XiaoleiFenxiDAO();
 					dao.setXiaolei(cursor.getString(XiaoleiZongheAnalysisActivity.INDEX_XIAOLEI));
+					dao.setAmount(cursor.getInt(XiaoleiZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(XiaoleiZongheAnalysisActivity.INDEX_PRICE));
+					dao.setWareCnt(cursor.getInt(XiaoleiZongheAnalysisActivity.INDEX_WARECNT));
+					dao.setWareAll(cursor.getInt(XiaoleiZongheAnalysisActivity.INDEX_WAREALL));
+					data.add(dao);
+					cursor.moveToNext();
 				}
 				
 			}
@@ -229,7 +239,29 @@ public class CommonDataUtils {
 				db.close();
 			}
 		}
-		return null;
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getXiaolei(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getXiaolei(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getXiaolei(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getXiaolei(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getXiaolei(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 	
 	/**
@@ -258,8 +290,71 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartYanseFenxi(Context context, String where) {
-		return null;
+	public static Map<String, Double> chartYanseFenxi(Context context, String where, int opt) {
+		String sql = " select sacolorcode.[colorname] yanse, "
+			+" sum(saindent.[warenum]) amount, "
+			+" sum(saindent.[warenum]*sawarecode.[retailprice]) price, "
+			+" count(distinct saindent.[warecode]) ware_cnt, "
+			+" (Select count(B.warecode) From saindent  B,sawarecode C "
+			+" where Rtrim(B.colorcode) = Rtrim(saindent.colorcode) "
+			+" And Rtrim(B.departcode) = '"+getUserAccount(context)+"' "
+			+" And Rtrim(B.warecode) = Rtrim(C.warecode)) ware_all "
+			+" from saindent, sawarecode, sacolorcode "
+			+" where "
+			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode)  "
+			+" and "
+			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode) "
+			+" and "
+			+"  saindent.departcode= '"+getUserAccount(context)+"' "
+			+" and "
+			+" saindnet.[warenum] > 0 "
+			+" group by saindent.[colorcode], sacolorcode.[colorname] ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		List<YanseFenxiDAO> data = new ArrayList<YanseFenxiDAO>();
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				while(!cursor.isAfterLast()) {
+					YanseFenxiDAO dao = new YanseFenxiDAO();
+					dao.setYanse(cursor.getString(YanseZongheAnalysisActivity.INDEX_YANSE));
+					dao.setAmount(cursor.getInt(YanseZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(YanseZongheAnalysisActivity.INDEX_PRICE));
+					dao.setWareAll(cursor.getInt(YanseZongheAnalysisActivity.INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(YanseZongheAnalysisActivity.INDEX_WARECNT));
+					data.add(dao);
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}		
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getYanse(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getYanse(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getYanse(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getYanse(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getYanse(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 	
 	/**
@@ -288,7 +383,65 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartSxzFenxi(Context context, String where)  {
-		return null;
+	public static Map<String, Double> chartSxzFenxi(Context context, String where, int opt)  {
+		String sql = " SELECT sawarecode.szx, "
+			+" sum(saindent.warenum) amount, "
+			+" sum(saindent.warenum*sawarecode.retailprice) price, "
+			+" count(distinct saindent.warecode) ware_cnt, "
+			+" (select count(warecode) from sawarecode b where rtrim(sawarecode.sxz) = rtrim(b.sxz)) ware_all "
+			+" from saindent, sawarecode "
+			+" where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+" and "
+			+" saindent.departcode = '"+getUserAccount(context)+"'"
+			+" and "
+			+" saindent.warenum > 0 "
+			+" group by sawarecode.sxz ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		List<SxzFenxiDAO> data = new ArrayList<SxzFenxiDAO>();
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				while(!cursor.isAfterLast()) {
+					SxzFenxiDAO dao = new SxzFenxiDAO();
+					dao.setSxz(cursor.getString(ShangxiazuangZongheAnalysisAcitivity.INDEX_SXZ));
+					dao.setAmount(cursor.getInt(ShangxiazuangZongheAnalysisAcitivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(ShangxiazuangZongheAnalysisAcitivity.INDEX_PRICE));
+					dao.setWareCnt(cursor.getInt(ShangxiazuangZongheAnalysisAcitivity.INDEX_WARECNT));
+					dao.setWareAll(cursor.getInt(ShangxiazuangZongheAnalysisAcitivity.INDEX_WAREALL));
+					data.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getSxz(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getSxz(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getSxz(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getSxz(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getSxz(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 }

@@ -41,6 +41,12 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 	//订货会一定款式
 	private int totalOrderedWareCnt = 0;
 	
+	public static final int INDEX_SXZ = 0;
+	public static final int INDEX_AMOUNT = 1;
+	public static final int INDEX_PRICE = 2;
+	public static final int INDEX_WARECNT = 3;
+	public static final int INDEX_WAREALL = 4;
+	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
 	@Override

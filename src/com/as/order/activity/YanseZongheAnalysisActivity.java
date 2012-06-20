@@ -37,7 +37,18 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 	private int totalPrice = 0;
 	private int totalOrderedWareCnt =0;
 	
+	private int sumWareAll = 0;
+	private int sumWareCnt = 0;
+	private int sumAmount = 0;
+	private int sumPrice = 0;
+	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
+	
+	public static final int INDEX_YANSE = 0;
+	public static final int INDEX_AMOUNT = 1;
+	public static final int INDEX_PRICE = 2;
+	public static final int INDEX_WARECNT = 3;
+	public static final int INDEX_WAREALL = 4;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,15 +97,15 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 				YanseFenxiDAO dao = mDataSet.get(currPage*15+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getYanse(),
+						dao.getWareAll()+"",
+						formatter.format((((double)dao.getWareAll()/sumWareAll)*100))+"%",
 						dao.getWareCnt()+"",
-						formatter.format((((double)dao.getWareCnt()/totalWareCnt)*100))+"%",
-						dao.getOrderedWareCnt()+"",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalWareCnt)*100)) +"%",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalOrderedWareCnt)*100))+"%",
-						dao.getWarenum()+"",
-						formatter.format((((double)dao.getWarenum()/totalWareNum)*100))+"%",
-						dao.getOrderedPrice()+"",
-						formatter.format((((double)dao.getOrderedPrice()/totalPrice)*100))+"%"
+						formatter.format((((double)dao.getWareCnt()/sumWareCnt)*100)) +"%",
+						formatter.format((((double)dao.getWareCnt()/dao.getWareAll())*100))+"%",
+						dao.getAmount()+"",
+						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
+						dao.getPrice()+"",
+						formatter.format((((double)dao.getPrice()/sumPrice)*100))+"%"
 				}, YanseZongheAnalysisActivity.this);
 			}
 			
