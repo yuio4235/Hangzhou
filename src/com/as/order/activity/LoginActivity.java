@@ -230,6 +230,10 @@ public class LoginActivity extends AbstractActivity {
 				editor.putString("user_account", "A100");
 				editor.commit();
 				DataInitialUtils.initSaIndent(LoginActivity.this, "A100");
+				boolean isInitSaSizeSet = sp.getBoolean("initsasizeset", false);
+				if(!isInitSaSizeSet) {
+					initSaSizeSet();
+				}
 				Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
 				startActivity(mainActivityIntent);
 			}
@@ -242,6 +246,17 @@ public class LoginActivity extends AbstractActivity {
 			default:
 				break;
 		}
+	}
+	
+	/**
+	 * ³õÊ¼»¯ÅäÂð×é
+	 */
+	private void initSaSizeSet() {
+		DataInitialUtils.InitSaSizeSet(LoginActivity.this);
+		SharedPreferences sp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+		Editor editor = sp.edit();
+		editor.putBoolean("initsasizeset", true);
+		editor.commit();
 	}
 	
 	private void initSaIndent(String departCode) {
