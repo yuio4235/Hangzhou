@@ -3,15 +3,21 @@ package com.as.order.dao;
 public class XiaoleiFenxiDAO {
 
 	private String xiaolei;
+	private int wareAll;
 	private int wareCnt;
-	private int orderedWareCnt;
-	private int warenum;
-	private int orderedPrice;
+	private int price;
+	private int amount;
 	public String getXiaolei() {
 		return xiaolei;
 	}
 	public void setXiaolei(String xiaolei) {
 		this.xiaolei = xiaolei;
+	}
+	public int getWareAll() {
+		return wareAll;
+	}
+	public void setWareAll(int wareAll) {
+		this.wareAll = wareAll;
 	}
 	public int getWareCnt() {
 		return wareCnt;
@@ -19,22 +25,16 @@ public class XiaoleiFenxiDAO {
 	public void setWareCnt(int wareCnt) {
 		this.wareCnt = wareCnt;
 	}
-	public int getOrderedWareCnt() {
-		return orderedWareCnt;
+	public int getPrice() {
+		return price;
 	}
-	public void setOrderedWareCnt(int orderedWareCnt) {
-		this.orderedWareCnt = orderedWareCnt;
+	public void setPrice(int price) {
+		this.price = price;
 	}
-	public int getWarenum() {
-		return warenum;
+	public int getAmount() {
+		return amount;
 	}
-	public void setWarenum(int warenum) {
-		this.warenum = warenum;
-	}
-	public int getOrderedPrice() {
-		return orderedPrice;
-	}
-	public void setOrderedPrice(int orderedPrice) {
-		this.orderedPrice = orderedPrice;
+	public void setAmount(int amount) {
+		this.amount = amount;
 	}
 }

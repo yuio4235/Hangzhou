@@ -44,6 +44,12 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
+	public static final int INDEX_XIAOLEI = 0;
+	public static final int INDEX_AMOUNT = 1;
+	public static final int INDEX_PRICE = 2;
+	public static final int INDEX_WARECNT = 3;
+	public static final int INDEX_WAREALL = 4;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

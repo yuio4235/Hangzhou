@@ -22,7 +22,9 @@ import com.as.db.provider.AsContent.SawarecodeColumns;
 import com.as.db.provider.AsContent.Type1;
 import com.as.db.provider.AsContent.Type1Columns;
 import com.as.order.activity.DaLeiZongheAnalysisActivity;
+import com.as.order.activity.XiaoleiZongheAnalysisActivity;
 import com.as.order.dao.DaleiFenxiDAO;
+import com.as.order.dao.XiaoleiFenxiDAO;
 
 public class CommonDataUtils {
 
@@ -143,13 +145,15 @@ public class CommonDataUtils {
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				DaleiFenxiDAO dao = new DaleiFenxiDAO();
-				dao.setDalei(cursor.getString(DaLeiZongheAnalysisActivity.INDEX_DALEI));
-				dao.setAmount(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_AMOUNT));
-				dao.setPrice(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_PRICE));
-				dao.setWareCnt(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_WARE_CNT));
-				dao.setWareAll(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_WARE_ALL));
-				data.add(dao);
+				while(!cursor.isAfterLast()) {
+					DaleiFenxiDAO dao = new DaleiFenxiDAO();
+					dao.setDalei(cursor.getString(DaLeiZongheAnalysisActivity.INDEX_DALEI));
+					dao.setAmount(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_PRICE));
+					dao.setWareCnt(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_WARE_CNT));
+					dao.setWareAll(cursor.getInt(DaLeiZongheAnalysisActivity.INDEX_WARE_ALL));
+					data.add(dao);
+				}
 				cursor.moveToNext();
 			}
 		} finally {
@@ -193,6 +197,38 @@ public class CommonDataUtils {
 	 * @return
 	 */
 	public static double[] chartXiaoleiFenxi(Context context, String where) {
+		String sql = 
+			" select "
+			+ " (select type1 from type1 where rtrim(id) = rtrim(sawarecode.id)) xiaolei, "
+			+ " sum(saindent.warenum) amount, "
+			+ " sum(saindent.warenum*sawarecode.retailprice) price, "
+			+ " count(distinct sawarecode.warecode) ware_cnt, "
+			+ " (select count(warecode) from sawarecode b where rtrim(b.id)) = rtrim(sawarecode.id)) ware_all "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+ " and rtrim(saindent.departcode) = '"+getUserAccount(context)+"' "
+			+ " and saindent.warenum > 0 "
+			+ " and " + where 
+			+ " group by sawarecode.id ";
+		List<XiaoleiFenxiDAO> data = new ArrayList<XiaoleiFenxiDAO>();
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				while(!cursor.isAfterLast()) {
+					XiaoleiFenxiDAO dao = new XiaoleiFenxiDAO();
+					dao.setXiaolei(cursor.getString(XiaoleiZongheAnalysisActivity.INDEX_XIAOLEI));
+				}
+				
+			}
+		} finally {
+			if(cursor != null)  {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
 		return null;
 	}
 	
