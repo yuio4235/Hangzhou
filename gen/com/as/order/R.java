@@ -587,6 +587,11 @@ public final class R {
     public static final class id {
         public static final int as_list=0x7f080054;
         public static final int boduan=0x7f08004f;
+        public static final int boduan_button01=0x7f08008a;
+        public static final int boduan_button02=0x7f08008b;
+        public static final int boduan_button03=0x7f08008c;
+        public static final int boduan_button04=0x7f08008d;
+        public static final int boduan_detail=0x7f080089;
         public static final int button01=0x7f080058;
         public static final int button02=0x7f080059;
         public static final int button03=0x7f08005a;
@@ -597,7 +602,17 @@ public final class R {
         public static final int charts_btn=0x7f080055;
         public static final int chenpin_chenlie=0x7f08000f;
         public static final int chima=0x7f080051;
+        public static final int chima_button01=0x7f080085;
+        public static final int chima_button02=0x7f080086;
+        public static final int chima_button03=0x7f080087;
+        public static final int chima_button04=0x7f080088;
+        public static final int chima_detail=0x7f080084;
         public static final int dalei=0x7f08004c;
+        public static final int dalei_button01=0x7f080071;
+        public static final int dalei_button02=0x7f080072;
+        public static final int dalei_button03=0x7f080073;
+        public static final int dalei_button04=0x7f080074;
+        public static final int dalei_detail=0x7f080070;
         public static final int dapei_order=0x7f080012;
         public static final int dapei_order_detail_item_iv=0x7f080044;
         public static final int dapei_order_detail_item_lv=0x7f080045;
@@ -608,8 +623,8 @@ public final class R {
         public static final int dapei_ordered_amount=0x7f08001d;
         public static final int dapei_total_amount=0x7f08001c;
         public static final int dapei_unordered_amount=0x7f08001e;
-        public static final int data_et=0x7f08006d;
-        public static final int delete_data_btn=0x7f08006f;
+        public static final int data_et=0x7f080098;
+        public static final int delete_data_btn=0x7f08009a;
         public static final int dialog_button_cancel=0x7f08002c;
         public static final int dialog_button_ok=0x7f08002b;
         public static final int dialog_content_list=0x7f080034;
@@ -620,8 +635,13 @@ public final class R {
         public static final int dialog_title_image=0x7f08002a;
         public static final int dinghuozonghefenxi=0x7f080048;
         public static final int first_page=0x7f080040;
-        public static final int insert_data_btn=0x7f08006e;
+        public static final int insert_data_btn=0x7f080099;
         public static final int jiagedai=0x7f080052;
+        public static final int jiagedai_button01=0x7f08008f;
+        public static final int jiagedai_button02=0x7f080090;
+        public static final int jiagedai_button03=0x7f080091;
+        public static final int jiagedai_button04=0x7f080092;
+        public static final int jiagedai_detail=0x7f08008e;
         public static final int last_page=0x7f080041;
         public static final int login_account=0x7f080003;
         public static final int login_password=0x7f080004;
@@ -644,6 +664,7 @@ public final class R {
         public static final int my_order_order_list_btn=0x7f08003d;
         public static final int nav_title=0x7f080002;
         public static final int next_page=0x7f080020;
+        public static final int opt_list=0x7f08006d;
         public static final int order_analysis=0x7f080013;
         public static final int order_by_style=0x7f08000e;
         public static final int order_by_style_dapei_dingliang=0x7f080027;
@@ -666,6 +687,12 @@ public final class R {
         public static final int shangxiazhuang=0x7f080053;
         public static final int style_review=0x7f080011;
         public static final int summrize_analysis=0x7f080015;
+        public static final int sxz=0x7f08006f;
+        public static final int sxz_button01=0x7f080094;
+        public static final int sxz_button02=0x7f080095;
+        public static final int sxz_button03=0x7f080096;
+        public static final int sxz_button04=0x7f080097;
+        public static final int sxz_detail=0x7f080093;
         public static final int textview01=0x7f08005d;
         public static final int textview02=0x7f08005e;
         public static final int textview03=0x7f08005f;
@@ -692,12 +719,28 @@ public final class R {
         public static final int title_to_top=0x7f080007;
         public static final int toast_txt=0x7f080033;
         public static final int unordered_list_lv=0x7f080047;
-        public static final int update_data_btn=0x7f080070;
+        public static final int update_data_btn=0x7f08009b;
         public static final int weidingkuanfenxi=0x7f080049;
+        public static final int xialei=0x7f08006e;
         public static final int xiaolei=0x7f08004d;
+        public static final int xiaolei_button01=0x7f080076;
+        public static final int xiaolei_button02=0x7f080077;
+        public static final int xiaolei_button03=0x7f080078;
+        public static final int xiaolei_button04=0x7f080079;
+        public static final int xiaolei_detail=0x7f080075;
         public static final int yanse=0x7f080050;
+        public static final int yanse_button01=0x7f080080;
+        public static final int yanse_button02=0x7f080081;
+        public static final int yanse_button03=0x7f080082;
+        public static final int yanse_button04=0x7f080083;
+        public static final int yanse_detail=0x7f08007f;
         public static final int zhibioafenxi=0x7f08004a;
         public static final int zhuti=0x7f08004e;
+        public static final int zhuti_button01=0x7f08007b;
+        public static final int zhuti_button02=0x7f08007c;
+        public static final int zhuti_button03=0x7f08007d;
+        public static final int zhuti_button04=0x7f08007e;
+        public static final int zhuti_detail=0x7f08007a;
     }
     public static final class layout {
         public static final int boduan_fenxi=0x7f030000;

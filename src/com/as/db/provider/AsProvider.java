@@ -513,6 +513,10 @@ public class AsProvider extends ContentProvider{
 		createSaSizeSetTable(db);
 	}
 	
+	static void createSizeView(SQLiteDatabase db) {
+		String viewSql = "";
+	}
+	
 	private SQLiteDatabase mDatabase;
 	
 	public synchronized SQLiteDatabase getDatabase(Context context) {
