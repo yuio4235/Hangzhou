@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="daleifenxi">
+        SELECT \n
+        (select waretypename from sawaretype where rtrim(sawaretype.[waretypeid]) = rtrim(sawarecode.[waretypeid])) waretypename, \n
+        (select count(warecode) from sawarecode b where rtrim(b.id) = rtrim(sawarecode.[id])) ware_all, \n
+        count(distinct saindent.[warecode]) ware_cnt, \n
+        sum(saindent.[warenum]) ware_num, \n
+        sum(sawarecode.[retailprice]*saindent.[warenum]) price \n
+        from sawarecode \n
+        left join saindent \n
+        on rtrim(sawarecode.warecode) = rtrim(saindent.warecode) \n
+        group by sawarecode.[waretypeid]
+    </string>
+    <string name="total_ware_cnt">
+        select count(distinct warecode) ware_cnt from sawarecode
+    </string>
+    <string name="total_ware_num">
+        select sum(saindent.warenum) ware_num from saindent
+    </string>
+	<string name="total_price">
+	    select sum(sawarecode.[retailprice]*saindent.[warenum]) price from saindent, sawarecode where saindent.warecode = sawarecode.warecode
+	</string>
+    <string name="total_ordered_ware_cnt">
+        select count(distinct warecode) from saindent
+    </string>
+</resources>

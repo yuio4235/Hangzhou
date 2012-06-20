@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Database_onCreate">
+        CREATE TABLE stPara(
+        	ParaType VARCHAR(10) NOT NULL,
+        	Para VARCHAR(4) NOT NULL,
+        	ParaContent VARCHAR(20),
+        	Content VARCAHR(80)
+        ); \n
+        CREATE TABLE stMsg (
+        	title VARCHAR(50),
+        	Msg VARCHAR(1000)
+        ); \n
+        CREATE TABLE saIndentCancel(
+        	indentno decimal(18,0) NOT NULL,
+        	departcode VARCHAR(10) NOT NULL,
+        	warecode VARCHAR(20) NOT NULL,
+        	colorcode VARCHAR(10) NOT NULL,
+        	s01 INTEGER, 
+        	s02 INTEGER, 
+        	s03 INTEGER,
+        	s04 INTEGER,
+        	s04 INTEGER,
+        	s06 INTEGER,
+        	s07 INTEGER,
+        	s08 INTEGER,
+        	s09 INTEGER,
+        	s10 INTEGER,
+        	s11 INTEGER,
+        	s12 INTEGER,
+        	s13 INTEGER,
+        	s14 INTEGER,
+        	s15 INTEGER,
+        	s16 INTEGER,
+        	s17 INTEGER,
+        	s18 INTEGER,
+        	s19 INTEGER,
+        	s20 INTEGER,
+        	inputdate DATETIME,
+        	inputman VARCHAR(10),
+        	warenum INTEGER,
+        	remark VARCHAR(50)
+        ); \n
+        CREATE TABLE satrademark(
+        	TrademarkCode VARCHAR(2) NOT NULL,
+        	TrademarkName VARCHAR(16) NULL,
+        	ClienCode VARCHAR(8) NULL,
+        	Py VARCHAR(10) NULL,
+        	Flag CHAR(1) NULL,
+        	Fg CHAR(1) NULL
+        ); \n
+        CREATE TABLE sawaretype(
+        	WareTypeID CHAR(2) NOT NULL,
+        	WareTypeName VARCHAR(20) NULL,
+        	TaxRate NUMERIC(20, 2) NULL,
+        	Standard CHAR(30) NULL,
+        	Flag CHAR(1) NULL,
+        	SizeFlag CHAR(1) NULL
+        ); \n
+        CREATE TABLE saware_size(
+        	WareCode CHAR(20) NOT NULL,
+        	Size CHAR(10) NOT NULL,
+        	ShowSort CHAR(2) NULL,
+        	Stand CHAR(20) NULL
+        ); \n
+        CREATE TABLE saware_color)(
+        	WareCode CHAR(20) NOT NULL,
+        	ColorCode CHAR(10) NOT NULL,
+        	ColorComment CHAR(40) NULL
+        ); \n
+        CREATE TABLE sawarecode(
+        	warecode CHAR(20) NULL,
+        	trademarkcode CHAR(2) NULL,
+        	waretypeid CHAR(2) NULL,
+        	id CHAR(4) NULL,
+        	specification CHAR(20) NULL,
+        	warename CHAR(40) NULL,
+        	adutunit CHAR(6) NULL,
+        	retailprice NUMBERIC(20, 4) NULL,
+        	date1 CHAR(4) NULL,
+        	type2 CHAR(30) NULL,
+        	state CHAR(4) NULL,
+        	py CHAR(20) NULL,
+        	flag CHAR(1) NULL,
+        	sxz CHAR(10) NULL,
+        	pagenum CHAR(10) NULL,
+        	specdef CHAR(10) NULL,
+        	sex CHAR(6) NULL,
+        	style CHAR(40) NULL,
+        	trait CHAR(250) NULL,
+        	pricecomment CHAR(40) NULL,
+        	plandate CHAR(8) NULL,
+        	waregoto CHAR(40) NULL,
+        	prodarea CHAR(100) NULL,
+        	patten CHAR(100) NULL,
+        	sizeorder CHAR(32) NULL,
+        	remark CHAR(100) NULL,
+        	Date3 CHAR(8) NULL,
+        	Date4 CHAR(8) NULL,
+        	ProcureDate CHAR(8) NULL,
+        	StyleSpec CHAR(20) NULL,
+        	FactoryCode CHAR(20) NULL,
+        	Direction CHAR(20) NULL,
+        	ClienCode CHAR(10) NULL,
+        	StdName CHAR(20) NULL,
+        	CType CHAR(10) NULL,
+        	WareDegree CHAR(10) NULL,
+        	SalePrice MONEY NULL,
+        	AvgPurhPrice MONEY NULL
+        ); \n
+        CREATE TABLE saseason(
+        	Season CHAR(2) NOT NULL,
+        	SeasonName CHAR(40) NULL
+        ); \n
+        CREATE TABLE type1(
+        	ID CHAR(4) NOT NULL,
+        	Type1 CHAR(40) NULL,
+        	WareTypeID CHAR(2) NULL,
+        	Standard CHAR(40) NULL,
+        	Remark CHAR(60) NULL
+        ); \n
+        CREATE TEABLE showsize(
+        	Size CHAR(10) NOT NULL,
+        	Type CHAR(1) NOT NULL,
+        	Show CHAR(2) NULL,
+        	Title CHAR(30) NULL,
+        	PrintTitle CHAR(10) NULL,
+        	SizeGroup CHAR(1) NULL,
+        	Scale NUMERIC(20, 4) NULL
+        ); \n
+        CREATE TABLE stDepartMent(
+        	DepartmentCode CHAR(12) NOT NULL,
+        	DeprtmentName CHAR(60) NULL,
+        	Parent CHAR(4) NULL,
+        	WareHouseID CHAR(12) NULL,
+        	ClienCode CHAR(12) NULL,
+        	SetupWareHouse CHAR(4) NULL,
+        	DelFlag CHAR(1) NULL,
+        	RootWareHouse CHAR(4) NULL,
+        	ShowSort INTEGER NULL,
+        	Area CHAR(20) NULL,
+        	Stat CHAR(2) NULL,
+        	TranTime DATETIME NULL,
+        	Auto CHAR(1) NULL,
+        	VipTime DATETIME NULL,
+        	FloatScale INTEGER NULL,
+        	Tel CHAR(20) NULL,
+        	Discount DECIMAL(18, 4) NULL,
+        	SerialFlag CHAR(2) NULL,
+        	ChangPower CHAR(1) NULL,
+        	Flag1 CHAR(1) NULL,
+        	PosType CHAR(1) NULL,
+        	PosScale DECIMAL(18,3) NULL,
+        	Flag2 CHAR(1) NULL,
+        	Flag3 CHAR(1) NULL,
+        	Flag4 CHAR(1) NULL,
+        	Flag5 CHAR(1) NULL,
+        	Flag6 CHAR(1) NULL,
+        	dpdj CHAR(20) NULL,
+        	ManageStyle CHAR(20) NULL,
+        	TaxNum DECIMAL(18,2) NULL,
+        	Pool CHAR(1) NULL,
+        	PoolScal MONEY NULL,
+        	PdFlag CHAR(1) NULL,
+        	DiscountID INTEGER NULL,
+        	BsDelFlag CHAR(1) NULL,
+        	PrintFlag CHAR(1) NULL,
+        	FloatPrice CHAR(1) NULL,
+        	SetupScal INTEGER NULL,
+        	Piece CHAR(30) NULL,
+        	ChangDay INTEGER NULL,
+        	Operater CHAR(30) NULL,
+        	PrintDeptName CHAR(60) NULL,
+        	VipSum MONEY NULL,
+        	vipSendSum MONEY NULL,
+        	Stock INTEGER NULL,
+        	Fhck CHAR(10) NULL,
+        	SaleFlag CHAR(1) NULL,
+        	Multiple INTEGER NULL,
+        	PrintTel VARCHAR(20) NULL,
+        	WaitDay INTEGER NULL,
+        	AreaCode CHAR(2) NULL,
+        	Type1 CHAR(20) NULL,
+        	Type2 CHAR(20) NULL,
+        	Type3 CHAR(20) NULL,
+        	Type4 CHAR(20) NULL,
+        	Type5 CHAR(20) NULL,
+        	Type6 CHAR(20) NULL,
+        	Type7 CHAR(20) NULL,
+        	Type8 CHAR(20) NULL,
+        	SArea INTEGER NULL,
+        	UseStat CHAR(1) NULL
+        ); \n
+        CREATE TABLE DepartType (
+        	TypeCode CHAR(1) NOT NULL,
+        	TypeName CHAR(6) NULL
+        ); \n
+        CREATE TABLE satrget (
+        	DepartCode CHAR(10) NOT NULL,
+        	WareCode CHAR(20) NOT NULL,
+        	ColorCode CHAR(10) NOT NULL,
+        	Amount INTEGER NULL,
+        	totalmoney MONEY NULL,
+        	S01 INTEGER NULL,
+        	S02 INTEGER NULL,
+        	S03 INTEGER NULL,
+        	S04 INTEGER NULL,
+        	S05 INTEGER NULL,
+        	S06 INTEGER NULL,
+        	S07 INTEGER NULL,
+        	S08 INTEGER NULL,
+        	S09 INTEGER NULL,
+        	S10 INTEGER NULL,
+        	S11 INTEGER NULL,
+        	S12 INTEGER NULL,
+        	S13 INTEGER NULL,
+        	S14 INTEGER NULL,
+        	S15 INTEGER NULL,
+        	S16 INTEGER NULL,
+        	S17 INTEGER NULL,
+        	S18 INTEGER NULL,
+        	S19 INTEGER NULL,
+        	S20 INTEGER NULL,
+        	TrgeType CHAR(1) NULL
+        ); \n
+        CREATE TABLE saindentStand (
+        	Dpdj VARCHAR(10) NOT NULL,
+        	Dpdjmc VARCHAR(20) NULL,
+        	warecode VARCHAR(20) NOT NULL,
+        	colorcode VARCHAR(10) NOT NULL,
+        	colorname VARCHAR(20) NULL,
+        	s01 INTEGER NULL,
+        	s02 INTEGER NULL,
+        	s03 INTEGER NULL,
+        	s04 INTEGER NULL,
+        	s05 INTEGER NULL,
+        	s06 INTEGER NULL,
+        	s07 INTEGER NULL,
+        	s08 INTEGER NULL,
+        	s09 INTEGER NULL,
+        	s10 INTEGER NULL,
+        	s11 INTEGER NULL,
+        	s12 INTEGER NULL,
+        	s13 INTEGER NULL,
+        	s14 INTEGER NULL,
+        	s15 INTEGER NULL,
+        	s16 INTEGER NULL,
+        	s17 INTEGER NULL,
+        	s18 INTEGER NULL,
+        	s19 INTEGER NULL,
+        	s20 INTEGER NULL
+        ); \n
+        CREATE TABLE saindent (
+        	indentno NUMERIC(18, 0) IDENTITY(1,1) NOT NULL,
+        	departcode VARCHAR(10) NOT NULL,
+        	warecode VARCHAR(20) NOT NULL,
+        	colorcode VARCHAR(10) NOT NULL,
+        	s01 INTEGER NULL,
+        	s02 INTEGER NULL,
+        	s03 INTEGER NULL,
+        	s04 INTEGER NULL,
+        	s05 INTEGER NULL,
+        	s06 INTEGER NULL,
+        	s07 INTEGER NULL,
+        	s08 INTEGER NULL,
+        	s09 INTEGER NULL,
+        	s10 INTEGER NULL,
+        	s11 INTEGER NULL,
+        	s12 INTEGER NULL,
+        	s13 INTEGER NULL,
+        	s14 INTEGER NULL,
+        	s15 INTEGER NULL,
+        	s16 INTEGER NULL,
+        	s17 INTEGER NULL,
+        	s18 INTEGER NULL,
+        	s19 INTEGER NULL,
+        	s20 INTEGER NULL,
+        	inputdate DATETIME NULL,
+        	inputman VARCHAR(10) NULL,
+        	warenum INTEGER NULL,
+        	remark VARCHAR(50) NULL,
+        	OFlag CHAR(1) NULL
+        );
+        CREATE TABLE SaWareGroup (
+        	ItemCode CHAR(10) NOT NULL,
+        	GroupName CHAR(20) NOT NULL,
+        	WareCode CHAR(20) NOT NULL,
+        	ColorCode CHAR(10) NOT NULL,
+        	Remark VARCHAR(255) NULL
+        ); \n
+        CREATE TABLE saordertrget (
+        	departcode VARCHAR(10) NOT NULL,
+        	item1 VARCHAR(20) NOT NULL,
+        	item2 VARCHAR(20) NULL,
+        	item2 VARCHAR(20) NULL,
+        	item4 VARCHAR(20) NULL,
+        	num1 MONEY NULL,
+        	num2 MONEY NULL,
+        	num3 MONEY NULL,
+        	Type CHAR(1) NULL,
+        	Type1 CHAR(1) NULL
+        ); \n
+        CREATE TABLE Users (
+        	LogID CHAR(10) NULL,
+        	DeptCode CHAR(10) NULL,
+        	LogPwd VARCHAR(50) NULL,
+        	DeptName CHAR(50) NULL,
+        	LoginDate DATETIME NULL,
+        	Stat CHAR(1) NULL,
+        	StopStat CHAR(1) NULL,
+        	MacID CHAR(10) NULL,
+        	MacAdder CHAR(40) NULL,
+        	UpIP CHAR(20) NULL,
+        	UpTime DATETIME NULL,
+        	DownIP CHAR(20) NULL,
+        	DownTime DATETIME NULL,
+        	StartDate DATETIME NULL,
+        	EndDate DATETIME NULL,
+        	IntTime INTEGER NULL,
+        	MaxOrd INTEGER NULL
+        ); \n
+        CREATE TABLE saSizeSet(
+        	SizeGroup VARCHAR(10) NOT NULL,
+        	s01 INTEGER NULL,
+        	s02 INTEGER NULL,
+        	s03 INTEGER NULL,
+        	s04 INTEGER NULL,
+        	s05 INTEGER NULL,
+        	s06 INTEGER NULL,
+        	s07 INTEGER NULL,
+        	s08 INTEGER NULL,
+        	s09 INTEGER NULL,
+        	s10 INTEGER NULL,
+        	s11 INTEGER NULL,
+        	s012 INTEGER NULL,
+        	s13 INTEGER NULL,
+        	s14 INTEGER NULL,
+        	s15 INTEGER NULL,
+        	s16 INTEGER NULL,
+        	s17 INTEGER NULL,
+        	s18 INTEGER NULL,
+        	s19 INTEGER NULL,
+        	s20 INTEGER NULL
+        ); \n
+        CREATE TABLE sacolorcode (
+        	ColorCode CHAR(10) NOT NULL,
+        	ColorName CHAR(20) NULL,
+        	Py CHAR(10) NULL,
+        	Code CHAR(10) NULL,
+        	Remark CHAR(40) NULL,
+        	PB CHAR(10) NULL,
+        	Trade CHAR(10) NULL
+        );
+    </string>
+    <string name="insert_data_sawarecode"> insert into sawarecode(warecode, trademarkcode, waretypeid, id, specification, warename, retailprice, date1, type2, state, flag, pagenum, sex, date3, date4, ctype) values(\'N294\', \'02\', \'2\', \'0817\', \'1212021\', \'小上衣1212021\', 689, 2012, \'1\', \'A\', \'1\', \'0\', \'女\', 20120101, 201201501, 1);</string>
+
+</resources>

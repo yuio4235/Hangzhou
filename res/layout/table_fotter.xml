@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="right|center_vertical"
+    android:layout_marginTop="4.0dip"
+     >
+
+    <Button style="@style/MMButton" android:background="@drawable/prev_page_btn" android:text="@string/prev_page" android:layout_marginRight="5.0dip"/>
+    <Button style="@style/MMButton" android:background="@drawable/next_page_btn" android:text="@string/next_page" android:layout_marginLeft="5.0dip"/>
+
+</LinearLayout>

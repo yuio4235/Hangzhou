@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/ASBody">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="4.0dip" android:orientation="horizontal" android:gravity="center">
+            <EditText android:id="@id/dapei_order_query_text" style="@style/MMEditText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="30.0dip" android:hint="请输入搭配组号" android:minWidth="100.0dip"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="2.0">
+                <ImageView android:id="@id/order_by_style_image_iv" android:layout_width="fill_parent" android:layout_height="fill_parent" android:src="@drawable/test01" android:scaleType="fitXY" android:background="@drawable/profile_bothsides_circle_normal" android:padding="5.0dip"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical">
+                <ListView android:id="@id/dapei_order_lv" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/MMListView"></ListView>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

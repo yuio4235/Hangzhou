@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:gravity="center_vertical"
+	android:orientation="horizontal"
+	android:id="@id/nav_title"
+	android:background="@drawable/mmtitle_bg"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"   
+	android:minHeight="65.0dip" 
+>
+	<Button android:id="@id/title_btn_left" android:background="@drawable/mm_title_btn_back" android:focusable="true" style="@style/MMTitleButton" android:textSize="25.0dip" android:minWidth="110.0dip"/>
+	<LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@id/title_to_top" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0">
+	    <ImageView android:id="@id/title_logo" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+	    <TextView android:textSize="30.0dip" android:textColor="#FFFFFFFF" android:ellipsize="end" android:id="@id/title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_name" android:singleLine="true" android:shadowColor="#ff404040" android:shadowDx="1.2" android:shadowDy="1.2" android:shadowRadius="1.0"/>
+	</LinearLayout>
+	<ImageView android:id="@id/title_network_sts" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/mm_title_btn_phone"/>
+	<Button android:id="@id/title_btn_right" android:background="@drawable/mm_title_btn_right" style="@style/MMTitleButton" android:focusable="true" android:textSize="25.0dip" android:minWidth="110.0dip"/>
+</LinearLayout>

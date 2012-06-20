@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="blue">#ffccddff</color>
+    <color name="grey">#ff58616d</color>
+    <color name="darkgrey">#ff404040</color>
+    <color name="toasterro">#ff9fd524</color>
+    <color name="lightgrey">#ff888888</color>
+    <color name="semitransparent">#80000000</color>
+    <color name="lightransparent">#a0000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="ChattingSenderTextColor">#ff081c52</color>
+    <color name="ConversationVoiceTextColor">#ff339900</color>
+    <color name="navpage">#ffd1d1d1</color>
+    <color name="shake_info_text">#ffa1a1a1</color>
+    <color name="cell_item_divider">#ff0000ff</color>
+    <color name="dialog_list_item_bg">#ff7cbff6</color>
+    <color name="color1">#FFFACD</color>
+    <color name="color2">#FFEBCD</color>
+    <color name="color3">#FFE4B5</color>
+    <color name="color4">#FFE4B5</color>
+    <color name="color5">#FFC0CB</color>
+    <color name="color6">#FFA07A</color>
+    <color name="color7">#FF82AB</color>
+    <color name="color8">#FF7F00</color>
+    <color name="color9">#FF3E96</color>
+    <color name="color10">#E0FFFF</color>
+    <color name="color11">#5D478B</color>
+    <color name="color12">#53868B</color>
+    <color name="color13">#7FFF00</color>
+    
+</resources>

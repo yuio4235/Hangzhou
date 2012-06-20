@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+     >
+
+	<RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingLeft="30.0dip" android:paddingTop="10.0dip">
+	    <ImageView  android:id="@id/dialog_title_image" android:layout_alignParentLeft="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/logo"/>
+	    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_centerInParent="true" android:text="提示" android:layout_toRightOf="@id/dialog_title_image" android:textColor="@color/black" android:textSize="@dimen/LargestTextSize"/>
+	</RelativeLayout>    
+	<TextView android:layout_width="fill_parent" android:layout_height="1.0dip" android:background="@drawable/dialogline" android:layout_marginTop="5.0dip"/>
+	<TextView android:id="@id/dialog_content_text" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="" android:visibility="gone" android:textColor="@color/black" android:layout_marginTop="10.0dip" android:layout_marginLeft="30.0dip"/>
+	<LinearLayout android:id="@id/dialog_content_root" android:visibility="gone" android:orientation="vertical" android:layout_width="800.0dip" android:layout_height="wrap_content"></LinearLayout>
+	<RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingTop="10.0dip" android:gravity="bottom|center_horizontal" android:paddingBottom="10.0dip">
+	    <Button android:id="@id/dialog_button_ok" android:layout_alignParentLeft="true" android:layout_width="100.0dip" android:layout_height="wrap_content" android:text="确定" android:background="@drawable/dialog_btn"/>
+	    <Button android:id="@id/dialog_button_cancel" android:layout_width="100.0dip" android:layout_height="wrap_content" android:layout_toRightOf="@id/dialog_button_ok" android:layout_marginLeft="35.0dip" android:text="取消" android:background="@drawable/dialog_btn"/>
+	</RelativeLayout>
+</LinearLayout>

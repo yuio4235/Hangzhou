@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="20.0dip" >
+
+    <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="20.0dip" android:layout_weight="1.0">
+        <EditText android:id="@+id/data_et" android:hint="请输入SQL" style="@style/MMLineEditText"/>
+        <View style="@style/MMSplit"/>
+        <Button android:id="@+id/insert_data_btn" android:layout_width="fill_parent" android:layout_height="45.0dip" style="@style/MMLineActionButton" android:text="插入数据" android:textSize="@dimen/TitleTextSize"/>
+        <View style="@style/MMSplit"/>
+        <Button android:id="@+id/delete_data_btn" android:layout_width="fill_parent" android:layout_height="45.0dip" style="@style/MMLineActionButton" android:text="删除数据" android:textSize="@dimen/TitleTextSize"/>
+        <View style="@style/MMSplit"/>
+        <Button android:id="@+id/update_data_btn" android:layout_width="fill_parent" android:layout_height="45.0dip" style="@style/MMLineActionButton" android:text="更新数据" android:textSize="@dimen/TitleTextSize"/>
+    </LinearLayout>
+
+</LinearLayout>

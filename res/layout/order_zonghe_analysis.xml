@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/ASBody">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="center" android:orientation="horizontal">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical" android:gravity="center">
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/dalei" android:text="大类综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/xiaolei" android:text="小类综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/zhuti" android:text="主题综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/boduan" android:text="波段综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>    
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical" android:gravity="center">
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/yanse" android:text="颜色综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/chima" android:text="尺码综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/jiagedai" android:text="价格带综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+	            <View style="@style/MMLabelSplit"/>
+	            <Button android:id="@id/shangxiazhuang" android:text="上下装综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>                                                                        
+	            <View style="@style/MMLabelSplit"/>     
+            </LinearLayout>
+       </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

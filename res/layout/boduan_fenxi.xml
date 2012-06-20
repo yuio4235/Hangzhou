@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/ASBody">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center">
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1.0"  android:gravity="center">
+                <EditText android:id="@id/must_order_theme_et" android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_theme_hint" android:editable="false"/>
+            </LinearLayout>   
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <EditText android:id="@id/must_order_pinlei_et" android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_pinlei_hint" android:editable="false"/>
+            </LinearLayout>
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <EditText android:id="@id/must_order_xiaolei_et" android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_xiaolei_hint" android:editable="false"/>
+            </LinearLayout>
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <EditText android:id="@id/must_order_boduan_et" android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_wave_hint" android:editable="false"/>
+            </LinearLayout>                             
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical">
+       		<ListView android:id="@id/as_list" android:layout_width="fill_parent" android:layout_height="fill_parent"></ListView>
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical|right">
+            <Button android:id="@id/prev_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text=" 前  页   " android:textSize="@dimen/LargerTextSize" android:layout_marginRight="5.0dip" android:minWidth="150.0dip"/>
+            <Button android:id="@id/next_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text=" 后  页   " android:textSize="@dimen/LargerTextSize" android:minWidth="150.0dip"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

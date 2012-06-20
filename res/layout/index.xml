@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/nav_page_tile"
+    android:padding="20dip"
+    android:orientation="vertical" >
+    <LinearLayout 
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:gravity="center"
+    	android:layout_weight="2.0"
+    >
+		<ImageView 
+		    android:layout_width="100.0dip" 
+		    android:layout_height="100.0dip" 
+		    android:src="@drawable/logo"
+		/>        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:gravity="center_horizontal" 
+        android:orientation="vertical" 
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent"
+        android:layout_marginTop="20.0dip"
+        android:layout_weight="1.0"
+    >
+	     <Button 
+	         android:id="@id/login_with_phone_num"
+	         android:layout_width="300.0dip"
+	         android:layout_height="wrap_content"
+	         style="@style/MMLineActionButton"
+	         android:text="@string/login"
+	         android:textSize="30.0dip"
+	      />        
+	      <View style="@style/MMSplit"/>
+          <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="@string/login_with_user_account"/>	   
+	      <Button 
+	         android:id="@id/reg_with_phone_num"
+	         android:layout_marginTop="30dip"
+	         android:layout_width="300.0dip"
+	         android:layout_height="wrap_content"
+	         android:background="@drawable/btn_style_two"
+	         android:text="@string/register"
+	         android:textColor="@color/black"
+	         android:textSize="30.0dip"
+	      />    
+	      <View style="@style/MMSplit"/>
+	      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="@string/register_with_user_account"/>        
+    </LinearLayout>
+
+</LinearLayout>

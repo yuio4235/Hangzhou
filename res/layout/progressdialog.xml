@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:paddingLeft="30.0dip" android:paddingTop="10.0dip">
+        <ImageView android:id="@id/dialog_title_image" android:layout_alignParentLeft="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/logo"/>
+        <TextView android:id="@id/dialog_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_centerInParent="true" android:text="提示" android:textSize="@dimen/LargestTextSize"/>
+    </RelativeLayout>
+	<TextView android:layout_width="fill_parent" android:layout_height="1.0dip" android:background="@drawable/dialogline" android:layout_marginTop="10.0dip"/>
+	<ProgressBar android:id="@id/dialog_progress_bar" android:max="100" android:layout_marginLeft="30.0dip" android:layout_marginRight="30.0dip" android:layout_height="wrap_content" android:layout_width="320.0dip" android:paddingBottom="10.0dip" android:paddingTop="10.0dip" style="?android:attr/progressBarStyleHorizontal" mce_style="?android:attr/progressBarStyleHorizontal"/>
+	<TextView android:id="@id/progress_dialog_text" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="30.0dip" android:layout_marginRight="30.0dip" android:gravity="center" android:textSize="@dimen/LargerTextSize"/>
+</LinearLayout>

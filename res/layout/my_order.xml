@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/ASBody" android:orientation="vertical">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="4.0dip" android:gravity="center_vertical">
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_gravity="left" android:layout_marginRight="10.0dip">
+                <EditText android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_xilie_hint" android:editable="false"/>
+            </LinearLayout>
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_gravity="left"  android:layout_marginRight="10.0dip">
+                <EditText android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_wave_hint" android:editable="false"/>
+            </LinearLayout>
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_gravity="left"  android:layout_marginRight="10.0dip">
+                <EditText android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_pinlei_hint" android:editable="false"/>
+            </LinearLayout> 
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_gravity="right"  android:layout_marginRight="10.0dip">
+				<Button android:minWidth="70.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargerTextSize" android:text="已订查询" android:background="@drawable/btn_style_two"/>
+            </LinearLayout>             
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_gravity="right"  android:layout_marginRight="10.0dip">
+				<Button android:minWidth="70.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargerTextSize" android:text="未订查询" android:background="@drawable/btn_style_two"/>
+            </LinearLayout> 
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:gravity="center" android:layout_gravity="right"  android:layout_marginRight="10.0dip">
+				<Button android:id="@id/my_order_order_list_btn" android:minWidth="70.0dip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargerTextSize" android:text="订货清单" android:background="@drawable/btn_style_two"/>
+            </LinearLayout>             
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="horizontal">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" >
+                <GridView android:id="@id/my_order_grid_view" android:layout_width="wrap_content" android:layout_height="wrap_content" android:numColumns="5" android:columnWidth="220.0dip" android:stretchMode="columnWidth" android:gravity="fill"></GridView>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:orientation="vertical" android:gravity="center_vertical" android:layout_marginRight="5.0dip">
+                <Button android:id="@id/prev_page" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargerTextSize" android:text="上\n页 " android:layout_marginBottom="10.0dip" android:minHeight="150.0dip" android:background="@drawable/btn_style_one"/>
+                <Button android:id="@id/next_page" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargerTextSize" android:text="下\n页 " android:minHeight="150.0dip" android:background="@drawable/btn_style_one"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

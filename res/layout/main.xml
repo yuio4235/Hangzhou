@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/MMBody">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
+            <TextView android:id="@id/main_customer_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargestTextSize"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
+            <TextView android:id="@id/main_customer_order_amount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="@dimen/LargeTextSize"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:padding="50.0dip" android:gravity="center_horizontal" android:orientation="horizontal">
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
+	            <Button android:layout_width="wrap_content" android:id="@id/order_by_style" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="@string/main_order_by_style" android:textSize="@dimen/LargerTextSize"/>
+	            <Button android:layout_width="wrap_content" android:id="@id/chenpin_chenlie" android:layout_height="wrap_content" android:text="@string/main_chenpin_chenlie" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
+	            <Button android:layout_width="wrap_content" android:id="@id/must_order" android:layout_height="wrap_content" android:text="@string/main_must_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+	            <Button android:id="@id/style_review" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_style_review" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
+	            <Button android:id="@id/dapei_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_dape_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+	            <Button android:id="@id/order_analysis" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_order_analysis" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
+	            <Button android:id="@id/theme_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_theme_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+	            <Button android:id="@id/summrize_analysis" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_summarize_analysis" android:layout_marginTop="10.0dip"  android:textSize="@dimen/LargerTextSize"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
+	            <Button android:id="@id/my_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_my_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+	            <Button android:id="@id/order_setting" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_order_setting" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, IndexActivity!</string>
+    <string name="app_name">订货终端系统</string>
+    <string name="login_account_hint">请输入用户名</string>
+    <string name="login_password_hint">请输入密码</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+    <string name="login_with_user_account">用店铺帐号登录</string>
+    <string name="register_with_user_account">用店铺帐号注册</string>
+    <string name="title_back">返回</string>
+    <string name="app_logout">退出</string>
+    <string name="main_customer_name">尊敬的&lt;u&gt;&lt;i&gt;%s&lt;/i&gt;&lt;/u&gt;客户</string>
+    <string name="main_order_kpis">您的订货指标:&lt;u&gt;&lt;i&gt;%d&lt;/i&gt;&lt;/u&gt;元</string>
+    <string name="main_order_by_style">按款\n订货</string>
+    <string name="main_chenpin_chenlie">陈品\n陈列</string>
+    <string name="main_must_order">必订\n 款</string>
+    <string name="main_style_review">款式\n评审</string>
+    <string name="main_dape_order">搭配\n订货</string>
+    <string name="main_order_analysis">订单\n分析</string>
+    <string name="main_theme_order">主题\n订货</string>
+    <string name="main_summarize_analysis">汇总\n分析</string>
+    <string name="main_my_order">我的\n订单</string>
+    <string name="main_order_setting">订货\n设置</string>
+    <string name="input_style_code_hint">请输入编号</string>
+    <string name="must_order_select_wave_hint">选择波段</string>
+    <string name="must_order_select_theme_hint">选择主题</string>
+    <string name="must_order_select_pinlei_hint">选择品类</string>
+    <string name="must_order_select_xiaolei_hint">选择小类</string>
+    <string name="must_order_select_xilie_hint">选择系列</string>
+    <string name="must_order_select_code_hint">选择编号</string>
+    <string name="preve_theme">上一主题</string>
+    <string name="next_theme">下一主题</string>
+    <string name="ordered_amount">已订数量:</string>
+    <string name="prev_page">上页</string>
+    <string name="next_page">下页</string>
+    <string name="first_page">首页</string>
+    <string name="last_page">尾页</string>
+    <string name="app_query">查询</string>
+
+</resources>

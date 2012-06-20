@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/ASBody">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="center" android:orientation="vertical">
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>
+            <Button android:id="@id/dinghuozonghefenxi" android:text="订单综合分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>
+            <Button android:id="@id/weidingkuanfenxi" android:text="未定款分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>
+            <Button android:id="@id/zhibioafenxi" android:text="指标分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>
+            <Button android:id="@id/paimingfenxi" android:text="排名分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

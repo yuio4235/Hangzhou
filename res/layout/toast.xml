@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_common_popwindow"
+    android:paddingLeft="10.0dip"
+    android:paddingRight="10.0dip" >
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@id/toast_txt" android:layout_gravity="center_vertical" android:textColor="@color/black" android:textSize="@dimen/BasicTextSize"/>
+
+</LinearLayout>

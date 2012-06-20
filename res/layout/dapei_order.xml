@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout style="@style/ASBody">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="4.0dip" android:orientation="horizontal" android:gravity="center_vertical|center_horizontal"><!--
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <TextView android:id="@id/dapei_total_amount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="25.0dip" android:textColor="@color/ConversationVoiceTextColor"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <TextView android:id="@id/dapei_ordered_amount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="25.0dip" android:textColor="@color/ConversationVoiceTextColor"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <TextView android:id="@id/dapei_unordered_amount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="25.0dip" android:textColor="@color/ConversationVoiceTextColor"/>
+            </LinearLayout>
+        -->
+        	<EditText android:id="@id/dapei_order_query_text" style="@style/MMEditText" android:numeric="integer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="30.0dip" android:hint="请输入搭配组号" android:minWidth="100.0dip"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0">
+			<LinearLayout android:layout_width="100.0dip" android:layout_height="fill_parent" android:id="@id/dapei_order_pager" android:gravity="top" android:orientation="vertical" android:paddingTop="20.0dip">
+			    <Button android:id="@id/first_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text="@string/first_page" android:minWidth="90.0dip"/>
+			    <Button android:id="@id/prev_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text="@string/prev_page" android:minWidth="90.0dip" android:layout_marginTop="15.0dip"/>
+			    <Button android:id="@id/next_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text="@string/next_page" android:minWidth="90.0dip"  android:layout_marginTop="15.0dip"/>
+			    <Button android:id="@id/last_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text="@string/last_page" android:minWidth="90.0dip" android:layout_marginTop="15.0dip"/>
+			</LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0" android:paddingTop="20.0dip">
+            	<ListView android:id="@id/dapei_order_list" android:layout_width="fill_parent" android:layout_height="fill_parent" style="@style/MMListView"></ListView>    
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
