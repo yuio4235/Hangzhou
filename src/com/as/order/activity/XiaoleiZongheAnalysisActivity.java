@@ -50,6 +50,15 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 	public static final int INDEX_WARECNT = 3;
 	public static final int INDEX_WAREALL = 4;
 	
+	//总款数
+	private int sumWareAll = 0;
+	//总订货款数
+	private int sumWareCnt = 0;
+	//总定量
+	private int sumAmount = 0;
+	//总金额
+	private int sumPrice = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,15 +97,15 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 				XiaoleiFenxiDAO dao = mDataSet.get(currPage*15+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getXiaolei(),
+						dao.getWareAll()+"",
+						formatter.format((((double)dao.getWareAll()/sumWareAll)*100))+"%",
 						dao.getWareCnt()+"",
-						formatter.format((((double)dao.getWareCnt()/totalWareCnt)*100))+"%",
-						dao.getOrderedWareCnt()+"",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalWareCnt)*100)) +"%",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalOrderedWareCnt)*100))+"%",
-						dao.getWarenum()+"",
-						formatter.format((((double)dao.getWarenum()/totalWareNum)*100))+"%",
-						dao.getOrderedPrice()+"",
-						formatter.format((((double)dao.getOrderedPrice()/totalPrice)*100))+"%"
+						formatter.format((((double)dao.getWareCnt()/sumWareCnt)*100)) +"%",
+						formatter.format((((double)dao.getWareCnt()/dao.getWareAll())*100))+"%",
+						dao.getAmount()+"",
+						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
+						dao.getPrice()+"",
+						formatter.format((((double)dao.getPrice()/sumPrice)*100))+"%"
 				}, XiaoleiZongheAnalysisActivity.this);
 			}
 			
@@ -197,12 +206,16 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 					totalPage = cursor.getCount()/15 + 1;
 				}
 				while(!cursor.isAfterLast()) {
+					sumWareAll += cursor.getInt(INDEX_WAREALL);
+					sumWareCnt += cursor.getInt(INDEX_WARECNT);
+					sumAmount += cursor.getInt(INDEX_AMOUNT);
+					sumPrice += cursor.getInt(INDEX_PRICE);
 					XiaoleiFenxiDAO dao = new XiaoleiFenxiDAO();
-					dao.setXiaolei(cursor.getString(0));
-					dao.setWareCnt(cursor.getInt(1));
-					dao.setOrderedWareCnt(cursor.getInt(2));
-					dao.setWarenum(cursor.getInt(3));
-					dao.setOrderedPrice(cursor.getInt(4));
+					dao.setXiaolei(cursor.getString(INDEX_XIAOLEI));
+					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
+					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(INDEX_PRICE));
 					mDataSet.add(dao);
 					cursor.moveToNext();
 				}
