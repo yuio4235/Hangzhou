@@ -7,14 +7,97 @@
     <LinearLayout android:id="@id/chart_root" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="horizontal">
         <LinearLayout android:id="@id/chart_view" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0">
         </LinearLayout>
-        <LinearLayout android:layout_width="300.0dip" android:layout_height="fill_parent" android:gravity="center" android:orientation="vertical">
-            <Button android:id="@id/button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
-            <View style="@style/MMSplit"/>
-            <Button android:id="@id/button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
-        	<View style="@style/MMSplit" android:visibility="visible"/>
-        	<Button android:id="@id/button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
-        	<View style="@style/MMSplit" android:visibility="visible"/>
-        	<Button android:id="@id/button04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        <LinearLayout android:layout_width="300.0dip" android:layout_height="fill_parent" android:gravity="center" android:orientation="horizontal">
+        	<LinearLayout android:id="@+id/opt_list" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+        		<Button android:id="@+id/dalei" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="大类" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>
+        		 <Button android:id="@+id/xialei" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="小类" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>
+        		<Button android:id="@+id/zhuti" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="主题" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>        		
+        		<Button android:id="@+id/boduan" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="波段" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>        		
+        		<Button android:id="@+id/yanse" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="颜色" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>   
+        		<Button android:id="@+id/chima" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="尺码" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>        		     		
+        		<Button android:id="@+id/jiagedai" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="价格带" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>        		
+        		<Button android:id="@+id/sxz" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="上下装" android:textSize="30.0dip"/>
+        		<View style="@style/MMSplit"/>        		
+        	</LinearLayout>
+        	<LinearLayout android:id="@+id/dalei_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/dalei_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/dalei_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/dalei_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/dalei_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>
+        	<LinearLayout android:id="@+id/xiaolei_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/xiaolei_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/xiaolei_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/xiaolei_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/xiaolei_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>
+        	<LinearLayout android:id="@+id/zhuti_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/zhuti_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/zhuti_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/zhuti_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/zhuti_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>        	
+        	<LinearLayout android:id="@+id/yanse_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/yanse_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/yanse_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/yanse_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/yanse_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>
+        	<LinearLayout android:id="@+id/chima_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/chima_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/chima_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/chima_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/chima_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>   
+        	<LinearLayout android:id="@+id/boduan_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/boduan_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/boduan_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/boduan_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/boduan_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>      
+        	<LinearLayout android:id="@+id/jiagedai_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/jiagedai_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/jiagedai_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/jiagedai_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/jiagedai_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>
+        	<LinearLayout android:id="@+id/sxz_detail" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_gravity="left" android:orientation="vertical">
+	            <Button android:id="@+id/sxz_button01" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="总款数占比" android:textSize="30.0dip"/>
+	            <View style="@style/MMSplit"/>
+	            <Button android:id="@+id/sxz_button02" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订货款占比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/sxz_button03" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="订 量 占 比" android:textSize="30.0dip"/>
+	        	<View style="@style/MMSplit" android:visibility="visible"/>
+	        	<Button android:id="@+id/sxz_button04" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:background="@drawable/btn_style_two" android:text="金 额 占 比" android:textSize="30.0dip"/>
+        	</LinearLayout>        	         	  	     	        	
         </LinearLayout>          
     </LinearLayout>
 
