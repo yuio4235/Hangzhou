@@ -148,16 +148,37 @@ public class OrderByStyleActivity extends AbstractActivity {
 											@Override
 											public void beforeTextChanged(CharSequence s, int start, int count,
 													int after) {
-												beforeValue = Integer.parseInt(et.getText().toString().trim());
+												String beforeValueStr = et.getText().toString().trim();
+												try {
+													beforeValue = Integer.parseInt(beforeValueStr);
+												} catch (NumberFormatException e) {
+													beforeValue = 0;
+												}
+//												beforeValue = Integer.parseInt(et.getText().toString().trim());
 											}
 											
 											@Override
 											public void afterTextChanged(Editable s) {
-												afterValue = Integer.parseInt(et.getText().toString().trim());
+												String afterValueStr = et.getText().toString().trim();
+												try {
+													afterValue = Integer.parseInt(et.getText().toString().trim());
+												} catch (NumberFormatException e) {
+													e.printStackTrace();
+													afterValue = 0;
+												}
+//												afterValue = Integer.parseInt(TextUtils.isEmpty(et.getText().toString().trim()) ? "0" : et.getText().toString().trim());
 												int currentAmount = 0;
 												for(int mm = 1; mm<=allIndents.size(); mm++) {
+//													LinearLayout currItemLayout = (LinearLayout)orderByStyleList.getItemAtPosition(mm);
 													LinearLayout currItemLayout = (LinearLayout) orderByStyleList.getChildAt(mm);
-													currentAmount += Integer.parseInt(((EditText)currItemLayout.getChildAt(etIndex)).getText().toString().trim());
+													int currValue = 0;
+													try {
+														int crrValue = Integer.parseInt(((EditText)currItemLayout.getChildAt(etIndex)).getText().toString().trim());
+													} catch (NumberFormatException e) {
+														e.printStackTrace();
+														currValue = 0;
+													}
+													currentAmount += currValue;
 												}
 												footerView.setTextForItem(etIndex, currentAmount+"");
 												footerView.setTextForItem(2*header.length-1, (Integer.parseInt(((TextView)footerView.getChildAt(2*header.length-1)).getText().toString().trim()) - beforeValue + afterValue) + "");
@@ -556,18 +577,19 @@ public class OrderByStyleActivity extends AbstractActivity {
 		int i;
 		int m;
 		int currRowTotal = 0;
-		for(i=0; i<allIndents.size(); i++) {
+		for(i=1; i<=allIndents.size(); i++) {
 			LinearLayout currRow = (LinearLayout) orderByStyleList.getChildAt(i);
-			int columnIndex = 0;
+			int columnIndex = 1;
 			int childCount = currRow.getChildCount();
+			currRowTotal = 0;
 			for(m=0;m<childCount;m++) {
 				if(currRow.getChildAt(m) instanceof EditText) {
-					currRowTotal = 0;
 					EditText et = (EditText)currRow.getChildAt(m);
 					try {
 						Field field = sasizeset.getClass().getDeclaredField("s" + (columnIndex < 10 ? "0" + columnIndex : columnIndex));
 						et.setText(field.getInt(sasizeset) + "");
 						currRowTotal += field.getInt(sasizeset);
+						columnIndex ++;
 					} catch (SecurityException e) {
 						e.printStackTrace();
 					} catch (NoSuchFieldException e) {
@@ -577,23 +599,23 @@ public class OrderByStyleActivity extends AbstractActivity {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					}
-					TextView rowTotalTv = (TextView) currRow.getChildAt(currRow.getChildCount()-2);
-					rowTotalTv.setText(currRowTotal + "");
-					columnIndex ++;
 				}
 			}
+			TextView rowTotalTv = (TextView) currRow.getChildAt(currRow.getChildCount()-2);
+			rowTotalTv.setText(currRowTotal + "");
 		}
 		//last total row
-		LinearLayout lastRow = (LinearLayout) orderByStyleList.getChildAt(allIndents.size());
-		int lastColumnIndex = 0;
+		LinearLayout lastRow = (LinearLayout) orderByStyleList.getChildAt(allIndents.size()+1);
+		int lastColumnIndex = 1;
 		int lastRowTotal = 0;
 		for(i=3;i<lastRow.getChildCount()-2; i+=2) {
 			TextView tv = (TextView) lastRow.getChildAt(i);
 			try {
-				Field field = sasizeset.getClass().getDeclaredField("s" + lastColumnIndex);
+				Field field = sasizeset.getClass().getDeclaredField("s" + (lastColumnIndex < 10 ? "0" + lastColumnIndex : lastColumnIndex));
 				int value = field.getInt(sasizeset);
 				tv.setText(value*allIndents.size() + "");
 				lastRowTotal += value*allIndents.size();
+				lastColumnIndex++;
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {

@@ -9,6 +9,7 @@ import java.util.Map;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -101,6 +102,10 @@ public class DapeiOrderActivity extends AbstractActivity {
 			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
+				Log.e(TAG, "mDataSize: " + mDataSet.size());
+				if(mDataSet.get(currPage*15 + position) == null) {
+					Log.e(TAG, "=================== positon: " + position);
+				}
 				return ListViewUtils.generateDapeiOrderRow(mDataSet.get(currPage*15 + position), DapeiOrderActivity.this);
 			}
 			
@@ -163,6 +168,7 @@ public class DapeiOrderActivity extends AbstractActivity {
 					String groupName = cursor.getString(SaWareGroup.CONTENT_GROUPNAME_COLUMN);
 					//搭配组已经存在，则取出搭配组，添加warecode
 					if(mItemCodeMap.containsKey(itemCode)) {
+						Log.e(TAG, "exist itemCode: " + itemCode);
 						List<SaWareCode> sawarecodes = mDataSet.get((Integer)mItemCodeMap.get(itemCode)).getWareCodes();
 						String warecode = cursor.getString(SaWareGroup.CONTENT_WARECODE_COLUMN);
 						SaWareCode sawarecode = SaWareCode.restoreSaWareCodeWithWareCode(DapeiOrderActivity.this, warecode);
@@ -196,6 +202,8 @@ public class DapeiOrderActivity extends AbstractActivity {
 				cursor.close();
 			}
 		}
+		
+		Log.e(TAG, "mDataSet size: " + mDataSet.size());
 		
 		if(mDataSet.size()%15==0){
 			totalPage = mDataSet.size()/15;

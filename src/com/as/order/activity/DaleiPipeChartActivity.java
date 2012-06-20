@@ -28,6 +28,89 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 
 	private static final String TAG = "DaleiPipeChartActivity";
 	
+	private static final String OPT_ZB = "3001";
+	private static final String OPT_YDB = "3002";
+	private static final String OPT_DHB = "3003";
+	private static final String OPT_JEB = "3004";
+	
+	private static final int[] allFenxiBtns = new int[]{
+		R.id.dalei,
+		R.id.xialei,
+		R.id.zhuti,
+		R.id.boduan,
+		R.id.yanse,
+		R.id.chima,
+		R.id.jiagedai,
+		R.id.sxz
+	};
+	
+	private static final int[] alloptids = new int[]{
+		R.id.dalei_detail,
+		R.id.xiaolei_detail,
+		R.id.zhuti_detail,
+		R.id.boduan_detail,
+		R.id.yanse_detail,
+		R.id.chima_detail,
+		R.id.jiagedai_detail,
+		R.id.sxz_detail
+	};
+	
+	private static final int[] daleiids = new int[]{
+		R.id.dalei_button01,
+		R.id.dalei_button02,
+		R.id.dalei_button03,
+		R.id.dalei_button04
+	};
+	
+	private static final int[] xiaoleiids = new int[]{
+		R.id.xiaolei_button01,
+		R.id.xiaolei_button02,
+		R.id.xiaolei_button03,
+		R.id.xiaolei_button04
+	};
+	
+	private static final int[] zhutiids = new int[]{
+		R.id.zhuti_button01,
+		R.id.zhuti_button02,
+		R.id.zhuti_button03,
+		R.id.zhuti_button04
+	};
+	
+	private static final int[] boduanids = new int[]{
+		R.id.boduan_button01,
+		R.id.boduan_button02,
+		R.id.boduan_button03,
+		R.id.boduan_button04
+	};
+	
+	private static final int[] yanseids = new int[]{
+		R.id.yanse_button01,
+		R.id.yanse_button02,
+		R.id.yanse_button03,
+		R.id.yanse_button04,
+	};
+	
+	private static final int[] chimaids = new int[]{
+		R.id.chima_button01,
+		R.id.chima_button02,
+		R.id.chima_button03,
+		R.id.chima_button04
+	};
+	
+	private static final int[] jiagedaiids = new int[]{
+		R.id.jiagedai_button01,
+		R.id.jiagedai_button02,
+		R.id.jiagedai_button03,
+		R.id.jiagedai_button04
+	};
+	
+	private static final int[] sxzids = new int[]{
+		R.id.sxz_button01,
+		R.id.sxz_button02,
+		R.id.sxz_button03,
+		R.id.sxz_button04
+	};
+	
 	private LinearLayout mLayout;
 	private List<DaleiFenxiDAO> mDataSet;
 	private GraphicalView mChart;
@@ -42,6 +125,49 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 	private Button jinezhanbi;
 	LinearLayout chartRoot;
 	private double[] values;
+	
+	private LinearLayout daleiLayout;
+	private LinearLayout xiaoleiLayout;
+	private LinearLayout zhutiLayout;
+	private LinearLayout boduanLayout;
+	private LinearLayout yanseLayout;
+	private LinearLayout chimaLayout;
+	private LinearLayout jiagedaiLayout;
+	private LinearLayout sxzLayout;
+	
+	private Button dalei1;
+	private Button dalei2;
+	private Button dalei3;
+	private Button dalei4;
+	private Button xiaolei1;
+	private Button xiaolei2;
+	private Button xiaolei3;
+	private Button xiaolei4;
+	private Button zhuti1;
+	private Button zhuti2;
+	private Button zhuti3;
+	private Button zhuti4;
+	private Button boduan1;
+	private Button buduan2;
+	private Button boduan3;
+	private Button boduan4;
+	private Button yanse1;
+	private Button yanse2;
+	private Button yanse3;
+	private Button yanse4;
+	private Button chima1;
+	private Button chima2;
+	private Button chima3;
+	private Button chima4;
+	private Button jiagedai1;
+	private Button jiagedai2;
+	private Button jiagedai3;
+	private Button jiagedai4;
+	private Button sxz1;
+	private Button sxz2;
+	private Button sxz3;
+	private Button sxz4;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,14 +176,20 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 		mRootView.addView(mLayout, FF);
 		chartRoot = (LinearLayout) findViewById(R.id.chart_view);
 		
-		zongkuanzhanbi = (Button) findViewById(R.id.button01);
-		dinghuokuanzhanbi = (Button) findViewById(R.id.button02);
-		dingliangzhanbi = (Button) findViewById(R.id.button03);
-		jinezhanbi = (Button) findViewById(R.id.button04);
-		zongkuanzhanbi.setOnClickListener(this);
-		dinghuokuanzhanbi.setOnClickListener(this);
-		jinezhanbi.setOnClickListener(this);
-		dingliangzhanbi.setOnClickListener(this);
+		int i;
+		for(i=0; i<allFenxiBtns.length; i++) {
+			Button btn = (Button) findViewById(allFenxiBtns[i]);
+			btn.setOnClickListener(this);
+		}
+		
+//		zongkuanzhanbi = (Button) findViewById(R.id.button01);
+//		dinghuokuanzhanbi = (Button) findViewById(R.id.button02);
+//		dingliangzhanbi = (Button) findViewById(R.id.button03);
+//		jinezhanbi = (Button) findViewById(R.id.button04);
+//		zongkuanzhanbi.setOnClickListener(this);
+//		dinghuokuanzhanbi.setOnClickListener(this);
+//		jinezhanbi.setOnClickListener(this);
+//		dingliangzhanbi.setOnClickListener(this);
 		
 		setTextForTitle("大类综合分析-饼状图");
 		setTextForLeftTitleBtn("返回");
@@ -129,20 +261,192 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 			finish();
 			break;
 			
-		case R.id.button01:
-//			zongkuanzhanbiChart();
+		case R.id.dalei:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.dalei_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.dalei_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}
 			break;
 			
-		case R.id.button02:
-//			dinghuokuanzhanbiChart();
+		case R.id.xialei:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.xiaolei_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.xiaolei_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}
 			break;
 			
-		case R.id.button03:
-//			dingliangzhanbiChart();
+		case R.id.zhuti:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.zhuti_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.zhuti_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}			
 			break;
 			
-		case R.id.button04:
-//			jinezhanbiChart();
+		case R.id.yanse:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.yanse_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.yanse_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}			
+			break;
+			
+		case R.id.boduan:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.boduan_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.boduan_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}			
+			break;
+			
+		case R.id.chima:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.chima_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.chima_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}			
+			break;
+			
+		case R.id.jiagedai:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.jiagedai_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.jiagedai_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}			
+			break;
+			
+		case R.id.sxz:
+			for(i=0; i<alloptids.length; i++) {
+				if(!(alloptids[i] == R.id.sxz_detail)) {
+					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+					layout.setVisibility(LinearLayout.GONE);
+				}
+				LinearLayout cLayout = (LinearLayout) findViewById(R.id.sxz_detail);
+				cLayout.setVisibility(LinearLayout.VISIBLE);
+			}			
+			break;
+			
+		case R.id.dalei_button01:
+			getDaleiFenxiData("", OPT_ZB);
+			break;
+			
+		case R.id.dalei_button02:
+			getDaleiFenxiData("", OPT_DHB);
+			break;
+			
+		case R.id.dalei_button03:
+			getDaleiFenxiData("", OPT_YDB);
+			break;
+			
+		case R.id.dalei_button04:
+			getDaleiFenxiData("", OPT_JEB);
+			break;
+			
+		case R.id.xiaolei_button01:
+			break;
+			
+		case R.id.xiaolei_button02:
+			break;
+			
+		case R.id.xiaolei_button03:
+			break;
+			
+		case R.id.xiaolei_button04:
+			break;
+			
+		case R.id.zhuti_button01:
+			break;
+			
+		case R.id.zhuti_button02:
+			break;
+			
+		case R.id.zhuti_button03:
+			break;
+			
+		case R.id.zhuti_button04:
+			break;
+			
+		case R.id.boduan_button01:
+			break;
+			
+		case R.id.boduan_button02:
+			break;
+			
+		case R.id.boduan_button03:
+			break;
+			
+		case R.id.boduan_button04:
+			break;
+			
+		case R.id.yanse_button01:
+			break;
+			
+		case R.id.yanse_button02:
+			break;
+			
+		case R.id.yanse_button03:
+			break;
+			
+		case R.id.yanse_button04:
+			break;
+			
+		case R.id.chima_button01:
+			break;
+			
+		case R.id.chima_button02:
+			break;
+			
+		case R.id.chima_button03:
+			break;
+			
+		case R.id.chima_button04:
+			break;
+			
+		case R.id.jiagedai_button01:
+			break;
+			
+		case R.id.jiagedai_button02:
+			break;
+			
+		case R.id.jiagedai_button03:
+			break;
+			
+		case R.id.jiagedai_button04:
+			break;
+			
+		case R.id.sxz_button01:
+			break;
+			
+		case R.id.sxz_button02:
+			break;
+			
+		case R.id.sxz_button03:
+			break;
+			
+		case R.id.sxz_button04:
 			break;
 			
 			
@@ -150,7 +454,35 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 			break;
 		}
 	}
-
+	
+	private double[] getXiaoleiFenxiData(String where, String anaType) {
+		return null;
+	}
+	
+	private double[] getZhutiFenxiData(String where, String anaType) {
+		return null;
+	}
+	
+	private double[] getBoduanFenxiData(String where, String anaType) {
+		return null;
+	}
+	
+	private double[] getYanseFenxiData(String where, String anaType) {
+		return null;
+	}
+	
+	private double[] getChimaFenxiData(String where, String anaType) {
+		return null;
+	}
+	
+	private double[] getJiagedaiFenxiData(String where, String anaType) {
+		return null;
+	}
+	
+	private double[] getSxzFenxiData(String where, String anaType) {
+		return null;
+	}
+	
 	private double[] getDaleiFenxiData(String where, String anaType) {
 //		if(mDataSet == null) {
 //			mDataSet = new ArrayList<DaleiFenxiDAO>();
