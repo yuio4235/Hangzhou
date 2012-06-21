@@ -22,6 +22,7 @@ import com.as.order.dao.BoduanFenxiDAO;
 import com.as.order.dao.DaleiFenxiDAO;
 import com.as.ui.utils.AnaUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class BoduanZongheAnalysisActivity extends AbstractActivity {
 	
@@ -126,12 +127,12 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public int getCount() {
-				if(mDataSet.size() < 15) {
+				if(mDataSet.size() < 10) {
 					return mDataSet.size();
-				} else if((currPage + 1)*15 > mDataSet.size()) {
-					return mDataSet.size()%15;
+				} else if((currPage + 1)*10 > mDataSet.size()) {
+					return mDataSet.size()%10;
 				}
-				return 15;
+				return 10;
 			}
 		};
 		mList.setAdapter(mAdapter);
@@ -141,7 +142,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initTotalData();
+//		initTotalData();
 		getBoduanFenxiData("");
 		initData();
 	}
@@ -179,15 +180,13 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 			mDataSet = new ArrayList<BoduanFenxiDAO>();
 		}
 		
-		SharedPreferences sp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
-		String account = sp.getString("user_account", "A100");
 		String sql = " SELECT (select rtrim(paraconnent) from sapara Where Rtrim(para) = Rtrim(sawarecode.state) And Trim(paratype) = 'PD') boduan, "
 			+ " saindent.[warenum]* Retailprice  price, "
 			+ " count( distinct saindent.warecode) ware_cnt, "
 			+ " (Select count(warecode) From sawarecode B where rtrim(B.state) = Rtrim(sawarecode.state)) ware_all "
 			+ " FROM saindent,sawarecode "
 			+ " WHERE  Rtrim(saindent.warecode)=Rtrim(sawarecode.warecode) " 
-			+ " And saindent.departcode='" + account + "'"
+			+ " And saindent.departcode='" + UserUtils.getUserAccount(this) + "'"
 			+ " And saindent.[warenum]> 0 "
 			+ " GROUP BY  sawarecode.state ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(BoduanZongheAnalysisActivity.this);
@@ -195,10 +194,10 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				mDataSet.clear();
-				if(cursor.getCount()%15 ==0) {
-					totalPage = cursor.getCount()/15;
+				if(cursor.getCount()%10 ==0) {
+					totalPage = cursor.getCount()/10;
 				} else {
-					totalPage = cursor.getCount()/15+1;
+					totalPage = cursor.getCount()/10+1;
 				}
 				while(!cursor.isAfterLast()) {
 					sumWareAll += cursor.getInt(INDEX_WAREALL);

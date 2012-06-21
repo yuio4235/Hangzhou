@@ -131,12 +131,12 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public int getCount() {
-				if(mDataSet.size() < 15) {
+				if(mDataSet.size() < 10) {
 					return mDataSet.size();
-				} else if((currPage+1)*15 > mDataSet.size()) {
-					return mDataSet.size()%15;
+				} else if((currPage+1)*10 > mDataSet.size()) {
+					return mDataSet.size()%10;
 				}
-				return 15;
+				return 10;
 			}
 		};
 		
@@ -147,7 +147,7 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initTotalData();
+//		initTotalData();
 		getJiagedaiFenxiData("");
 		initData();
 	}

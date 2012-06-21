@@ -4,12 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.as.order.R;
-import com.as.order.dao.DaleiFenxiDAO;
-import com.as.order.dao.ZhutiFenxiDAO;
-import com.as.ui.utils.AnaUtils;
-import com.as.ui.utils.ListViewUtils;
-
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +13,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.as.db.provider.AsProvider;
+import com.as.order.R;
+import com.as.order.dao.ZhutiFenxiDAO;
+import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class ZhutiZongheAnalysisActivity extends AbstractActivity {
 
@@ -38,6 +41,17 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity {
 	private int totalPrice = 0;
 	//订货会一定款式
 	private int totalOrderedWareCnt = 0;	
+	
+	private int sumWareAll = 0;
+	private int sumWareCnt = 0;
+	private int sumAmount = 0;
+	private int sumPrice = 0;
+	
+	public static final int INDEX_ZHUTI = 0;
+	public static final int INDEX_AMOUNT = 1;
+	public static final int INDEX_PRICE = 2;
+	public static final int INDEX_WARECNT = 3;
+	public static final int INDEX_WAREALL = 4;
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	@Override
@@ -90,15 +104,15 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity {
 				ZhutiFenxiDAO dao = mDataSet.get(currPage*15+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getZhuti(),
+						dao.getWareAll()+"",
+						formatter.format((((double)dao.getWareAll()/sumWareAll)*100))+"%",
 						dao.getWareCnt()+"",
-						formatter.format((((double)dao.getWareCnt()/totalWareCnt)*100))+"%",
-						dao.getOrderedWareCnt()+"",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalWareCnt)*100)) +"%",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalOrderedWareCnt)*100))+"%",
-						dao.getWarenum()+"",
-						formatter.format((((double)dao.getWarenum()/totalWareNum)*100))+"%",
-						dao.getOrderedPrice()+"",
-						formatter.format((((double)dao.getOrderedPrice()/totalPrice)*100))+"%"
+						formatter.format((((double)dao.getWareCnt()/sumWareCnt)*100)) +"%",
+						formatter.format((((double)dao.getWareCnt()/dao.getWareAll())*100))+"%",
+						dao.getAmount()+"",
+						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
+						dao.getPrice()+"",
+						formatter.format((((double)dao.getPrice()/sumPrice)*100))+"%"
 				}, ZhutiZongheAnalysisActivity.this);
 			}
 			
@@ -114,12 +128,12 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public int getCount() {
-				if(mDataSet.size() < 15) {
+				if(mDataSet.size() < 10) {
 					return mDataSet.size();
-				} else if((currPage+1)*15 > mDataSet.size()) {
-					return mDataSet.size()%15;
+				} else if((currPage+1)*10 > mDataSet.size()) {
+					return mDataSet.size()%10;
 				}
-				return 15;
+				return 10;
 			}
 		};
 		
@@ -130,7 +144,7 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initTotalData();
+//		initTotalData();
 		getZhutiFenxiData("");
 		initData();
 	}
@@ -164,6 +178,50 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity {
 	}
 
 	private void getZhutiFenxiData(String where) {
-		
+		String sql = 
+		      " select sawarecode.style, "
+			+ " sum(saindent.warenum) amount ,"
+			+ " sum(saindent.warenum*sawarecode.retailprice) price, "
+			+ " count(distinct saindent.warecode) ware_cnt, "
+			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.style) = rtrim(b.style)) ware_all, "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+ " and saindent.departcode = '"+UserUtils.getUserAccount(this)+"' "
+			+ " and saindent.warenum > 0 "
+			+ " and " + where 
+			+ " group by sawarecode.style ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
+		Cursor cursor = db.rawQuery(sql, null);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				mDataSet.clear();
+				if(cursor.getCount()%10 == 0) {
+					totalPage = cursor.getCount()/10;
+				} else {
+					totalPage = cursor.getCount()/10 + 1;
+				}
+				while(!cursor.isAfterLast()) {
+					sumWareAll += cursor.getInt(INDEX_WAREALL);
+					sumWareCnt += cursor.getInt(INDEX_WARECNT);
+					sumAmount += cursor.getInt(INDEX_AMOUNT);
+					sumPrice += cursor.getInt(INDEX_PRICE);
+					ZhutiFenxiDAO dao = new ZhutiFenxiDAO();
+					dao.setZhuti(cursor.getString(INDEX_ZHUTI));
+					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
+					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(INDEX_PRICE));
+					mDataSet.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(db != null) {
+				db.close();
+			}
+			if(cursor != null) {
+				cursor.close();
+			}
+		}
 	}
 }

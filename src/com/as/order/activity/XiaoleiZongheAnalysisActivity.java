@@ -121,12 +121,12 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public int getCount() {
-				if(mDataSet.size() < 15) {
+				if(mDataSet.size() < 10) {
 					return mDataSet.size();
-				} else if((currPage+1)*15 > mDataSet.size()) {
-					return mDataSet.size()%15;
+				} else if((currPage+1)*10 > mDataSet.size()) {
+					return mDataSet.size()%10;
 				}
-				return 15;
+				return 10;
 			}
 		};
 		
@@ -200,10 +200,10 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				mDataSet.clear();
-				if(cursor.getCount()%15 == 0) {
-					totalPage = cursor.getCount()/15;
+				if(cursor.getCount()%10 == 0) {
+					totalPage = cursor.getCount()/10;
 				} else {
-					totalPage = cursor.getCount()/15 + 1;
+					totalPage = cursor.getCount()/10 + 1;
 				}
 				while(!cursor.isAfterLast()) {
 					sumWareAll += cursor.getInt(INDEX_WAREALL);

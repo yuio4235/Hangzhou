@@ -4,12 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.as.order.R;
-import com.as.order.dao.BoduanFenxiDAO;
-import com.as.order.dao.YanseFenxiDAO;
-import com.as.ui.utils.AnaUtils;
-import com.as.ui.utils.ListViewUtils;
-
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +13,14 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.as.db.provider.AsProvider;
+import com.as.order.R;
+import com.as.order.dao.YanseFenxiDAO;
+import com.as.order.dao.ZhutiFenxiDAO;
+import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class YanseZongheAnalysisActivity extends AbstractActivity {
 	
@@ -121,12 +125,12 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public int getCount() {
-				if(mDataSet.size() < 15) {
+				if(mDataSet.size() < 10) {
 					return mDataSet.size();
-				} else if((currPage + 1)*15 > mDataSet.size()) {
-					return mDataSet.size()%15;
+				} else if((currPage + 1)*10 > mDataSet.size()) {
+					return mDataSet.size()%10;
 				}
-				return 15;
+				return 10;
 			}
 		};
 		mList.setAdapter(mAdapter);
@@ -170,6 +174,60 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 	}
 
 	private void getYanseFenxiData(String where) {
-		
+		if(mDataSet == null) {
+			mDataSet = new ArrayList<YanseFenxiDAO>();
+		}
+		String sql = " select sacolorcode.[colorname] yanse, "
+			+" sum(saindent.[warenum]) amount, "
+			+" sum(saindent.[warenum]*sawarecode.[retailprice]) price, "
+			+" count(distinct saindent.[warecode]) ware_cnt, "
+			+" (Select count(B.warecode) From saindent  B,sawarecode C "
+			+" where Rtrim(B.colorcode) = Rtrim(saindent.colorcode) "
+			+" And Rtrim(B.departcode) = '"+UserUtils.getUserAccount(this)+"' "
+			+" And Rtrim(B.warecode) = Rtrim(C.warecode)) ware_all "
+			+" from saindent, sawarecode, sacolorcode "
+			+" where "
+			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode)  "
+			+" and "
+			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode) "
+			+" and "
+			+"  saindent.departcode= '"+UserUtils.getUserAccount(this)+"' "
+			+" and "
+			+" saindnet.[warenum] > 0 "
+			+" and " + where
+			+" group by saindent.[colorcode], sacolorcode.[colorname] ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
+		Cursor cursor = db.rawQuery(sql, null);
+		try  {
+			if(cursor != null && cursor.moveToFirst()) {
+				mDataSet.clear();
+				if(cursor.getCount()%10 == 0) {
+					totalPage = cursor.getCount()/10;
+				} else {
+					totalPage = cursor.getCount()/10 + 1;
+				}
+				while(!cursor.isAfterLast()) {
+					sumWareAll += cursor.getInt(INDEX_WAREALL);
+					sumWareCnt += cursor.getInt(INDEX_WARECNT);
+					sumAmount += cursor.getInt(INDEX_AMOUNT);
+					sumPrice += cursor.getInt(INDEX_PRICE);
+					YanseFenxiDAO dao = new YanseFenxiDAO();
+					dao.setYanse(cursor.getString(INDEX_YANSE));
+					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
+					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
+					dao.setPrice(cursor.getInt(INDEX_PRICE));
+					mDataSet.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
 	}
 }

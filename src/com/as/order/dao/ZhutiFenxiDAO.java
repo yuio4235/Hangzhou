@@ -3,9 +3,9 @@ package com.as.order.dao;
 public class ZhutiFenxiDAO {
 	private String zhuti;
 	private int wareCnt;
-	private int orderedWareCnt;
-	private int warenum;
-	private int orderedPrice;
+	private int wareAll;
+	private int price;
+	private int amount;
 	public String getZhuti() {
 		return zhuti;
 	}
@@ -18,22 +18,22 @@ public class ZhutiFenxiDAO {
 	public void setWareCnt(int wareCnt) {
 		this.wareCnt = wareCnt;
 	}
-	public int getOrderedWareCnt() {
-		return orderedWareCnt;
+	public int getWareAll() {
+		return wareAll;
 	}
-	public void setOrderedWareCnt(int orderedWareCnt) {
-		this.orderedWareCnt = orderedWareCnt;
+	public void setWareAll(int wareAll) {
+		this.wareAll = wareAll;
 	}
-	public int getWarenum() {
-		return warenum;
+	public int getPrice() {
+		return price;
 	}
-	public void setWarenum(int warenum) {
-		this.warenum = warenum;
+	public void setPrice(int price) {
+		this.price = price;
 	}
-	public int getOrderedPrice() {
-		return orderedPrice;
+	public int getAmount() {
+		return amount;
 	}
-	public void setOrderedPrice(int orderedPrice) {
-		this.orderedPrice = orderedPrice;
+	public void setAmount(int amount) {
+		this.amount = amount;
 	}
 }
