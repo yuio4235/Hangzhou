@@ -42,6 +42,17 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 	private int totalPrice = 0;
 	private int totalOrderedWareCnt =0;
 	
+	private int sumWareAll = 0;
+	private int sumWareCnt = 0;
+	private int sumAmount = 0;
+	private int sumPrice = 0;
+	
+	public static final int INDEX_BODUAN = 0;
+	public static final int INDEX_AMOUNT = 1;
+	public static final int INDEX_PRICE = 2;
+	public static final int INDEX_WARECNT = 3;
+	public static final int INDEX_WAREALL = 4;
+	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
 	@Override
@@ -91,15 +102,15 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 				BoduanFenxiDAO dao = mDataSet.get(currPage*15+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getBoduan(),
+						dao.getWareAll()+"",
+						formatter.format((((double)dao.getWareAll()/sumWareAll)*100))+"%",
 						dao.getWareCnt()+"",
-						formatter.format((((double)dao.getWareCnt()/totalWareCnt)*100))+"%",
-						dao.getOrderedWareCnt()+"",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalWareCnt)*100)) +"%",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalOrderedWareCnt)*100))+"%",
-						dao.getWarenum()+"",
-						formatter.format((((double)dao.getWarenum()/totalWareNum)*100))+"%",
-						dao.getOrderedPrice()+"",
-						formatter.format((((double)dao.getOrderedPrice()/totalPrice)*100))+"%"
+						formatter.format((((double)dao.getWareCnt()/sumWareCnt)*100)) +"%",
+						formatter.format((((double)dao.getWareCnt()/dao.getWareAll())*100))+"%",
+						dao.getAmount()+"",
+						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
+						dao.getPrice()+"",
+						formatter.format((((double)dao.getPrice()/totalPrice)*100))+"%"
 				}, BoduanZongheAnalysisActivity.this);
 			}
 			
@@ -190,13 +201,16 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 					totalPage = cursor.getCount()/15+1;
 				}
 				while(!cursor.isAfterLast()) {
+					sumWareAll += cursor.getInt(INDEX_WAREALL);
+					sumWareCnt += cursor.getInt(INDEX_WARECNT);
+					sumAmount += cursor.getInt(INDEX_AMOUNT);
+					sumPrice += cursor.getInt(INDEX_PRICE);
 					BoduanFenxiDAO dao = new BoduanFenxiDAO();
-					dao.setBoduan(cursor.getString(0));
-					dao.setWareCnt(cursor.getInt(3));
-					dao.setOrderedWareCnt(cursor.getInt(1));
-					dao.setWarenum(cursor.getInt(3));
-					dao.setOrderedPrice(cursor.getInt(1));  
-					
+					dao.setBoduan(cursor.getString(INDEX_BODUAN));
+					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
+					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(INDEX_PRICE));
 					mDataSet.add(dao);
 					cursor.moveToNext();
 				}

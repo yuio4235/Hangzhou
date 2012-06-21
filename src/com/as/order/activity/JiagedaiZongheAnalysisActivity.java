@@ -4,12 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.as.order.R;
-import com.as.order.dao.DaleiFenxiDAO;
-import com.as.order.dao.JiagedaiFenxiDAO;
-import com.as.ui.utils.AnaUtils;
-import com.as.ui.utils.ListViewUtils;
-
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +13,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.as.db.provider.AsProvider;
+import com.as.order.R;
+import com.as.order.dao.JiagedaiFenxiDAO;
+import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 	
@@ -40,6 +43,17 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 	private int totalPrice = 0;
 	//订货会一定款式
 	private int totalOrderedWareCnt = 0;
+	
+	private int sumWareAll = 0;
+	private int sumWareCnt = 0;
+	private int sumAmount = 0;
+	private int sumPrice = 0;
+	
+	public static final int INDEX_JIAGEDAI = 0;
+	public static final int INDEX_AMOUNT = 1;
+	public static final int INDEX_PRICE = 2;
+	public static final int INDEX_WARECNT = 3;
+	public static final int INDEX_WAREALL = 4;
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
@@ -93,15 +107,15 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 				JiagedaiFenxiDAO dao = mDataSet.get(currPage*15+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getJiagedai(),
+						dao.getWareAll()+"",
+						formatter.format((((double)dao.getWareAll()/sumWareAll)*100))+"%",
 						dao.getWareCnt()+"",
-						formatter.format((((double)dao.getWareCnt()/totalWareCnt)*100))+"%",
-						dao.getOrderedWareCnt()+"",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalWareCnt)*100)) +"%",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalOrderedWareCnt)*100))+"%",
-						dao.getWarenum()+"",
-						formatter.format((((double)dao.getWarenum()/totalWareNum)*100))+"%",
-						dao.getOrderedPrice()+"",
-						formatter.format((((double)dao.getOrderedPrice()/totalPrice)*100))+"%"
+						formatter.format((((double)dao.getWareCnt()/sumWareCnt)*100)) +"%",
+						formatter.format((((double)dao.getWareCnt()/dao.getWareAll())*100))+"%",
+						dao.getAmount()+"",
+						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
+						dao.getPrice()+"",
+						formatter.format((((double)dao.getPrice()/sumPrice)*100))+"%"
 				}, JiagedaiZongheAnalysisActivity.this);
 			}
 			
@@ -170,6 +184,50 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 	}
 
 	private void getJiagedaiFenxiData(String where) {
-		
+		String sql = " SELECT "
+			+ " sawarecode.pricecomment, "
+			+ " sum(saindent.warenum) amount, "
+			+ " sum(saindent.warenum * sawarecode.retailprice) price, "
+			+ " count(distinct saindent.warecode ) ware_cnt "
+			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.pricecomment) = rtrim(b.pricecomment)) ware_all "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode ) "
+			+ " and saindent.departcode = '"+UserUtils.getUserAccount(this)+"' "
+			+ " and saindent.warenum > 0 "
+			+ " and " + where 
+			+ " group by sawarecode.pricecomment ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
+		Cursor cursor = db.rawQuery(sql, null);
+		try  {
+			if(cursor != null && cursor.moveToFirst()) {
+				mDataSet.clear();
+				if(cursor.getCount()%10 == 0) {
+					totalPage = cursor.getCount()/10;
+				} else {
+					totalPage = cursor.getCount()/10 + 1;
+				}
+				while(!cursor.isAfterLast()) {
+					sumWareAll += cursor.getInt(INDEX_WAREALL);
+					sumWareCnt += cursor.getInt(INDEX_WARECNT);
+					sumAmount += cursor.getInt(INDEX_AMOUNT);
+					sumPrice += cursor.getInt(INDEX_PRICE);
+					JiagedaiFenxiDAO dao = new JiagedaiFenxiDAO();
+					dao.setJiagedai(cursor.getString(INDEX_JIAGEDAI));
+					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
+					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(INDEX_PRICE));
+					mDataSet.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if( db != null) {
+				db.close();
+			}
+		}
 	}
 }

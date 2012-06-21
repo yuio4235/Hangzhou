@@ -4,12 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.as.order.R;
-import com.as.order.dao.DaleiFenxiDAO;
-import com.as.order.dao.SxzFenxiDAO;
-import com.as.ui.utils.AnaUtils;
-import com.as.ui.utils.ListViewUtils;
-
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +13,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.as.db.provider.AsProvider;
+import com.as.order.R;
+import com.as.order.dao.SxzFenxiDAO;
+import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 	
@@ -46,6 +49,11 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 	public static final int INDEX_PRICE = 2;
 	public static final int INDEX_WARECNT = 3;
 	public static final int INDEX_WAREALL = 4;
+	
+	private int sumWareAll = 0;
+	private int sumWareCnt = 0;
+	private int sumAmount = 0;
+	private int sumPrice = 0;
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
@@ -98,15 +106,15 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 				SxzFenxiDAO dao = mDataSet.get(currPage*15+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getSxz(),
+						dao.getWareAll()+"",
+						formatter.format((((double)dao.getWareAll()/sumWareAll)*100))+"%",
 						dao.getWareCnt()+"",
-						formatter.format((((double)dao.getWareCnt()/totalWareCnt)*100))+"%",
-						dao.getOrderedWareCnt()+"",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalWareCnt)*100)) +"%",
-						formatter.format((((double)dao.getOrderedWareCnt()/totalOrderedWareCnt)*100))+"%",
-						dao.getWarenum()+"",
-						formatter.format((((double)dao.getWarenum()/totalWareNum)*100))+"%",
-						dao.getOrderedPrice()+"",
-						formatter.format((((double)dao.getOrderedPrice()/totalPrice)*100))+"%"
+						formatter.format((((double)dao.getWareCnt()/sumWareCnt)*100)) +"%",
+						formatter.format((((double)dao.getWareCnt()/dao.getWareAll())*100))+"%",
+						dao.getAmount()+"",
+						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
+						dao.getPrice()+"",
+						formatter.format((((double)dao.getPrice()/sumPrice)*100))+"%"
 				}, ShangxiazuangZongheAnalysisAcitivity.this);
 			}
 			
@@ -175,6 +183,52 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 	}
 
 	private void getSxzFenxiData(String where) {
-		
+		if(mDataSet == null) {
+			mDataSet = new ArrayList<SxzFenxiDAO>();
+		}
+		String sql = " SELECT "
+			+ " sawarecode.sxz, "
+			+ " sum(saindent.warenum) amount, "
+			+ " sum(saindent.warenum * sawarecode.retailprice) price, "
+			+ " count(distinct saindent.warecode) ware_cnt, "
+			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.sxz) = rtrim(b.sxz)) ware_all, "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+ " and saindent.departcode = '"+UserUtils.getUserAccount(ShangxiazuangZongheAnalysisAcitivity.this)+"' "
+			+ " and saindent.warenum > 0 "
+			+ " group by sawarecode.sxz ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
+		Cursor cursor = db.rawQuery(sql, null);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				mDataSet.clear();
+				if(cursor.getCount()%10 == 0) {
+					totalPage = cursor.getCount()/10;
+				} else {
+					totalPage = cursor.getCount()/10 + 1;
+				}
+				while(!cursor.isAfterLast()) {
+					sumWareAll += cursor.getInt(INDEX_WAREALL);
+					sumWareCnt += cursor.getInt(INDEX_WARECNT);
+					sumAmount += cursor.getInt(INDEX_AMOUNT);
+					sumPrice += cursor.getInt(INDEX_PRICE);
+					SxzFenxiDAO dao = new SxzFenxiDAO();
+					dao.setSxz(cursor.getString(INDEX_SXZ));
+					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
+					dao.setPrice(cursor.getInt(INDEX_PRICE));
+					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
+					mDataSet.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
 	}
 }
