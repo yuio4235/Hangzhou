@@ -1,6 +1,9 @@
 package com.as.order.activity;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -18,6 +21,7 @@ import android.widget.LinearLayout;
 import com.as.order.R;
 import com.as.order.dao.DaleiFenxiDAO;
 import com.as.ui.utils.ColorUtils;
+import com.as.ui.utils.CommonDataUtils;
 
 public class DaleiPipeChartActivity extends AbstractActivity {
 
@@ -163,6 +167,15 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 	private Button sxz3;
 	private Button sxz4;
 	
+	public static final int ANATYPE_DALEI = 5001;
+	public static final int ANATYPE_XIAOLEI = 5002;
+	public static final int ANATYPE_ZHUTI = 5003;
+	public static final int ANATYPE_BODUAN = 5004;
+	public static final int ANATYPE_YANSE = 5005;
+	public static final int ANATYPE_CHIMA = 5006;
+	public static final int ANATYPE_JIAGEDAI = 5007;
+	public static final int ANATYPE_SXZ = 5008;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -198,6 +211,25 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 		int optType = bundle.getInt("optType");
 		String titleString = bundle.getString("title");
 		setTextForTitle(titleString);
+		
+		if(anaType == ANATYPE_DALEI) {
+			Map<String, Double> data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.ZKZB);
+			
+		} else if(anaType == ANATYPE_XIAOLEI) {
+			
+		} else if(anaType == ANATYPE_ZHUTI) {
+			
+		} else if(anaType == ANATYPE_BODUAN) {
+			
+		} else if(anaType == ANATYPE_YANSE) {
+			
+		} else if(anaType == ANATYPE_CHIMA) {
+			
+		} else if(anaType == ANATYPE_JIAGEDAI) {
+			
+		} else if(anaType == ANATYPE_SXZ) {
+			
+		}
 	}
 	
 	@Override
@@ -514,5 +546,32 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 			series.add(mDataSet.get(k++).getDalei()+"(" + value + ")", value);
 		}
 		return ChartFactory.getPieChartView(DaleiPipeChartActivity.this, series, renderer);
+	}
+	
+	private GraphicalView createChart(Map<String, Double> data, String chartTitle) {
+		int[] colors = ColorUtils.getColors(data.size());
+		DefaultRenderer renderer = new DefaultRenderer();
+		renderer.setLabelsTextSize(20);
+		renderer.setLegendTextSize(20);
+		renderer.setChartTitleTextSize(30);
+		renderer.setMargins(new int[]{20, 30, 15, 0});
+		for(int color : colors) {
+			SimpleSeriesRenderer r = new SimpleSeriesRenderer();
+			r.setColor(color);
+			renderer.addSeriesRenderer(r);
+		}
+		renderer.setZoomButtonsVisible(true);
+		renderer.setZoomEnabled(true);
+		renderer.setChartTitle(chartTitle);
+		renderer.setLabelsColor(Color.BLACK);
+		CategorySeries series = new CategorySeries("categoryseries");
+		Set<String> keys = data.keySet();
+		Iterator iterator = keys.iterator();
+		while(iterator.hasNext()) {
+			String key = (String)iterator.next();
+			double value = (double) data.get(key);
+			series.add(key+"( " + value + " )", value);
+		}
+		return ChartFactory.getPieChartView(this, series, renderer);
 	}
 }
