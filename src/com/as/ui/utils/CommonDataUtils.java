@@ -22,13 +22,17 @@ import com.as.db.provider.AsContent.SawarecodeColumns;
 import com.as.db.provider.AsContent.Type1;
 import com.as.db.provider.AsContent.Type1Columns;
 import com.as.order.activity.DaLeiZongheAnalysisActivity;
+import com.as.order.activity.JiagedaiZongheAnalysisActivity;
 import com.as.order.activity.ShangxiazuangZongheAnalysisAcitivity;
 import com.as.order.activity.XiaoleiZongheAnalysisActivity;
 import com.as.order.activity.YanseZongheAnalysisActivity;
+import com.as.order.activity.ZhutiZongheAnalysisActivity;
 import com.as.order.dao.DaleiFenxiDAO;
+import com.as.order.dao.JiagedaiFenxiDAO;
 import com.as.order.dao.SxzFenxiDAO;
 import com.as.order.dao.XiaoleiFenxiDAO;
 import com.as.order.dao.YanseFenxiDAO;
+import com.as.order.dao.ZhutiFenxiDAO;
 
 public class CommonDataUtils {
 
@@ -270,8 +274,66 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartZhutiFenxi(Context context, String where) {
-		return null;
+	public static Map<String, Double> chartZhutiFenxi(Context context, String where, int opt) {
+		String sql = 
+		      " select sawarecode.style, "
+			+ " sum(saindent.warenum) amount ,"
+			+ " sum(saindent.warenum*sawarecode.retailprice) price, "
+			+ " count(distinct saindent.warecode) ware_cnt, "
+			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.style) = rtrim(b.style)) ware_all, "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+ " and saindent.departcode = '"+getUserAccount(context)+"' "
+			+ " and saindent.warenum > 0 "
+			+ " and " + where 
+			+ " group by sawarecode.style ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		List<ZhutiFenxiDAO> data = new ArrayList<ZhutiFenxiDAO>();
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				while(!cursor.isAfterLast()) {
+					ZhutiFenxiDAO dao = new ZhutiFenxiDAO();
+					dao.setZhuti(cursor.getString(ZhutiZongheAnalysisActivity.INDEX_ZHUTI));
+					dao.setWareAll(cursor.getInt(ZhutiZongheAnalysisActivity.INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(ZhutiZongheAnalysisActivity.INDEX_WARECNT));
+					dao.setAmount(cursor.getInt(ZhutiZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(ZhutiZongheAnalysisActivity.INDEX_PRICE));
+					data.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getZhuti(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getZhuti(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getZhuti(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getZhuti(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getZhuti(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 	
 	/**
@@ -373,8 +435,66 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartJiagedaiFenxi(Context context, String where)  {
-		return null;
+	public static Map<String, Double> chartJiagedaiFenxi(Context context, String where, int opt)  {
+		String sql = " SELECT "
+			+ " sawarecode.pricecomment, "
+			+ " sum(saindent.warenum) amount, "
+			+ " sum(saindent.warenum * sawarecode.retailprice) price, "
+			+ " count(distinct saindent.warecode ) ware_cnt "
+			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.pricecomment) = rtrim(b.pricecomment)) ware_all "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode ) "
+			+ " and saindent.departcode = '"+getUserAccount(context)+"' "
+			+ " and saindent.warenum > 0 "
+			+ " and " + where 
+			+ " group by sawarecode.pricecomment ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		List<JiagedaiFenxiDAO> data = new ArrayList<JiagedaiFenxiDAO>();
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				while(!cursor.isAfterLast()) {
+					JiagedaiFenxiDAO dao = new JiagedaiFenxiDAO();
+					dao.setJiagedai(cursor.getString(JiagedaiZongheAnalysisActivity.INDEX_JIAGEDAI));
+					dao.setWareAll(cursor.getInt(JiagedaiZongheAnalysisActivity.INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(JiagedaiZongheAnalysisActivity.INDEX_WARECNT));
+					dao.setAmount(cursor.getInt(JiagedaiZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(JiagedaiZongheAnalysisActivity.INDEX_PRICE));
+					data.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getJiagedai(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getJiagedai(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getJiagedai(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getJiagedai(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getJiagedai(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 	
 	/**
