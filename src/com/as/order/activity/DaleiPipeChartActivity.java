@@ -214,11 +214,14 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 		
 		if(anaType == ANATYPE_DALEI) {
 			Map<String, Double> data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.ZKZB);
-			
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(data, "大类分析-总款占比"));
 		} else if(anaType == ANATYPE_XIAOLEI) {
-			
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.ZKZB), "小类分析-总款占比"));
 		} else if(anaType == ANATYPE_ZHUTI) {
-			
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.ZKZB), "主题分析"));
 		} else if(anaType == ANATYPE_BODUAN) {
 			
 		} else if(anaType == ANATYPE_YANSE) {
