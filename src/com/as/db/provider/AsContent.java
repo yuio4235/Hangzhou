@@ -2088,8 +2088,73 @@ public abstract class AsContent {
 		
 		public static SaSizeSet restoreSaSizeSetWithSiezeGroup(Context context, String sizeGroup) {
 			Cursor cursor = context.getContentResolver()
-				.query(SaSizeSet.CONTENT_URI, CONTENT_PROJECTION, SaSizeSetColumns.SIZEGROUP + "-?", new String[]{sizeGroup}, null);
+				.query(SaSizeSet.CONTENT_URI, CONTENT_PROJECTION, SaSizeSetColumns.SIZEGROUP + "=?", new String[]{sizeGroup}, null);
 			return restoreSaSizeSetWithCursor(cursor);
+		}
+	}
+	
+	public interface ViewOrderListColumns {
+		public String DEPARTCODE = "departcode";
+		public String WARECODE = "warecode";
+		public String COLORCODE = "colorcode";
+		public String SIZECODE = "sizecode";
+		public String MOUNT = "mount";
+		public String MONEY = "money";
+	}
+	
+	public static final class ViewOrderList extends AsContent implements ViewOrderListColumns {
+
+		public static final String TABLE_NAME = "view_ord_list";
+		public static final Uri CONTENT_URI = Uri.parse(AsContent.CONTENT_URI + "/viewordlist");
+		
+		public static final int CONTENT_DEPARTCODE_COLUMN = 0;
+		public static final int CONTENT_WARECODE_COLUMN = 1;
+		public static final int CONTENT_SIZECODE_COLUMN = 2;
+		public static final int CONTENT_MOUNT_COLUMN = 3;
+		public static final int CONTENT_MONEY_COLUMN = 4;
+		
+		public static final String[] CONTENT_PROJECTION = new String[]{
+			ViewOrderListColumns.DEPARTCODE,
+			ViewOrderListColumns.WARECODE,
+			ViewOrderListColumns.COLORCODE,
+			ViewOrderListColumns.MOUNT,
+			ViewOrderListColumns.MONEY
+		};
+		
+		public String departcode;
+		public String warecode;
+		public String colorcode;
+		public int mount;
+		public int money;
+		
+		public ViewOrderList() {
+			mBaseUri = CONTENT_URI;
+		}
+		
+		@Override
+		public ViewOrderList restore(Cursor cursor) {
+			mBaseUri = CONTENT_URI;
+			try {
+				if(cursor != null && cursor.moveToFirst()) {
+					return getContent(cursor, ViewOrderList.class);
+				}
+			} finally {
+				if(cursor != null) {
+					cursor.close();
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public ContentValues toContentValues() {
+			ContentValues values = new ContentValues();
+			values.put(ViewOrderListColumns.DEPARTCODE, departcode);
+			values.put(ViewOrderListColumns.WARECODE, warecode);
+			values.put(ViewOrderListColumns.COLORCODE, colorcode);
+			values.put(ViewOrderListColumns.MOUNT, mount);
+			values.put(ViewOrderListColumns.MONEY, money);
+			return values;
 		}
 		
 	}

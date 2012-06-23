@@ -17,7 +17,10 @@
             </LinearLayout>
             <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1.0" android:gravity="center">
                 <EditText android:id="@id/must_order_boduan_et" android:textSize="@dimen/LargerTextSize" style="@style/MMEditText" android:hint="@string/must_order_select_wave_hint" android:editable="false"/>
-            </LinearLayout>                             
+            </LinearLayout>     
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1.0" android:gravity="center">
+                <Button android:id="@id/charts_btn" style="@style/MMButton" android:background="@drawable/btn_style_two" android:text="图表" android:minWidth="100.0dip"/>
+            </LinearLayout>                                         
         </LinearLayout>
         <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical">
        		<ListView android:id="@id/as_list" android:layout_width="fill_parent" android:layout_height="fill_parent"></ListView>

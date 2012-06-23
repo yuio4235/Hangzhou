@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,7 +21,10 @@ import com.as.db.provider.AsProvider;
 import com.as.order.R;
 import com.as.order.charts.DaleiFenxiPipeChart;
 import com.as.order.dao.DaleiFenxiDAO;
+import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.PagerUtils;
+import com.as.ui.utils.UserUtils;
 
 public class DaLeiZongheAnalysisActivity extends AbstractActivity {
 	
@@ -74,7 +79,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity {
 		mList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
 				"大类",
 				"总款数",
-				"总款数占比",
+				"总款占比",
 				"订货款",
 				"订货款占比",
 				"已订占比",
@@ -97,7 +102,8 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				DaleiFenxiDAO dao = mDataSet.get(currPage*15+position);
+				DaleiFenxiDAO dao = mDataSet.get(currPage*PagerUtils.PAGE_AMOUNT+position);
+//				Log.e(TAG, "current ware_all: " + dao.getWareAll() + " sumWareAll: " + sumWareAll);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getDalei(),
 						dao.getWareAll()+"",
@@ -170,8 +176,13 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity {
 			case R.id.charts_btn:
 //				DaleiFenxiPipeChart mChart = new DaleiFenxiPipeChart(mDataSet);
 //				startActivity(mChart.execute(DaLeiZongheAnalysisActivity.this));
-				Intent inent = new Intent(DaLeiZongheAnalysisActivity.this, DaleiPipeChartActivity.class);
-				startActivity(inent);
+				Intent intent = new Intent(DaLeiZongheAnalysisActivity.this, DaleiPipeChartActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt(DaleiPipeChartActivity.ANA_TYPE, DaleiPipeChartActivity.ANATYPE_DALEI);
+				bundle.putInt(DaleiPipeChartActivity.OPT_TYPE, CommonDataUtils.ZKZB);
+				bundle.putString(DaleiPipeChartActivity.ANA_TITLE, "大类分析-总款占比");
+				intent.putExtras(bundle);
+				startActivity(intent);
 				break;
 			
 			default:
@@ -183,19 +194,32 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity {
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<DaleiFenxiDAO>();
 		}
-		String sql = " SELECT "
-			+ " (select waretypename From sawaretype Where rtrim(sawaretype.waretypeid) = rtrim(sawarecode.waretypeid)) dalei, "
-			/*+ " (Select type1 From type1 Where rtrim(id) = trim(sawarecode.id)) xiaolei, "*/
-			+ " sum(saindent.[warenum]) amount, "
-			+ " Sum(saindent.[warenum] * Retailprice ) price, "
-			+ " count( distinct saindent.warecode) ware_cnt, "
-			+ " (Select count(warecode) From sawarecode B where rtrim(B.id) = Rtrim(sawarecode.id)) ware_all "
-			+ " FROM saindent,sawarecode "
-			+ " WHERE  Rtrim(saindent.warecode)=Rtrim(sawarecode.warecode) "
-			+ " And Rtrim(saindent.departcode) = 'A100' "
-		    + where
-		    + " And		saindent.[warenum] > 0 "
-			+ " GROUP BY  sawarecode.waretypeid";
+//		String sql = " SELECT "
+//			+ " (select waretypename From sawaretype Where rtrim(sawaretype.waretypeid) = rtrim(sawarecode.waretypeid)) dalei, "
+//			/*+ " (Select type1 From type1 Where rtrim(id) = trim(sawarecode.id)) xiaolei, "*/
+//			+ " sum(saindent.[warenum]) amount, "
+//			+ " Sum(saindent.[warenum] * Retailprice ) price, "
+//			+ " count( distinct saindent.warecode) ware_cnt, "
+//			+ " (Select count(warecode) From sawarecode B where rtrim(B.id) = Rtrim(sawarecode.id)) ware_all "
+//			+ " FROM saindent,sawarecode "
+//			+ " WHERE  Rtrim(saindent.warecode)=Rtrim(sawarecode.warecode) "
+//			+ " And Rtrim(saindent.departcode) = 'A100' "
+//		    + where
+//		    + " And		saindent.[warenum] > 0 "
+//			+ " GROUP BY  sawarecode.waretypeid";
+		String sql = ""
+			+" SELECT "
+			+" (select waretypename from sawaretype where rtrim(sawaretype.[waretypeid])  = rtrim(sawarecode.[waretypeid])) dalei, "
+			+" sum(saindent.[warenum]) amount, "
+			+" sum(saindent.[warenum]* retailprice) price,  "
+			+" count(distinct saindent.[warecode]) ware_cnt,  "
+			+" (Select count(warecode) From sawarecode B where rtrim(B.id) = Rtrim(sawarecode.id)) ware_all "
+			+" from saindent, sawarecode " 
+			+" where rtrim(saindent.[warecode]) = rtrim(sawarecode.[warecode]) "
+			+" and rtrim(saindent.[departcode]) = '"+UserUtils.getUserAccount(this)+"' "
+			+" and saindent.[warenum] > 0 "
+			+(TextUtils.isEmpty(where) ? "" : " and " + where)
+			+" group by sawarecode.[waretypeid] ";
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(DaLeiZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);

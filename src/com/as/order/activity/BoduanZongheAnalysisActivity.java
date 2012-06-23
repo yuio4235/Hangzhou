@@ -4,11 +4,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,8 +19,8 @@ import android.widget.ListView;
 import com.as.db.provider.AsProvider;
 import com.as.order.R;
 import com.as.order.dao.BoduanFenxiDAO;
-import com.as.order.dao.DaleiFenxiDAO;
 import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.ListViewUtils;
 import com.as.ui.utils.UserUtils;
 
@@ -56,6 +56,8 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
+	private Button chartsBtn;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,9 +66,11 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
+		chartsBtn = (Button) findViewById(R.id.charts_btn);
 		
 		prevBtn.setOnClickListener(this);
 		nextBtn.setOnClickListener(this);
+		chartsBtn.setOnClickListener(this);
 		
 		mList = (ListView) findViewById(R.id.as_list);
 		mList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
@@ -172,6 +176,16 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 			currPage ++;
 			mAdapter.notifyDataSetChanged();
 			break;
+			
+		case R.id.charts_btn:
+			Intent chartIntent = new Intent(this, DaleiPipeChartActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt(DaleiPipeChartActivity.ANA_TYPE, DaleiPipeChartActivity.ANATYPE_BODUAN);
+			bundle.putInt(DaleiPipeChartActivity.OPT_TYPE, CommonDataUtils.ZKZB);
+			bundle.putString(DaleiPipeChartActivity.ANA_TITLE, "波段分析-总款占比");
+			chartIntent.putExtras(bundle);
+			startActivity(chartIntent);
+			break;
 		}
 	}
 
@@ -180,15 +194,18 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity {
 			mDataSet = new ArrayList<BoduanFenxiDAO>();
 		}
 		
-		String sql = " SELECT (select rtrim(paraconnent) from sapara Where Rtrim(para) = Rtrim(sawarecode.state) And Trim(paratype) = 'PD') boduan, "
-			+ " saindent.[warenum]* Retailprice  price, "
-			+ " count( distinct saindent.warecode) ware_cnt, "
-			+ " (Select count(warecode) From sawarecode B where rtrim(B.state) = Rtrim(sawarecode.state)) ware_all "
-			+ " FROM saindent,sawarecode "
-			+ " WHERE  Rtrim(saindent.warecode)=Rtrim(sawarecode.warecode) " 
-			+ " And saindent.departcode='" + UserUtils.getUserAccount(this) + "'"
-			+ " And saindent.[warenum]> 0 "
-			+ " GROUP BY  sawarecode.state ";
+		String sql = 
+			"select (select rtrim(paraconnent) from sapara where rtrim(para) = rtrim(sawarecode.state) AND trim(paratype) = 'PD') boduan, "
+			+ " sum(saindent.warenum) amount, "
+			+ " sum(saindent.warenum*retailprice) price, "
+			+ " count(distinct saindent.warecode) ware_cnt, "
+			+ " (select count(warecode) from sawarecode b where rtrim(b.state) = rtrim(sawarecode.state)) ware_all "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+ " and saindent.warenum > 0 "
+			+ " and saindent.departcode = '"+UserUtils.getUserAccount(this)+"'"
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where )
+			+ " group by sawarecode.state";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(BoduanZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {

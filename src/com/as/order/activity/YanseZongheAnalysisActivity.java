@@ -4,9 +4,12 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,9 +20,10 @@ import android.widget.ListView;
 import com.as.db.provider.AsProvider;
 import com.as.order.R;
 import com.as.order.dao.YanseFenxiDAO;
-import com.as.order.dao.ZhutiFenxiDAO;
 import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.PagerUtils;
 import com.as.ui.utils.UserUtils;
 
 public class YanseZongheAnalysisActivity extends AbstractActivity {
@@ -32,6 +36,8 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 	private List<YanseFenxiDAO> mDataSet;
 	private Button prevBtn;
 	private Button nextBtn;
+	
+	private Button chartsBtn;
 	
 	private int currPage = 0;
 	private int totalPage = 0;
@@ -57,7 +63,7 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.boduan_fenxi, null);
+		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.yanse_fenxi, null);
 		mRootView.addView(mLayout, FF);
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
@@ -65,6 +71,9 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 		
 		prevBtn.setOnClickListener(this);
 		nextBtn.setOnClickListener(this);
+		
+		chartsBtn = (Button) findViewById(R.id.charts_btn);
+		chartsBtn.setOnClickListener(this);
 		
 		mList = (ListView) findViewById(R.id.as_list);
 		mList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
@@ -98,7 +107,7 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				YanseFenxiDAO dao = mDataSet.get(currPage*15+position);
+				YanseFenxiDAO dao = mDataSet.get(currPage*PagerUtils.PAGE_AMOUNT+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getYanse(),
 						dao.getWareAll()+"",
@@ -170,6 +179,16 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 			currPage ++;
 			mAdapter.notifyDataSetChanged();
 			break;
+			
+		case R.id.charts_btn:
+			Intent chartsIntent = new Intent(YanseZongheAnalysisActivity.this, DaleiPipeChartActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt(DaleiPipeChartActivity.ANA_TYPE, DaleiPipeChartActivity.ANATYPE_YANSE);
+			bundle.putInt(DaleiPipeChartActivity.OPT_TYPE, CommonDataUtils.ZKZB);
+			bundle.putString(DaleiPipeChartActivity.ANA_TITLE, "颜色分析-总款占比");
+			chartsIntent.putExtras(bundle);
+			startActivity(chartsIntent);
+			break;
 		}
 	}
 
@@ -189,12 +208,12 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 			+" where "
 			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode)  "
 			+" and "
-			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode) "
+			+"  Rtrim(saindent.warecode)= Rtrim(sawarecode.warecode) "
 			+" and "
 			+"  saindent.departcode= '"+UserUtils.getUserAccount(this)+"' "
 			+" and "
-			+" saindnet.[warenum] > 0 "
-			+" and " + where
+			+" saindent.[warenum] > 0 "
+			+(TextUtils.isEmpty(where) ? "" : " and " + where)
 			+" group by saindent.[colorcode], sacolorcode.[colorname] ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
 		Cursor cursor = db.rawQuery(sql, null);
@@ -207,6 +226,7 @@ public class YanseZongheAnalysisActivity extends AbstractActivity {
 					totalPage = cursor.getCount()/10 + 1;
 				}
 				while(!cursor.isAfterLast()) {
+					Log.e(TAG, "current sumWareAll: " + sumWareAll);
 					sumWareAll += cursor.getInt(INDEX_WAREALL);
 					sumWareCnt += cursor.getInt(INDEX_WARECNT);
 					sumAmount += cursor.getInt(INDEX_AMOUNT);

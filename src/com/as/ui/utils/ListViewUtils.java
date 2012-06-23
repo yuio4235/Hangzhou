@@ -124,7 +124,7 @@ public class ListViewUtils {
 		
 		int totalCount =0;
 		int i;
-		Log.e("==", "====== warecodes size: " + dao.getWareCodes().size());
+//		Log.e("==", "====== warecodes size: " + dao.getWareCodes().size());
 		for(i=0; i<dao.getWareCodes().size() && i<3; i++) {
 			TextView tv = new TextView(context);
 			tv.setTextSize(25);

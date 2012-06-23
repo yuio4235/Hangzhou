@@ -21,12 +21,16 @@ import com.as.db.provider.AsContent.SaWareTypeColumns;
 import com.as.db.provider.AsContent.SawarecodeColumns;
 import com.as.db.provider.AsContent.Type1;
 import com.as.db.provider.AsContent.Type1Columns;
+import com.as.order.activity.BoduanZongheAnalysisActivity;
+import com.as.order.activity.ChimaZongheAnalysisActivity;
 import com.as.order.activity.DaLeiZongheAnalysisActivity;
 import com.as.order.activity.JiagedaiZongheAnalysisActivity;
 import com.as.order.activity.ShangxiazuangZongheAnalysisAcitivity;
 import com.as.order.activity.XiaoleiZongheAnalysisActivity;
 import com.as.order.activity.YanseZongheAnalysisActivity;
 import com.as.order.activity.ZhutiZongheAnalysisActivity;
+import com.as.order.dao.BoduanFenxiDAO;
+import com.as.order.dao.ChimaFenxiDAO;
 import com.as.order.dao.DaleiFenxiDAO;
 import com.as.order.dao.JiagedaiFenxiDAO;
 import com.as.order.dao.SxzFenxiDAO;
@@ -146,7 +150,7 @@ public class CommonDataUtils {
 			+" where rtrim(saindent.[warecode]) = rtrim(sawarecode.[warecode]) "
 			+" and rtrim(saindent.[departcode]) = '"+getUserAccount(context)+"' "
 			+" and saindent.[warenum] > 0 "
-			+" and " + where
+			+(TextUtils.isEmpty(where) ? "" : " and " + where)
 			+" group by sawarecode.[waretypeid] ";
 		List<DaleiFenxiDAO> data = new ArrayList<DaleiFenxiDAO>();
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
@@ -211,12 +215,12 @@ public class CommonDataUtils {
 			+ " sum(saindent.warenum) amount, "
 			+ " sum(saindent.warenum*sawarecode.retailprice) price, "
 			+ " count(distinct sawarecode.warecode) ware_cnt, "
-			+ " (select count(warecode) from sawarecode b where rtrim(b.id)) = rtrim(sawarecode.id)) ware_all "
+			+ " (select count(warecode) from sawarecode b where rtrim(b.id) = rtrim(sawarecode.id)) ware_all "
 			+ " from saindent, sawarecode "
 			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
 			+ " and rtrim(saindent.departcode) = '"+getUserAccount(context)+"' "
 			+ " and saindent.warenum > 0 "
-			+ " and " + where 
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where )
 			+ " group by sawarecode.id ";
 		List<XiaoleiFenxiDAO> data = new ArrayList<XiaoleiFenxiDAO>();
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
@@ -280,12 +284,12 @@ public class CommonDataUtils {
 			+ " sum(saindent.warenum) amount ,"
 			+ " sum(saindent.warenum*sawarecode.retailprice) price, "
 			+ " count(distinct saindent.warecode) ware_cnt, "
-			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.style) = rtrim(b.style)) ware_all, "
+			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.style) = rtrim(b.style)) ware_all "
 			+ " from saindent, sawarecode "
 			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
 			+ " and saindent.departcode = '"+getUserAccount(context)+"' "
 			+ " and saindent.warenum > 0 "
-			+ " and " + where 
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where) 
 			+ " group by sawarecode.style ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
 		Cursor cursor = db.rawQuery(sql, null);
@@ -342,8 +346,66 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartBoduanFenxi(Context context, String where) {
-		return null;
+	public static Map<String, Double> chartBoduanFenxi(Context context, String where, int opt) {
+		String sql = 
+			"select (select rtrim(paraconnent) from sapara where rtrim(para) = rtrim(sawarecode.state) AND trim(paratype) = 'PD') boduan, "
+			+ " sum(saindent.warenum) amount, "
+			+ " sum(saindent.warenum*retailprice) price, "
+			+ " count(distinct saindent.warecode) ware_cnt, "
+			+ " (select count(warecode) from sawarecode b where rtrim(b.state) = rtrim(sawarecode.state)) ware_all "
+			+ " from saindent, sawarecode "
+			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
+			+ " and saindent.warenum > 0 "
+			+ " and saindent.departcode = '"+getUserAccount(context)+"'"
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where )
+			+ " group by sawarecode.state";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		List<BoduanFenxiDAO> data = new ArrayList<BoduanFenxiDAO>();
+		try  {
+			if(cursor != null && cursor.moveToFirst()) {
+				while(!cursor.isAfterLast()) {
+					BoduanFenxiDAO dao = new BoduanFenxiDAO();
+					dao.setBoduan(cursor.getString(BoduanZongheAnalysisActivity.INDEX_BODUAN));
+					dao.setAmount(cursor.getInt(BoduanZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setPrice(cursor.getInt(BoduanZongheAnalysisActivity.INDEX_PRICE));
+					dao.setWareCnt(cursor.getInt(BoduanZongheAnalysisActivity.INDEX_WARECNT));
+					dao.setWareAll(cursor.getInt(BoduanZongheAnalysisActivity.INDEX_WAREALL));
+					data.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(db != null) {
+				db.close();
+			}
+			if(cursor != null) {
+				cursor.close();
+			}
+		}
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getBoduan(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getBoduan(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getBoduan(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getBoduan(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getBoduan(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 	
 	/**
@@ -365,11 +427,12 @@ public class CommonDataUtils {
 			+" where "
 			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode)  "
 			+" and "
-			+"  Rtrim(saindent.colorcode)= Rtrim(sacolorcode.colorcode) "
+			+"  Rtrim(saindent.warecode)= Rtrim(sawarecode.warecode) "
 			+" and "
 			+"  saindent.departcode= '"+getUserAccount(context)+"' "
 			+" and "
-			+" saindnet.[warenum] > 0 "
+			+" saindent.[warenum] > 0 "
+			+(TextUtils.isEmpty(where) ? "" : " and " + where)
 			+" group by saindent.[colorcode], sacolorcode.[colorname] ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
 		Cursor cursor = db.rawQuery(sql, null);
@@ -384,6 +447,7 @@ public class CommonDataUtils {
 					dao.setWareAll(cursor.getInt(YanseZongheAnalysisActivity.INDEX_WAREALL));
 					dao.setWareCnt(cursor.getInt(YanseZongheAnalysisActivity.INDEX_WARECNT));
 					data.add(dao);
+					cursor.moveToNext();
 				}
 			}
 		} finally {
@@ -425,8 +489,71 @@ public class CommonDataUtils {
 	 * @param where
 	 * @return
 	 */
-	public static double[] chartChaimaFenxi(Context context, String where) {
-		return null;
+	public static Map<String, Double> chartChaimaFenxi(Context context, String where, int opt) {
+		String sql = " SELECT "
+			+ " (select paraconnent from sapara, sawarecode b, showsize where sapara.[paratype] = 'CM' and sapara.[para] = showsize.[type] and showsize.[type] = b.[flag] and b.[warecode] = sawarecode.warecode) chimazu, "
+			+ "        view_ord_list.[sizecode] sizecode,       "
+			+ "        sum(view_ord_list.[amount]) amount, "
+			+ "        sum(view_ord_list.[money]) price,   "
+			+ "        count(distinct view_ord_list.[warecode]) ware_cnt, "
+			+ " (select count(warecode) from sawarecode c where rtrim(c.flag) = rtrim(sawarecode.flag)) ware_all "
+			+" from "
+			+ "     sawarecode, view_ord_list "
+			+ " where  "
+			+ "       sawarecode.[warecode] = view_ord_list.[warecode] "
+			+ " and "
+			+ "    view_ord_list.[amount] > 0 "
+			+ " and view_ord_list.departcode = '"+getUserAccount(context)+"'"
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where)
+			+ " group by sawarecode.[flag],  view_ord_list.[sizecode] ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		List<ChimaFenxiDAO> data = new ArrayList<ChimaFenxiDAO>();
+		try  {
+			if(cursor != null && cursor.moveToNext()) {
+				while(!cursor.isAfterLast()) {
+					ChimaFenxiDAO dao = new ChimaFenxiDAO();
+					dao.setChimazu(cursor.getString(ChimaZongheAnalysisActivity.INDEX_CHIMAZU));
+					dao.setChima(cursor.getString(ChimaZongheAnalysisActivity.INDEX_SIZECODE));
+					dao.setAmount(cursor.getInt(ChimaZongheAnalysisActivity.INDEX_AMOUNT));
+					dao.setWareAll(cursor.getInt(ChimaZongheAnalysisActivity.INDEX_WAREALL));
+					dao.setWareCnt(cursor.getInt(ChimaZongheAnalysisActivity.INDEX_WARECNT));
+					dao.setPrice(cursor.getInt(ChimaZongheAnalysisActivity.INDEX_PRICE));
+					data.add(dao);
+					cursor.moveToNext();
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
+		Map<String, Double> returnData = new HashMap<String, Double>();
+		if(opt == ZKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getChima(), (double)data.get(i).getWareAll());
+			}
+		} else if(opt == DHKZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getChima(), (double)data.get(i).getWareCnt());
+			}
+		} else if(opt == DLZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getChima(), (double)data.get(i).getAmount());
+			}
+		} else if(opt == JEZB) {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getChima(), (double)data.get(i).getPrice());
+			}
+		} else {
+			for(int i=0; i<data.size(); i++) {
+				returnData.put(data.get(i).getChima(), (double)data.get(i).getWareAll());
+			}
+		}		
+		return returnData;
 	}
 	
 	/**
@@ -440,13 +567,13 @@ public class CommonDataUtils {
 			+ " sawarecode.pricecomment, "
 			+ " sum(saindent.warenum) amount, "
 			+ " sum(saindent.warenum * sawarecode.retailprice) price, "
-			+ " count(distinct saindent.warecode ) ware_cnt "
+			+ " count(distinct saindent.warecode ) ware_cnt, "
 			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.pricecomment) = rtrim(b.pricecomment)) ware_all "
 			+ " from saindent, sawarecode "
 			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode ) "
 			+ " and saindent.departcode = '"+getUserAccount(context)+"' "
 			+ " and saindent.warenum > 0 "
-			+ " and " + where 
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where)
 			+ " group by sawarecode.pricecomment ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
 		Cursor cursor = db.rawQuery(sql, null);
@@ -504,7 +631,7 @@ public class CommonDataUtils {
 	 * @return
 	 */
 	public static Map<String, Double> chartSxzFenxi(Context context, String where, int opt)  {
-		String sql = " SELECT sawarecode.szx, "
+		String sql = " SELECT sawarecode.sxz, "
 			+" sum(saindent.warenum) amount, "
 			+" sum(saindent.warenum*sawarecode.retailprice) price, "
 			+" count(distinct saindent.warecode) ware_cnt, "
@@ -515,6 +642,7 @@ public class CommonDataUtils {
 			+" saindent.departcode = '"+getUserAccount(context)+"'"
 			+" and "
 			+" saindent.warenum > 0 "
+			+(TextUtils.isEmpty(where) ? "" : " and " + where)
 			+" group by sawarecode.sxz ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
 		Cursor cursor = db.rawQuery(sql, null);

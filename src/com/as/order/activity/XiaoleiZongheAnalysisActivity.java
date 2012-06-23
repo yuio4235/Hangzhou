@@ -4,9 +4,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +19,11 @@ import android.widget.ListView;
 
 import com.as.db.provider.AsProvider;
 import com.as.order.R;
-import com.as.order.dao.DaleiFenxiDAO;
 import com.as.order.dao.XiaoleiFenxiDAO;
 import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.PagerUtils;
 
 public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 	
@@ -59,6 +62,8 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 	//总金额
 	private int sumPrice = 0;
 	
+	private Button chartBtn;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,6 +84,9 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 		}, XiaoleiZongheAnalysisActivity.this));
 		mDataSet = new ArrayList<XiaoleiFenxiDAO>();
 		
+		chartBtn = (Button) findViewById(R.id.charts_btn);
+		chartBtn.setOnClickListener(this);
+		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
 		prevBtn.setOnClickListener(this);
@@ -94,7 +102,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				XiaoleiFenxiDAO dao = mDataSet.get(currPage*15+position);
+				XiaoleiFenxiDAO dao = mDataSet.get(currPage*PagerUtils.PAGE_AMOUNT+position);
 				return ListViewUtils.generateRow(new String[]{
 						dao.getXiaolei(),
 						dao.getWareAll()+"",
@@ -175,6 +183,15 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 			}
 			currPage ++;
 			mAdapter.notifyDataSetChanged();
+			
+		case R.id.charts_btn:
+			Intent chartIntent = new Intent(XiaoleiZongheAnalysisActivity.this, DaleiPipeChartActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt(DaleiPipeChartActivity.ANA_TYPE, DaleiPipeChartActivity.ANATYPE_XIAOLEI);
+			bundle.putInt(DaleiPipeChartActivity.OPT_TYPE, CommonDataUtils.ZKZB);
+			bundle.putString(DaleiPipeChartActivity.ANA_TITLE, "小类分析-总款占比");
+			chartIntent.putExtras(bundle);
+			startActivity(chartIntent);
 			break;
 		}
 	}
@@ -192,7 +209,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity {
 			+ " from sawarecode "
 			+ " left join saindent "
 			+ " on sawarecode.[warecode] = saindent.warecode "
-			+ " where 1=1 " + where
+			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.id ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(XiaoleiZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);

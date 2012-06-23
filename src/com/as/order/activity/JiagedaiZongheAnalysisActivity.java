@@ -4,9 +4,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,6 +20,7 @@ import com.as.db.provider.AsProvider;
 import com.as.order.R;
 import com.as.order.dao.JiagedaiFenxiDAO;
 import com.as.ui.utils.AnaUtils;
+import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.ListViewUtils;
 import com.as.ui.utils.UserUtils;
 
@@ -57,6 +60,8 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	
+	private Button chartsBtn;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,9 +71,11 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
+		chartsBtn = (Button) findViewById(R.id.charts_btn);
 		
 		prevBtn.setOnClickListener(this);
 		nextBtn.setOnClickListener(this);
+		chartsBtn.setOnClickListener(this);
 		
 		mList = (ListView) findViewById(R.id.as_list);
 		mList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
@@ -178,6 +185,16 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 			mAdapter.notifyDataSetChanged();
 			break;
 			
+		case R.id.charts_btn:
+			Intent chartIntent = new Intent(this, DaleiPipeChartActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt(DaleiPipeChartActivity.ANA_TYPE, DaleiPipeChartActivity.ANATYPE_JIAGEDAI);
+			bundle.putInt(DaleiPipeChartActivity.OPT_TYPE, CommonDataUtils.ZKZB);
+			bundle.putString(DaleiPipeChartActivity.ANA_TITLE, "价格带分析-总款占比");
+			chartIntent.putExtras(bundle);
+			startActivity(chartIntent);
+			break;
+			
 			default:
 				break;
 		}
@@ -188,13 +205,13 @@ public class JiagedaiZongheAnalysisActivity extends AbstractActivity {
 			+ " sawarecode.pricecomment, "
 			+ " sum(saindent.warenum) amount, "
 			+ " sum(saindent.warenum * sawarecode.retailprice) price, "
-			+ " count(distinct saindent.warecode ) ware_cnt "
+			+ " count(distinct saindent.warecode ) ware_cnt, "
 			+ " (select count(warecode) from sawarecode b where rtrim(sawarecode.pricecomment) = rtrim(b.pricecomment)) ware_all "
 			+ " from saindent, sawarecode "
 			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode ) "
 			+ " and saindent.departcode = '"+UserUtils.getUserAccount(this)+"' "
 			+ " and saindent.warenum > 0 "
-			+ " and " + where 
+			+ (TextUtils.isEmpty(where) ? "" : " and " + where )
 			+ " group by sawarecode.pricecomment ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
 		Cursor cursor = db.rawQuery(sql, null);

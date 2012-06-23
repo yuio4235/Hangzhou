@@ -1,5 +1,6 @@
 package com.as.db.provider;
 
+import android.R;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -38,6 +39,7 @@ import com.as.db.provider.AsContent.ShowSize;
 import com.as.db.provider.AsContent.ShowSizeColumns;
 import com.as.db.provider.AsContent.Type1;
 import com.as.db.provider.AsContent.Type1Columns;
+import com.as.db.provider.AsContent.ViewOrderList;
 
 public class AsProvider extends ContentProvider{
 	
@@ -99,6 +101,9 @@ public class AsProvider extends ContentProvider{
 	private static final int SASIZESET = SASIZESET_BASE;
 	private static final int SASIZESET_SIZEGROUP = SASIZESET_BASE + 1;
 	
+	private static final int VIEWORDLIST_BASE = 0xC000;
+	private static final int VIEWORDLIST = VIEWORDLIST_BASE;
+	
 	private static final int BASE_SHIFT = 12;
 	
 	private static final String[] TABLE_NAMES = {
@@ -113,7 +118,8 @@ public class AsProvider extends ContentProvider{
 		AsContent.SaIndent.TABLE_NAME,
 		SaWareGroup.TABLE_NAME,
 		SaOrderTrget.TABLE_NAME,
-		SaSizeSet.TABLE_NAME
+		SaSizeSet.TABLE_NAME,
+		ViewOrderList.TABLE_NAME
 	};
 	
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -169,6 +175,9 @@ public class AsProvider extends ContentProvider{
 		//All SaSizeSet
 		matcher.addURI(AS_AUTHORITY, "sasizeset", SASIZESET);
 		matcher.addURI(AS_AUTHORITY, "sasizeset/sizegroup/#", SASIZESET_SIZEGROUP);
+		
+		//all vieworderlist
+		matcher.addURI(AS_AUTHORITY, "viewordlist", VIEWORDLIST);
 	}
 	
 	/**
@@ -417,7 +426,7 @@ public class AsProvider extends ContentProvider{
 			+ SaIndentColumns.S20 + " integer default 0, "
 			+ SaIndentColumns.INPUTDATE + " text, "
 			+ SaIndentColumns.INPUTMAN + " text, "
-			+ SaIndentColumns.WARENUM + " integer, "
+			+ SaIndentColumns.WARENUM + " integer default 0, "
 			+ SaIndentColumns.REMARK + " text, "
 			+ SaIndentColumns.OFLAG + " text);";
 		
@@ -513,8 +522,9 @@ public class AsProvider extends ContentProvider{
 		createSaSizeSetTable(db);
 	}
 	
-	static void createSizeView(SQLiteDatabase db) {
-		String viewSql = "";
+	static void createViewOrdListView(Context context, SQLiteDatabase db) {
+		String viewSql  =  context.getString(com.as.order.R.string.view_order_list);
+		db.execSQL(viewSql);
 	}
 	
 	private SQLiteDatabase mDatabase;
@@ -563,6 +573,7 @@ public class AsProvider extends ContentProvider{
 			createSaWareGroupTable(db);
 			createSaOrderTrgetTable(db);
 			createSaSizeSetTable(db);
+			createViewOrdListView(mContext, db);
 		}
 
 		@Override
@@ -619,6 +630,7 @@ public class AsProvider extends ContentProvider{
 			case SAORDERTRGET_ID:
 			case SASIZESET_SIZEGROUP:
 			case SASIZESET:
+			case VIEWORDLIST:
 				db.beginTransaction();
 				break;
 			}
@@ -827,6 +839,9 @@ public class AsProvider extends ContentProvider{
 			
 		case SASIZESET_SIZEGROUP:
 			return "vnd.android.item/sasizeset";
+			
+		case VIEWORDLIST:
+			return "vnd.android.dir/viewordlist";
 			
 			default:
 				throw new IllegalArgumentException("Unknow URI " + uri);
@@ -1042,6 +1057,10 @@ public class AsProvider extends ContentProvider{
 			case SASIZESET_SIZEGROUP:
 				String sizeGroup = uri.getPathSegments().get(2);
 				c = db.query(TABLE_NAMES[table], projection, whereWithSizeGroup(sizeGroup, selection), selectionArgs, null, null, sortOrder);
+				break;
+				
+			case VIEWORDLIST:
+				c = db.query(TABLE_NAMES[table], ViewOrderList.CONTENT_PROJECTION, selection, selectionArgs, null, null, sortOrder);
 				break;
 				
 				default:

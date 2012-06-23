@@ -1,5 +1,6 @@
 package com.as.order.activity;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.achartengine.renderer.SimpleSeriesRenderer;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -38,7 +40,8 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 		R.id.zhuti,
 		R.id.boduan,
 		R.id.yanse,
-		R.id.chima,
+//		R.id.chima,
+		R.id.chimabtn,
 		R.id.jiagedai,
 		R.id.sxz
 	};
@@ -167,6 +170,11 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 	private Button sxz3;
 	private Button sxz4;
 	
+	public static final String ANA_TYPE = "anaType";
+	public static final String OPT_TYPE = "optType";
+	public static final String ANA_TITLE = "title";
+	public static final String ANA_CHIMAZU = "chimazu";
+	
 	public static final int ANATYPE_DALEI = 5001;
 	public static final int ANATYPE_XIAOLEI = 5002;
 	public static final int ANATYPE_ZHUTI = 5003;
@@ -190,6 +198,46 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 			btn.setOnClickListener(this);
 		}
 		
+		for(i=0; i<daleiids.length; i++) {
+			Button btn = (Button) findViewById(daleiids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<xiaoleiids.length; i++) {
+			Button btn = (Button) findViewById(xiaoleiids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<zhutiids.length; i++) {
+			Button btn = (Button) findViewById(zhutiids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<boduanids.length; i++) {
+			Button btn = (Button) findViewById(boduanids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<yanseids.length; i++) {
+			Button btn = (Button) findViewById(yanseids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<chimaids.length; i++) {
+			Button btn = (Button) findViewById(chimaids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<jiagedaiids.length; i++) {
+			Button btn = (Button) findViewById(jiagedaiids[i]);
+			btn.setOnClickListener(this);
+		}
+		
+		for(i=0; i<sxzids.length; i++) {
+			Button btn = (Button) findViewById(sxzids[i]);
+			btn.setOnClickListener(this);
+		}
+		
 //		zongkuanzhanbi = (Button) findViewById(R.id.button01);
 //		dinghuokuanzhanbi = (Button) findViewById(R.id.button02);
 //		dingliangzhanbi = (Button) findViewById(R.id.button03);
@@ -207,32 +255,183 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 		super.onResume();
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
-		int anaType = bundle.getInt("anaType");
-		int optType = bundle.getInt("optType");
-		String titleString = bundle.getString("title");
+		int anaType = bundle.getInt(this.ANA_TYPE);
+		int optType = bundle.getInt(this.OPT_TYPE);
+		String titleString = bundle.getString(this.ANA_TITLE);
+		String chimazu = "";
+		if(anaType == ANATYPE_CHIMA) {
+			chimazu = bundle.getString(this.ANA_CHIMAZU);
+		}
 		setTextForTitle(titleString);
 		
+		int i;
+		
 		if(anaType == ANATYPE_DALEI) {
-			Map<String, Double> data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.ZKZB);
+			displayDaleiOpts();
+			Map<String, Double> data = CommonDataUtils.chartDaleiFenxi(this, "", optType);
 			chartRoot.removeAllViews();
-			chartRoot.addView(createChart(data, "大类分析-总款占比"));
+			chartRoot.addView(createChart(data, titleString));
 		} else if(anaType == ANATYPE_XIAOLEI) {
+			displayXiaoleiOpts();
+			Map<String, Double> data = CommonDataUtils.chartXiaoleiFenxi(this, "", optType);
 			chartRoot.removeAllViews();
-			chartRoot.addView(createChart(CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.ZKZB), "小类分析-总款占比"));
+//			chartRoot.addView(createChart(CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.ZKZB), "小类分析-总款占比"));
+			chartRoot.addView(createChart(data, titleString));
 		} else if(anaType == ANATYPE_ZHUTI) {
+			displayZhutiOpts();
+			Map<String, Double> data = CommonDataUtils.chartZhutiFenxi(this, "", optType);
 			chartRoot.removeAllViews();
-			chartRoot.addView(createChart(CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.ZKZB), "主题分析"));
+//			chartRoot.addView(createChart(CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.ZKZB), "主题分析"));
+			chartRoot.addView(createChart(data, titleString));
 		} else if(anaType == ANATYPE_BODUAN) {
+			displayBoduanOpts();
+			Map<String, Double> data = CommonDataUtils.chartBoduanFenxi(this, "", optType);
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(data, titleString));
 			
 		} else if(anaType == ANATYPE_YANSE) {
+			displayYanseOpts();
+			Map<String, Double> data = CommonDataUtils.chartYanseFenxi(this, "", optType);
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(data, titleString));
 			
 		} else if(anaType == ANATYPE_CHIMA) {
+			displayChimaOpts();
+			Map<String, Double> data = CommonDataUtils.chartChaimaFenxi(this, " sawarecode.flag = '1' ", CommonDataUtils.ZKZB);
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(data, "尺码分析-尺码组-女装"));
 			
 		} else if(anaType == ANATYPE_JIAGEDAI) {
+			displayJiagedaiOpts();
+			Map<String, Double> data = CommonDataUtils.chartJiagedaiFenxi(this, "", optType);
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(data, titleString));
 			
 		} else if(anaType == ANATYPE_SXZ) {
+			displaySxzOpts();
+			Map<String, Double> data = CommonDataUtils.chartSxzFenxi(this, "", optType);
+			chartRoot.removeAllViews();
+			chartRoot.addView(createChart(data, titleString));
 			
 		}
+	}
+	
+	//display all options for dalei analysis
+	private void displayDaleiOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.dalei_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.dalei_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}
+	}
+	
+	/**
+	 * display all options for xiaolei analysis
+	 */
+	private void displayXiaoleiOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.xiaolei_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.xiaolei_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}		
+	}
+	
+	/**
+	 * display all options for zhuti analysis
+	 */
+	private void displayZhutiOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.zhuti_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.zhuti_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}		
+	}
+	
+	/**
+	 * display all options for boduan
+	 */
+	private void displayBoduanOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.boduan_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.boduan_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}	
+	}
+	
+	/**
+	 * display all options for yanse analysis
+	 */
+	private void displayYanseOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.yanse_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.yanse_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}	
+	}
+	
+	/**
+	 * display all options for chima analysis
+	 */
+	private void displayChimaOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.chima_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.chima_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}	
+	}
+	
+	/**
+	 * display all options for jiagedai 
+	 */
+	private void displayJiagedaiOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.jiagedai_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.jiagedai_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}		
+	}
+	
+	/**
+	 * display all options for sxz
+	 */
+	private void displaySxzOpts() {
+		int i;
+		for(i=0; i<alloptids.length; i++) {
+			if(!(alloptids[i] == R.id.sxz_detail)) {
+				LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
+				layout.setVisibility(LinearLayout.GONE);
+			}
+			LinearLayout cLayout = (LinearLayout) findViewById(R.id.sxz_detail);
+			cLayout.setVisibility(LinearLayout.VISIBLE);
+		}	
 	}
 	
 	@Override
@@ -242,6 +441,7 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 	
 	@Override
 	public void onClick(View v) {
+		Map<String, Double> data = new HashMap<String, Double>();
 		int i;
 		switch(v.getId()) {
 		case R.id.title_btn_left:
@@ -249,151 +449,149 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 			break;
 			
 		case R.id.dalei:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.dalei_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.dalei_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}
+			displayDaleiOpts();
+			data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "大类分析-总款占比");
 			break;
 			
 		case R.id.xialei:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.xiaolei_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.xiaolei_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}
+			displayXiaoleiOpts();
+			data = CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "小类分析-总款占比");
 			break;
 			
 		case R.id.zhuti:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.zhuti_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.zhuti_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}			
+			displayZhutiOpts();
+			data = CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "主题分析-总款占比");
 			break;
 			
 		case R.id.yanse:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.yanse_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.yanse_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}			
+			displayYanseOpts();
+			data = CommonDataUtils.chartYanseFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "颜色分析-总款占比");
 			break;
 			
 		case R.id.boduan:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.boduan_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.boduan_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}			
+			displayBoduanOpts();
+			data = CommonDataUtils.chartBoduanFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "波段分析-总款占比");
 			break;
 			
 		case R.id.chima:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.chima_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.chima_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}			
+			displayChimaOpts();
 			break;
 			
 		case R.id.jiagedai:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.jiagedai_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.jiagedai_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}			
+			displayJiagedaiOpts();
+			data = CommonDataUtils.chartJiagedaiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "价格带分析-总款占比");
 			break;
 			
 		case R.id.sxz:
-			for(i=0; i<alloptids.length; i++) {
-				if(!(alloptids[i] == R.id.sxz_detail)) {
-					LinearLayout layout = (LinearLayout) findViewById(alloptids[i]);
-					layout.setVisibility(LinearLayout.GONE);
-				}
-				LinearLayout cLayout = (LinearLayout) findViewById(R.id.sxz_detail);
-				cLayout.setVisibility(LinearLayout.VISIBLE);
-			}			
+			displaySxzOpts();
+			data = CommonDataUtils.chartSxzFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "上下装分析-总款占比");
 			break;
 			
 		case R.id.dalei_button01:
+			data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "大类分析-总款占比");
 			break;
 			
 		case R.id.dalei_button02:
+			data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "大类分析-订货款占比");
 			break;
 			
 		case R.id.dalei_button03:
+			data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "大类分析-订量占比");
 			break;
 			
 		case R.id.dalei_button04:
+			data = CommonDataUtils.chartDaleiFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "大类分析-金额占比");
 			break;
 			
 		case R.id.xiaolei_button01:
+			data = CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "小类分析-总款占比");
 			break;
 			
 		case R.id.xiaolei_button02:
+			data = CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "小类分析-订货款占比");
 			break;
 			
 		case R.id.xiaolei_button03:
+			data = CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "小类分析-订量占比");
 			break;
 			
 		case R.id.xiaolei_button04:
+			data = CommonDataUtils.chartXiaoleiFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "小类分析-金额占比");
 			break;
 			
 		case R.id.zhuti_button01:
+			data = CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "主题分析-总款占比");
 			break;
 			
 		case R.id.zhuti_button02:
+			data = CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "主题分析-订货款占比");
 			break;
 			
 		case R.id.zhuti_button03:
+			data = CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "主题分析-订量占比");
 			break;
 			
 		case R.id.zhuti_button04:
+			data = CommonDataUtils.chartZhutiFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "主题分析-金额占比");
 			break;
 			
 		case R.id.boduan_button01:
+			data = CommonDataUtils.chartBoduanFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "波段分析-总款占比");
 			break;
 			
 		case R.id.boduan_button02:
+			data = CommonDataUtils.chartBoduanFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "波段分析-订货款占比");
 			break;
 			
 		case R.id.boduan_button03:
+			data = CommonDataUtils.chartBoduanFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "波段分析-订量占比");
 			break;
 			
 		case R.id.boduan_button04:
+			data = CommonDataUtils.chartBoduanFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "波段分析-金额占比");
 			break;
 			
 		case R.id.yanse_button01:
+			data = CommonDataUtils.chartYanseFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "颜色分析-总款占比");
 			break;
 			
 		case R.id.yanse_button02:
+			data = CommonDataUtils.chartYanseFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "颜色分析-订货款占比");
 			break;
 			
 		case R.id.yanse_button03:
+			data = CommonDataUtils.chartYanseFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "颜色分析-订量占比");
 			break;
 			
 		case R.id.yanse_button04:
+			data = CommonDataUtils.chartYanseFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "颜色分析-金额占比");
 			break;
 			
 		case R.id.chima_button01:
@@ -409,33 +607,55 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 			break;
 			
 		case R.id.jiagedai_button01:
+			data = CommonDataUtils.chartJiagedaiFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "价格带分析-总款占比");
 			break;
 			
 		case R.id.jiagedai_button02:
+			data = CommonDataUtils.chartJiagedaiFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "价格带分析-订货款占比");
 			break;
 			
 		case R.id.jiagedai_button03:
+			data = CommonDataUtils.chartJiagedaiFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "价格带分析-订量占比");
 			break;
 			
 		case R.id.jiagedai_button04:
+			data = CommonDataUtils.chartJiagedaiFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "价格带分析-金额占比");
 			break;
 			
 		case R.id.sxz_button01:
+			data = CommonDataUtils.chartSxzFenxi(this, "", CommonDataUtils.ZKZB);
+			chart(data, "上下装分析-总款占比");
 			break;
 			
 		case R.id.sxz_button02:
+			data = CommonDataUtils.chartSxzFenxi(this, "", CommonDataUtils.DHKZB);
+			chart(data, "上下装分析-订货款占比");
 			break;
 			
 		case R.id.sxz_button03:
+			data = CommonDataUtils.chartSxzFenxi(this, "", CommonDataUtils.DLZB);
+			chart(data, "上下装分析-订量占比");
 			break;
 			
 		case R.id.sxz_button04:
+			data = CommonDataUtils.chartSxzFenxi(this, "", CommonDataUtils.JEZB);
+			chart(data, "上下装分析-金额占比");
 			break;
 			
 			
 		default:
 			break;
 		}
+	}
+	
+	private void chart(Map<String, Double> data, String title) {
+		setTextForTitle(title);
+		chartRoot.removeAllViews();
+		chartRoot.addView(createChart(data, title));
 	}
 	
 //	private double[] getXiaoleiFenxiData(String where, String anaType) {
@@ -573,6 +793,7 @@ public class DaleiPipeChartActivity extends AbstractActivity {
 		while(iterator.hasNext()) {
 			String key = (String)iterator.next();
 			double value = (double) data.get(key);
+//			Log.e(TAG, "key: " + key + ", value: " + value);
 			series.add(key+"( " + value + " )", value);
 		}
 		return ChartFactory.getPieChartView(this, series, renderer);

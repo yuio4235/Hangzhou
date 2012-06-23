@@ -122,6 +122,11 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 			
 			@Override
 			public int getCount() {
+				if(dataset.size() < 15) {
+					return dataset.size();
+				} else if((pageNum + 1)*15 > dataset.size()) {
+					return dataset.size()%15;
+				}
 				return 15;
 			}
 		};
@@ -249,7 +254,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 			break;
 			
 		case R.id.next_page:
-			if(pageNum > totalPage-1) {
+			if(pageNum >= totalPage-1) {
 				return;
 			} else {
 				pageNum ++;
