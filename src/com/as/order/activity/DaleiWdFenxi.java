@@ -3,20 +3,23 @@ package com.as.order.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.as.db.provider.AsProvider;
 import com.as.order.R;
-import com.as.order.dao.DaleiFenxiDAO;
 import com.as.order.dao.DaleiWdDAO;
 import com.as.order.pager.PageDao;
 import com.as.order.pager.PageDaoImplAll;
@@ -59,7 +62,16 @@ public class DaleiWdFenxi extends AbstractActivity {
 		setTextForTitleRightBtn("≤È—Ø");
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		initData();
+		mList.setAdapter(mAdapter);
+		mAdapter.notifyDataSetChanged();
+	}
+	
 	private void initData() {
+		getData("");
 		mAdapter = new BaseAdapter() {
 			
 			@Override
@@ -88,6 +100,21 @@ public class DaleiWdFenxi extends AbstractActivity {
 				return mCurrentDataSet.size();
 			}
 		};
+		mList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				if(position == 0) {
+					return;
+				}
+				DaleiWdDAO dao = mCurrentDataSet.get(position-1);
+//				Log.e(TAG, "current position: " + (pager.getPerPage()*(pager.getCurrentPage()-1) + position) + ", dalei: " + dao.getDalei() + " waretypeid: " + dao.getWaretypeid());
+				Intent intent = new Intent(DaleiWdFenxi.this, WdDetailActivity.class);
+				intent.putExtra("where", " waretypeid = " + dao.getWaretypeid());
+				startActivity(intent);
+			}
+		});
 	}
 	
 	@Override
@@ -119,6 +146,7 @@ public class DaleiWdFenxi extends AbstractActivity {
 			mDataSet = new ArrayList<DaleiWdDAO>();
 		}
 		String sql = " select "
+			+ " sawarecode.[waretypeid], "
 			+ "   (select waretypename from sawaretype where rtrim(sawaretype.waretypeid) = rtrim(sawarecode.waretypeid)) dalei, "
 			+ "         count(distinct b.warecode) ware_order, "
 			+ "         count(distinct c.warecode) ware_unorder, "
@@ -132,12 +160,14 @@ public class DaleiWdFenxi extends AbstractActivity {
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				mDataSet.clear();
 				while(!cursor.isAfterLast()) {
 					DaleiWdDAO dao = new DaleiWdDAO();
-					dao.setDalei(cursor.getString(0));
-					dao.setYd(cursor.getInt(1));
-					dao.setWd(cursor.getInt(2));
-					dao.setTotal(cursor.getInt(3));
+					dao.setWaretypeid(cursor.getString(0));
+					dao.setDalei(cursor.getString(1));
+					dao.setYd(cursor.getInt(2));
+					dao.setWd(cursor.getInt(3));
+					dao.setTotal(cursor.getInt(4));
 					mDataSet.add(dao);
 					cursor.moveToNext();
 				}

@@ -110,4 +110,6 @@
     <item type="id" name="textview15">false</item>
     <item type="id" name="peima">false</item>
     <item name="chiamfenxi_chimazu" type="id">false</item>
+    <item name="order_by_style_next_warecode" type="id">false</item>
+    <item type="id" name="order_by_style_prev_warecode">false</item>
 </resources>

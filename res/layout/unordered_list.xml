@@ -5,14 +5,24 @@
     android:orientation="vertical" >
 
     <LinearLayout style="@style/ASBody">
-        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0">
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical" android:gravity="center">
             <View style="@style/MMLabelSplit"/>
             <View style="@style/MMLabelSplit"/>    
-                    
+            <Button android:id="@+id/dalei_wd" android:text="大类未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>     
+			<Button android:id="@+id/xiaolei_wd" android:text="小类未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>  
+            <Button android:id="@+id/sxz_wd" android:text="上下装未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/> 
+            <Button android:id="@+id/zhuti_wd" android:text="主题未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/> 
+            <Button android:id="@+id/boduan_wd" android:text="波段未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
+            <View style="@style/MMLabelSplit"/>
+            <View style="@style/MMLabelSplit"/>                         
         </LinearLayout>
-        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="right|center_vertical">
-            <Button android:id="@id/prev_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text=" 前  页   " android:textSize="@dimen/LargerTextSize" android:layout_marginRight="5.0dip" android:minWidth="150.0dip"/>
-            <Button android:id="@id/next_page" style="@style/MMButton" android:background="@drawable/btn_style_one" android:text=" 后  页   " android:textSize="@dimen/LargerTextSize" android:minWidth="150.0dip"/>
-        </LinearLayout>          
     </LinearLayout>
 </LinearLayout>

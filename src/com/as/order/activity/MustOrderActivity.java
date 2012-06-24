@@ -152,9 +152,9 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 	}
 	private void initData()	 {
 		showDialog(ID_DATA_LOADING_DIALOG);
-		String SQL = " select a.specification, a.date3, a.state, a.paraconnent, a.waretypeid, a.waretypename, a.style, a.specification, a.retailprice, b.wareNum "
+		String SQL = " select a.specification, a.date3, a.state, a.paraconnent, a.waretypeid, a.waretypename, a.style, a.specification, a.retailprice, b.wareNum, a.pagenum"
 				+ " from "
-				+ " ( select sawarecode.[warecode], sawarecode.[specification], sawarecode.[date3], sawarecode.[state], sapara.[paraconnent], sawarecode.[waretypeid], sawaretype.[waretypename], sawarecode.[style], sawarecode.[specification], sawarecode.[retailprice] "
+				+ " ( select sawarecode.[warecode], sawarecode.[specification], sawarecode.[date3], sawarecode.[state], sapara.[paraconnent], sawarecode.[waretypeid], sawaretype.[waretypename], sawarecode.[style], sawarecode.[specification], sawarecode.[retailprice], sawarecode.pagenum "
 				+ " from sawarecode "
 				+ " left join sapara on sawarecode.[state] = sapara.[para] "
 				+ " left join sawaretype on sawarecode.[waretypeid] = sawaretype.[waretypeid] "
@@ -181,7 +181,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 					dao.setWave(TextUtils.isEmpty(cursor.getString(3)) ? "" : cursor.getString(3));
 					dao.setWareType(TextUtils.isEmpty(cursor.getString(5)) ? "" : cursor.getString(5));
 					dao.setTheme(TextUtils.isEmpty(cursor.getString(6)) ? "" : cursor.getString(6));
-					dao.setHuohao(TextUtils.isEmpty(cursor.getString(0)) ? "" : cursor.getString(0));
+					dao.setHuohao(TextUtils.isEmpty(cursor.getString(10)) ? "" : cursor.getString(10));
 					dao.setRetailPrice(TextUtils.isEmpty(cursor.getString(8)) ? "" : cursor.getString(8));
 					dao.setWareNum(cursor.getInt(9));
 					dataset.add(dao);

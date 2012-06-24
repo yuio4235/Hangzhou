@@ -39,6 +39,8 @@ import com.as.db.provider.AsContent.ShowSize;
 import com.as.db.provider.AsContent.ShowSizeColumns;
 import com.as.db.provider.AsContent.Type1;
 import com.as.db.provider.AsContent.Type1Columns;
+import com.as.db.provider.AsContent.User;
+import com.as.db.provider.AsContent.UserColumns;
 import com.as.db.provider.AsContent.ViewOrderList;
 
 public class AsProvider extends ContentProvider{
@@ -104,6 +106,10 @@ public class AsProvider extends ContentProvider{
 	private static final int VIEWORDLIST_BASE = 0xC000;
 	private static final int VIEWORDLIST = VIEWORDLIST_BASE;
 	
+	private static final int USER_BASE = 0xD000;
+	private static final int USER = USER_BASE;
+	private static final int USER_ID = USER_BASE + 1;
+	
 	private static final int BASE_SHIFT = 12;
 	
 	private static final String[] TABLE_NAMES = {
@@ -119,7 +125,8 @@ public class AsProvider extends ContentProvider{
 		SaWareGroup.TABLE_NAME,
 		SaOrderTrget.TABLE_NAME,
 		SaSizeSet.TABLE_NAME,
-		ViewOrderList.TABLE_NAME
+		ViewOrderList.TABLE_NAME,
+		User.TABLE_NAME
 	};
 	
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -178,6 +185,10 @@ public class AsProvider extends ContentProvider{
 		
 		//all vieworderlist
 		matcher.addURI(AS_AUTHORITY, "viewordlist", VIEWORDLIST);
+		
+		//all users
+		matcher.addURI(AS_AUTHORITY, "user", USER);
+		matcher.addURI(AS_AUTHORITY, "user/#", USER_ID);
 	}
 	
 	/**
@@ -527,6 +538,39 @@ public class AsProvider extends ContentProvider{
 		db.execSQL(viewSql);
 	}
 	
+	static void createUserTable(SQLiteDatabase db) {
+		String columns = UserColumns.DEPTCODE + " text default '', "
+			+ UserColumns.LOGPWD + " text default '', "
+			+ UserColumns.DEPTNAME + " text default '', "
+			+ UserColumns.LOGINDATE + " text default '', "
+			+ UserColumns.STATE + " text default '', "
+			+ UserColumns.STOPSTATE + " text default '', "
+			+ UserColumns.MACID + " text default '', "
+			+ UserColumns.MACADDR + " text default '', "
+			+ UserColumns.UPIP + " text default '', "
+			+ UserColumns.UPTIME + " text default '', "
+			+ UserColumns.DOWNIP + " text default '', "
+			+ UserColumns.DOWNTIME + " text default '', "
+			+ UserColumns.STARTDATE + " text default '', "
+			+ UserColumns.ENDDATE + " text default '', "
+			+ UserColumns.INTTIME + " integer default 0, "
+			+ UserColumns.MAXORD + " integer default 0, "
+			+ UserColumns.FTPUSER + " text default '', "
+			+ UserColumns.FTPPWD + " text default '', "
+			+ UserColumns.INDENTNAME + " text default '');";
+		String createString = " ( " + AsContent.User.RECORD_ID + " integer primary key autoincrement, " + columns;
+		db.execSQL(" create table " + AsContent.User.TABLE_NAME + createString);
+	}
+	
+	static void resetUserTable(SQLiteDatabase db, int oldVersion, int newVersion) {
+		try {
+			db.execSQL(" drop table " + AsContent.User.TABLE_NAME);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		createUserTable(db);
+	}
+	
 	private SQLiteDatabase mDatabase;
 	
 	public synchronized SQLiteDatabase getDatabase(Context context) {
@@ -574,6 +618,7 @@ public class AsProvider extends ContentProvider{
 			createSaOrderTrgetTable(db);
 			createSaSizeSetTable(db);
 			createViewOrdListView(mContext, db);
+			createUserTable(db);
 		}
 
 		@Override
@@ -590,6 +635,7 @@ public class AsProvider extends ContentProvider{
 				resetSaWareGroupTable(db, oldVersion, newVersion);
 				resetSaOrderTrgetTable(db, oldVersion, newVersion);
 				resetSaSizeSetTable(db, oldVersion, newVersion);
+				resetUserTable(db, oldVersion, newVersion);
 			}
 		}
 		
@@ -631,6 +677,8 @@ public class AsProvider extends ContentProvider{
 			case SASIZESET_SIZEGROUP:
 			case SASIZESET:
 			case VIEWORDLIST:
+			case USER:
+			case USER_ID:
 				db.beginTransaction();
 				break;
 			}
@@ -749,6 +797,15 @@ public class AsProvider extends ContentProvider{
 				result = db.delete(TABLE_NAMES[table], whereWithSizeGroup(sizeGroup, selection), selectionArgs);
 				break;
 				
+			case USER:
+				result = db.delete(TABLE_NAMES[table], selection, selectionArgs);
+				break;
+				
+			case USER_ID:
+				id = uri.getPathSegments().get(1);
+				result = db.delete(TABLE_NAMES[table], whereWithId(id, selection), selectionArgs);
+				break;
+				
 				default:
 					throw new IllegalArgumentException("Unknow URI" + uri);
 			}
@@ -843,6 +900,12 @@ public class AsProvider extends ContentProvider{
 		case VIEWORDLIST:
 			return "vnd.android.dir/viewordlist";
 			
+		case USER:
+			return "vnd.android.dir/user";
+			
+		case USER_ID:
+			return "vnd.android.item/user";
+			
 			default:
 				throw new IllegalArgumentException("Unknow URI " + uri);
 		}
@@ -917,6 +980,11 @@ public class AsProvider extends ContentProvider{
 			case SASIZESET:
 				id = db.insert(TABLE_NAMES[table], "foo", values);
 				resultUri = ContentUris.withAppendedId(SaSizeSet.CONTENT_URI, id);
+				break;
+				
+			case USER:
+				id = db.insert(TABLE_NAMES[table], "foo", values);
+				resultUri = ContentUris.withAppendedId(User.CONTENT_URI, id);
 				break;
 				
 				default:
@@ -1063,6 +1131,15 @@ public class AsProvider extends ContentProvider{
 				c = db.query(TABLE_NAMES[table], ViewOrderList.CONTENT_PROJECTION, selection, selectionArgs, null, null, sortOrder);
 				break;
 				
+			case USER:
+				c = db.query(TABLE_NAMES[table], User.CONTENT_PROJECTION, selection, selectionArgs, null, null, sortOrder);
+				break;
+				
+			case USER_ID:
+				id = uri.getPathSegments().get(1);
+				c = db.query(TABLE_NAMES[table], User.CONTENT_PROJECTION, whereWithId(id, selection), selectionArgs, null, null, sortOrder);
+				break;
+				
 				default:
 					throw new IllegalArgumentException("UnKnown URI " + uri);
 			}
@@ -1191,6 +1268,15 @@ public class AsProvider extends ContentProvider{
 			case SASIZESET_SIZEGROUP:
 				String sizeGroup = uri.getPathSegments().get(2);
 				result = db.update(TABLE_NAMES[table], values, whereWithSizeGroup(sizeGroup, selection), selectionArgs);
+				break;
+				
+			case USER:
+				result = db.update(TABLE_NAMES[table], values, selection, selectionArgs);
+				break;
+				
+			case USER_ID:
+				id = uri.getPathSegments().get(1);
+				result= db.update(TABLE_NAMES[table], values, whereWithId(id, selection), selectionArgs);
 				break;
 				
 				default:

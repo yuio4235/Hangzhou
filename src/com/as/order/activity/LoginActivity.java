@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +43,7 @@ import com.as.db.provider.AsContent.SaWareGroup;
 import com.as.db.provider.AsContent.SaWareSize;
 import com.as.db.provider.AsContent.SaWareType;
 import com.as.db.provider.AsContent.ShowSize;
+import com.as.db.provider.AsContent.User;
 import com.as.order.R;
 import com.as.order.ui.AsProgressDialog;
 import com.as.ui.utils.AlertUtils;
@@ -55,6 +57,8 @@ public class LoginActivity extends AbstractActivity {
 	
 	private EditText accountEt;
 	private EditText passwdEt;
+	
+	private User user;
 	
 	//dlndl.vicp.cc
 	private static final String REMOTE_HOST = "dlndl.vicp.cc";
@@ -215,6 +219,9 @@ public class LoginActivity extends AbstractActivity {
 			msg.what = MSG_DOWNLOADING_FILE;
 			msg.sendToTarget();			
 		}
+		
+		user = User.resotoreUserWithId(LoginActivity.this, 1);
+		accountEt.setText(user.deptcode);
 	}
 
 	@Override
@@ -222,7 +229,7 @@ public class LoginActivity extends AbstractActivity {
 		switch(v.getId()) 
 		{
 		case ID_LOGIN_BTN:
-			if(!("A110".equals(accountEt.getText().toString().trim()) && "111111".equals(passwdEt.getText().toString().trim()))) {
+			if(!(user.deptcode.equals(accountEt.getText().toString().trim()) && user.logpwd.equals(passwdEt.getText().toString().trim()))) {
 				AlertUtils.toastMsg(LoginActivity.this, "用户名或密码错误");
 			} else {
 				SharedPreferences sp = getSharedPreferences("user_account", Context.MODE_PRIVATE);

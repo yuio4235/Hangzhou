@@ -50,7 +50,7 @@ public class OrderAnalysisActivity extends AbstractActivity {
 			break;
 			
 		case R.id.weidingkuanfenxi:
-			Intent weidingIntent = new Intent(OrderAnalysisActivity.this, WeidingkuanFenxiActivity.class);
+			Intent weidingIntent = new Intent(OrderAnalysisActivity.this, UnOrderedListActivity.class);
 			startActivity(weidingIntent);
 			break;
 			

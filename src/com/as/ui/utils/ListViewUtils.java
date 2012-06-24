@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -206,7 +207,8 @@ public class ListViewUtils {
 		View v1 = makeDivideView(context);
 		mLayout.addView(v1, dLp);
 		
-		TextView specNoTv = makeTextView(dao.getSpecNo(), context);
+		//编号改为pagenum
+		TextView specNoTv = makeTextView(dao.getHuohao(), context);
 		mLayout.addView(specNoTv, cellLp);
 		View v2 = makeDivideView(context);
 		mLayout.addView(v2, dLp);
@@ -231,7 +233,8 @@ public class ListViewUtils {
 		View v6 = makeDivideView(context);
 		mLayout.addView(v6, dLp);
 		
-		TextView huohaoTv = makeTextView(dao.getHuohao(), context);
+		//货号改为specification
+		TextView huohaoTv = makeTextView(dao.getSpecNo(), context);
 		mLayout.addView(huohaoTv, cellLp);
 		View v7 = makeDivideView(context);
 		mLayout.addView(v7, dLp);
@@ -324,6 +327,8 @@ public class ListViewUtils {
 		for(int i=1; i<=sizeCount; i++) {
 			try {
 				EditText tv = new EditText(ctx);
+				tv.setSelectAllOnFocus(true);
+				tv.setImeOptions(EditorInfo.IME_ACTION_DONE|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 				tv.setTextSize(25);
 				Field field = saIndent.getClass().getDeclaredField("s" + (i<10?"0"+i:i));
 				tv.setText(field.getInt(saIndent) +"");

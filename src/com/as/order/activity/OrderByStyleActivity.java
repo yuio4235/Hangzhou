@@ -16,6 +16,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -34,6 +35,7 @@ import com.as.db.provider.AsContent.SaIndent;
 import com.as.db.provider.AsContent.SaIndentColumns;
 import com.as.db.provider.AsContent.SaSizeSet;
 import com.as.db.provider.AsContent.SaWareCode;
+import com.as.db.provider.AsContent.SaWareColorColumns;
 import com.as.db.provider.AsContent.SawarecodeColumns;
 import com.as.order.R;
 import com.as.order.ui.OrderByStyleFooter;
@@ -52,6 +54,8 @@ public class OrderByStyleActivity extends AbstractActivity {
 	private EditText searchEt;
 	private ImageView displayIv;
 	private Button nextImgBtn;
+	private Button nextWareCode;
+	private Button prevWareCode;
 	private TextView swarecodeTv;
 	private Button dapeiBtn;
 	private Button waveBtn;
@@ -64,6 +68,7 @@ public class OrderByStyleActivity extends AbstractActivity {
 	private static final int MSG_UPDATE_SAINDENT = 1002;
 	private static final int MSG_SAVE_ORDER = 1003;
 	private static final int MSG_PEIMA = 1004;
+	private static final int MSG_NEXT_WARECODE = 1005;
 	
 	private View headerView;
 	private OrderByStyleFooter footerView;
@@ -72,6 +77,9 @@ public class OrderByStyleActivity extends AbstractActivity {
 	private String[] mForm;
 	private List<SaIndent> allIndents;
 	private SaIndent currentIndent;
+	
+	private BaseAdapter listAdapter;
+	private BaseAdapter mmAdapter;
 	
 	private Button peimaBtn;
 	
@@ -102,11 +110,12 @@ public class OrderByStyleActivity extends AbstractActivity {
 		public void handleMessage(android.os.Message msg) {
 			switch(msg.what) {
 				case MSG_SEARCH_CODE:
-					Cursor c = getContentResolver().query(AsContent.SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.SPECIFICATION + " = ?", new String[]{ searchEt.getText().toString().trim() }, SaWareCode.RECORD_ID);
+					Cursor c = getContentResolver().query(AsContent.SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.SPECIFICATION + " = ? OR " + SawarecodeColumns.PAGENUM + " = ? ", new String[]{ searchEt.getText().toString().trim(), searchEt.getText().toString().trim() }, SaWareCode.RECORD_ID);
 					try {
 						if(c != null && c.moveToFirst()) {
 							swarecodeTv.setText(c.getString(SaWareCode.CONTENT_WARECODE_COLUMN));
-							displayImgs = FileUtils.getBitmapsFileCode(OrderByStyleActivity.this, swarecodeTv.getText().toString());
+							displayImgs = FileUtils.getBitmapsFileCode(OrderByStyleActivity.this, /*swarecodeTv.getText().toString()*/c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
+							Log.e(TAG, "imgs count: " + displayImgs.length + " SPECNO: " + c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
 							if(displayImgs != null && displayImgs.length>0) {
 								displayIv.setImageBitmap(displayImgs[0]);
 							}
@@ -118,99 +127,107 @@ public class OrderByStyleActivity extends AbstractActivity {
 							}
 							headerView = ListViewUtils.generateListViewHeader(header, OrderByStyleActivity.this);
 							orderByStyleList.addHeaderView(headerView);
-							if(allIndents == null) {
-								allIndents = getAllIndentsBySpecification();
+//							if(allIndents == null) {
+//								allIndents = getAllIndentsBySpecification();
+//							}
+							allIndents = getAllIndentsBySpecification();
+							if(footerView != null) {
+								orderByStyleList.removeFooterView(footerView);
 							}
 							footerView = new OrderByStyleFooter(OrderByStyleActivity.this, header.length, allIndents);
 							orderByStyleList.addFooterView(footerView);
-							orderByStyleList.setAdapter(new BaseAdapter() {
-								
-								@Override
-								public View getView(int position, View convertView, ViewGroup parent) {
-									if(allIndents == null) {
-										allIndents = getAllIndentsBySpecification();
-									}
-//									LinearLayout layout = ListViewUtils.generateRow(allIndents.get(position), header.length-2, OrderByStyleActivity.this);
-									final LinearLayout layout = ListViewUtils.generateEditText(allIndents.get(position), header.length-2, OrderByStyleActivity.this);
-									for(int i=3;i<(2*header.length+1-3);i+=2) {
-										final int etIndex = i;
-//										AlertUtils.toastMsg(OrderByStyleActivity.this, "etIndex: " + etIndex);
-										final EditText et = (EditText) layout.getChildAt(i);
-										et.addTextChangedListener(new TextWatcher() {
-											
-											int beforeValue = 0;
-											int afterValue = 0;
-											@Override
-											public void onTextChanged(CharSequence s, int start, int before, int count) {
+							if(mmAdapter == null) {
+								mmAdapter = new BaseAdapter() {
+									
+									@Override
+									public View getView(int position, View convertView, ViewGroup parent) {
+										if(allIndents == null) {
+											allIndents = getAllIndentsBySpecification();
+										}
+//										LinearLayout layout = ListViewUtils.generateRow(allIndents.get(position), header.length-2, OrderByStyleActivity.this);
+										final LinearLayout layout = ListViewUtils.generateEditText(allIndents.get(position), header.length-2, OrderByStyleActivity.this);
+										for(int i=3;i<(2*header.length+1-3);i+=2) {
+											final int etIndex = i;
+//											AlertUtils.toastMsg(OrderByStyleActivity.this, "etIndex: " + etIndex);
+											final EditText et = (EditText) layout.getChildAt(i);
+											et.addTextChangedListener(new TextWatcher() {
 												
-											}
-											
-											@Override
-											public void beforeTextChanged(CharSequence s, int start, int count,
-													int after) {
-												String beforeValueStr = et.getText().toString().trim();
-												try {
-													beforeValue = Integer.parseInt(beforeValueStr);
-												} catch (NumberFormatException e) {
-													beforeValue = 0;
+												int beforeValue = 0;
+												int afterValue = 0;
+												@Override
+												public void onTextChanged(CharSequence s, int start, int before, int count) {
+													
 												}
-//												beforeValue = Integer.parseInt(et.getText().toString().trim());
-											}
-											
-											@Override
-											public void afterTextChanged(Editable s) {
-												String afterValueStr = et.getText().toString().trim();
-												try {
-													afterValue = Integer.parseInt(et.getText().toString().trim());
-												} catch (NumberFormatException e) {
-													e.printStackTrace();
-													afterValue = 0;
-												}
-//												afterValue = Integer.parseInt(TextUtils.isEmpty(et.getText().toString().trim()) ? "0" : et.getText().toString().trim());
-												int currentAmount = 0;
-												for(int mm = 1; mm<=allIndents.size(); mm++) {
-//													LinearLayout currItemLayout = (LinearLayout)orderByStyleList.getItemAtPosition(mm);
-													LinearLayout currItemLayout = (LinearLayout) orderByStyleList.getChildAt(mm);
-													int currValue = 0;
+												
+												@Override
+												public void beforeTextChanged(CharSequence s, int start, int count,
+														int after) {
+													String beforeValueStr = et.getText().toString().trim();
 													try {
-														int crrValue = Integer.parseInt(((EditText)currItemLayout.getChildAt(etIndex)).getText().toString().trim());
+														beforeValue = Integer.parseInt(beforeValueStr);
+													} catch (NumberFormatException e) {
+														beforeValue = 0;
+													}
+//													beforeValue = Integer.parseInt(et.getText().toString().trim());
+												}
+												
+												@Override
+												public void afterTextChanged(Editable s) {
+													String afterValueStr = et.getText().toString().trim();
+													try {
+														afterValue = Integer.parseInt(et.getText().toString().trim());
 													} catch (NumberFormatException e) {
 														e.printStackTrace();
-														currValue = 0;
+														afterValue = 0;
 													}
-													currentAmount += currValue;
+//													afterValue = Integer.parseInt(TextUtils.isEmpty(et.getText().toString().trim()) ? "0" : et.getText().toString().trim());
+													int currentAmount = 0;
+													for(int mm = 1; mm<=allIndents.size(); mm++) {
+//														LinearLayout currItemLayout = (LinearLayout)orderByStyleList.getItemAtPosition(mm);
+														LinearLayout currItemLayout = (LinearLayout) orderByStyleList.getChildAt(mm);
+														int currValue = 0;
+														try {
+															int crrValue = Integer.parseInt(((EditText)currItemLayout.getChildAt(etIndex)).getText().toString().trim());
+														} catch (NumberFormatException e) {
+															e.printStackTrace();
+															currValue = 0;
+														}
+														currentAmount += currValue;
+													}
+													Log.e(TAG, "===========================  currentAmount: " + currentAmount + " allIndents size: " + allIndents.size());
+													footerView.setTextForItem(etIndex, currentAmount+"");
+													footerView.setTextForItem(2*header.length-1, (Integer.parseInt(((TextView)footerView.getChildAt(2*header.length-1)).getText().toString().trim()) - beforeValue + afterValue) + "");
+													TextView lastItemForThisRow = (TextView) layout.getChildAt(2*header.length-1);
+													lastItemForThisRow.setText((Integer.parseInt(lastItemForThisRow.getText().toString().trim()) - beforeValue + afterValue) + "");
+													
 												}
-												footerView.setTextForItem(etIndex, currentAmount+"");
-												footerView.setTextForItem(2*header.length-1, (Integer.parseInt(((TextView)footerView.getChildAt(2*header.length-1)).getText().toString().trim()) - beforeValue + afterValue) + "");
-												TextView lastItemForThisRow = (TextView) layout.getChildAt(2*header.length-1);
-												lastItemForThisRow.setText((Integer.parseInt(lastItemForThisRow.getText().toString().trim()) - beforeValue + afterValue) + "");
-												
-											}
-										});
+											});
+										}
+										layout.setTag(allIndents.get(position));
+										return layout;
 									}
 									
-									layout.setTag(allIndents.get(position));
-									return layout;
-								}
-								
-								@Override
-								public long getItemId(int position) {
-									return 0;
-								}
-								
-								@Override
-								public Object getItem(int position) {
-									return null;
-								}
-								
-								@Override
-								public int getCount() {
-									if(allIndents == null) {
-										allIndents = getAllIndentsBySpecification();
+									@Override
+									public long getItemId(int position) {
+										return 0;
 									}
-									return allIndents.size();
-								}
-							});
+									
+									@Override
+									public Object getItem(int position) {
+										return null;
+									}
+									
+									@Override
+									public int getCount() {
+										if(allIndents == null) {
+											allIndents = getAllIndentsBySpecification();
+										}
+										return allIndents.size();
+									}
+								};
+							}
+							orderByStyleList.setAdapter(mmAdapter);
+							mmAdapter.notifyDataSetChanged();
 							orderByStyleList.setOnItemClickListener(new OnItemClickListener(){
 
 								@Override
@@ -262,6 +279,10 @@ public class OrderByStyleActivity extends AbstractActivity {
 					peima();
 					break;
 					
+				case MSG_NEXT_WARECODE:
+					
+					break;
+					
 					default:
 						break;
 			}
@@ -292,8 +313,13 @@ public class OrderByStyleActivity extends AbstractActivity {
 		searchBtn = (Button) findViewById(R.id.order_by_style_search_btn);
 		searchBtn.setOnClickListener(this);
 		searchEt = (EditText) findViewById(R.id.order_by_style_search_code_et);
+		searchEt.setSelectAllOnFocus(true);
 		displayIv = (ImageView) findViewById(R.id.order_by_style_image_iv);
 		nextImgBtn = (Button) findViewById(R.id.order_by_style_next_img_btn);
+		nextWareCode = (Button) findViewById(R.id.order_by_style_next_warecode);
+		nextWareCode.setOnClickListener(this);
+		prevWareCode = (Button) findViewById(R.id.order_by_style_prev_warecode);
+		prevWareCode.setOnClickListener(this);
 		nextImgBtn.setOnClickListener(this);
 		swarecodeTv = (TextView) findViewById(R.id.order_by_style_warecode_tv);
 		dapeiBtn = (Button) findViewById(R.id.order_by_style_dapei_dingliang);
@@ -363,6 +389,29 @@ public class OrderByStyleActivity extends AbstractActivity {
 			peimaMsg.sendToTarget();
 			break;
 			
+		case R.id.order_by_style_next_warecode:
+			String specNo = getNextSpecNo(searchEt.getText().toString().trim());
+			if(TextUtils.isEmpty(specNo)) {
+				return;
+			} else {
+				searchEt.setText(specNo);
+				Message searchMsg = mHandler.obtainMessage();
+				searchMsg.what = MSG_SEARCH_CODE;
+				searchMsg.sendToTarget();
+			}
+			break;
+			
+		case R.id.order_by_style_prev_warecode:
+			String prevSpecNo = getPrevSpecNo(searchEt.getText().toString().trim());
+			if(TextUtils.isEmpty(prevSpecNo)) {
+				return;
+			} else {
+				searchEt.setText(prevSpecNo);
+				Message searchMsg = mHandler.obtainMessage();
+				searchMsg.what = MSG_SEARCH_CODE;
+				searchMsg.sendToTarget();
+			}
+			
 			default:
 				break;
 		}
@@ -373,7 +422,7 @@ public class OrderByStyleActivity extends AbstractActivity {
 			+ " from saware_size, sawarecode, showsize "
 			+ " where (saware_size.warecode = sawarecode.warecode) and  "
 			+ " (saware_size.size = showsize.size) "
-			+ " and (sawarecode.flag = showsize.type) and sawarecode.specification = '"+searchEt.getText().toString().trim()+"'  "
+			+ " and (sawarecode.flag = showsize.type) and ( sawarecode.specification = '"+searchEt.getText().toString().trim()+"'  OR sawarecode.pagenum = '"+searchEt.getText().toString().trim()+"' )"
 			+ " order by showsize.show asc ";
 		ArrayList<String> header = new ArrayList<String>();
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
@@ -455,7 +504,7 @@ public class OrderByStyleActivity extends AbstractActivity {
 		List<SaIndent> saIndents = new ArrayList<SaIndent>();
 		String queryColorSql = " select saware_color.[warecode], saware_color.[colorcode], sacolorcode.[colorname], sawarecode.[specification] "
 			+ " from saware_color, sacolorcode, sawarecode "
-			+ " where saware_color.[warecode] = sawarecode.[warecode] and saware_color.[colorcode] = sacolorcode.[colorcode] and sawarecode.[specification] = '"+searchEt.getText().toString().trim()+"' "
+			+ " where saware_color.[warecode] = sawarecode.[warecode] and saware_color.[colorcode] = sacolorcode.[colorcode] and ( sawarecode.[specification] = '"+searchEt.getText().toString().trim()+"'  OR sawarecode.pagenum = '"+searchEt.getText().toString().trim()+"')"
 			+ " order by saware_color.[colorcode] ";
 		SQLiteDatabase db  = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
 		Cursor cursor = db.rawQuery(queryColorSql, null);
@@ -639,4 +688,55 @@ public class OrderByStyleActivity extends AbstractActivity {
 	private SaWareCode getBasicInfo(String code) {
 		return null;
 	}
+	
+	private String getNextSpecNo(String str) {
+		Cursor cursor = getContentResolver().query(SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.SPECIFICATION + " = ? OR " + SawarecodeColumns.PAGENUM + " = ? ", new String[]{str, str}, SawarecodeColumns.ID);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+//				int _id = cursor.getInt(SaWareCode.CONTENT_ID_COLUMN);
+				int pageNum = cursor.getInt(SaWareCode.CONTENT_PAGENUM_COLUMN);
+				Cursor cc = getContentResolver().query(SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.PAGENUM + " =  ? " , new String[]{ (++pageNum)+"" }, SaWareColorColumns.ID);
+				try {
+					if(cc!= null && cc.moveToFirst()) {
+						return cc.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN);
+					}
+				} finally {
+					if(cc != null) {
+						cc.close();
+					}
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+		}
+		return null;
+	}
+	
+	private String getPrevSpecNo(String str) {
+		Cursor cursor = getContentResolver().query(SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.SPECIFICATION + " = ? OR " + SawarecodeColumns.PAGENUM + " = ? ", new String[]{str, str}, SawarecodeColumns.ID);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+//				int _id = cursor.getInt(SaWareCode.CONTENT_ID_COLUMN);
+				int pageNum = cursor.getInt(SaWareCode.CONTENT_PAGENUM_COLUMN);
+				Cursor cc = getContentResolver().query(SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.PAGENUM + " = ? ", new String[]{ (--pageNum)+"" }, SaWareColorColumns.ID);
+				try {
+					if(cc!= null && cc.moveToFirst()) {
+						return cc.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN);
+					}
+				} finally {
+					if(cc != null) {
+						cc.close();
+					}
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+		}
+		return null;		
+	}
+	
 }

@@ -1,5 +1,7 @@
 package com.as.ui.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +24,17 @@ public class FileUtils {
 		List<Bitmap> bitmaps = new ArrayList<Bitmap>();
 		AssetManager am = context.getAssets();
 		try {
-			String[] files = am.list("");
+//			String[] files = am.list("pic");
+			File picDir = new File(context.getCacheDir()+"/pic/");
+			if(!picDir.exists()) {
+				picDir.mkdirs();
+			}
+			String[] files = picDir.list();
 			for(String f : files) {
 				if(f.startsWith(code)) {
-					bitmaps.add(BitmapFactory.decodeStream(am.open(f)));
+					FileInputStream fis = new FileInputStream(context.getCacheDir() + "/pic/" + f);
+					bitmaps.add(BitmapFactory.decodeStream(fis));
+					fis.close();
 				}
 			}
 		} catch (IOException e) {

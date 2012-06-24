@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.widget.BaseAdapter;
 
 public abstract class AsContent {
 	public static final String AUTHORITY = AsProvider.AS_AUTHORITY;
@@ -2156,6 +2155,163 @@ public abstract class AsContent {
 			values.put(ViewOrderListColumns.MONEY, money);
 			return values;
 		}
+	}
+	
+	public interface UserColumns {
+		public static final String ID = "_id";
+		public static final String DEPTCODE = "deptcode";
+		public static final String LOGPWD = "logpwd";
+		public static final String DEPTNAME = "deptname";
+		public static final String LOGINDATE = "logindate";
+		public static final String STATE = "state";
+		public static final String STOPSTATE = "stopstate";
+		public static final String MACID = "macid";
+		public static final String MACADDR = "macaddr";
+		public static final String UPIP = "upip";
+		public static final String UPTIME = "uptime";
+		public static final String DOWNIP = "downip";
+		public static final String DOWNTIME = "downtime";
+		public static final String STARTDATE = "startdate";
+		public static final String ENDDATE = "enddate";
+		public static final String INTTIME = "inttiem";
+		public static final String MAXORD = "maxord";
+		public static final String FTPUSER = "ftpuser";
+		public static final String FTPPWD = "ftppwd";
+		public static final String INDENTNAME = "indentname";
+	}
+	
+	public static final class User extends AsContent implements UserColumns {
+		public static final String TABLE_NAME = "user";
+		public static final Uri CONTENT_URI = Uri.parse(AsContent.CONTENT_URI + "/user");
 		
+		public static final int CONTENT_ID_COLUMN = 0;
+		public static final int CONTENT_DEPTCODE_COLUMN = 1;
+		public static final int CONTENT_LOGPWD_COLUMN = 2;
+		public static final int CONTENT_DEPTNAME_COLUMN = 3;
+		public static final int CONTENT_LOGINDATE_COLUMN = 4;
+		public static final int CONTENT_STATE_COLUMN = 5;
+		public static final int CONTENT_STOPSTATE_COLUMN = 6;
+		public static final int CONTENT_MACID_COLUMN = 7;
+		public static final int CONTENT_MACADDR_COLUMN = 8;
+		public static final int CONTENT_UPIP_COLUMN = 9;
+		public static final int CONTENT_UPTIME_COLUMN = 10;
+		public static final int CONTENT_DOWNIP_COLUMN = 11;
+		public static final int CONTENT_DOWNTIME_COLUMN = 12;
+		public static final int CONTENT_STARTDATE_COLUMN = 13;
+		public static final int CONTENT_EDNDATE_COLUMN = 14;
+		public static final int CONTENT_INITIME_COLUMN = 15;
+		public static final int CONTENT_MAXORD_COLUMN = 16;
+		public static final int CONTENT_FTPUSER_COLUMN = 17;
+		public static final int CONTENT_FTPPWD_COLUMN = 18;
+		public static final int CONTENT_INDENTNAME_COLUMN = 19;
+		
+		public static final String[] CONTENT_PROJECTION = new String[]{
+			RECORD_ID,
+			UserColumns.DEPTCODE,
+			UserColumns.LOGPWD,
+			UserColumns.DEPTNAME,
+			UserColumns.LOGINDATE,
+			UserColumns.STATE,
+			UserColumns.STOPSTATE,
+			UserColumns.MACID,
+			UserColumns.MACADDR,
+			UserColumns.UPIP,
+			UserColumns.UPTIME,
+			UserColumns.DOWNIP,
+			UserColumns.DOWNTIME,
+			UserColumns.STARTDATE,
+			UserColumns.ENDDATE,
+			UserColumns.INTTIME,
+			UserColumns.MAXORD,
+			UserColumns.FTPUSER,
+			UserColumns.FTPPWD,
+			UserColumns.INDENTNAME
+		};
+		
+		public String deptcode;
+		public String logpwd;
+		public String deptname;
+		public String logindate;
+		public String state;
+		public String stopstate;
+		public String macid;
+		public String macaddr;
+		public String upip;
+		public String uptime;
+		public String downip;
+		public String downtime;
+		public String startdate;
+		public String enddate;
+		public int inttime;
+		public int maxord;
+		public String ftpuser;
+		public String ftppwd;
+		public String indentname;
+		
+		public User() {
+			mBaseUri = CONTENT_URI;
+		}
+
+		@Override
+		public User restore(Cursor cursor) {
+			mBaseUri = CONTENT_URI;
+				if(cursor != null && cursor.moveToFirst()) {
+					deptcode = cursor.getString(User.CONTENT_DEPTCODE_COLUMN);
+					logpwd = cursor.getString(User.CONTENT_LOGPWD_COLUMN);
+					deptname = cursor.getString(User.CONTENT_DEPTNAME_COLUMN);
+					logindate = cursor.getString(User.CONTENT_LOGINDATE_COLUMN);
+					state = cursor.getString(User.CONTENT_STATE_COLUMN);
+					stopstate = cursor.getString(User.CONTENT_STOPSTATE_COLUMN);
+					macid = cursor.getString(User.CONTENT_MACID_COLUMN);
+					macaddr = cursor.getString(User.CONTENT_MACADDR_COLUMN);
+					upip = cursor.getString(User.CONTENT_UPIP_COLUMN);
+					uptime = cursor.getString(User.CONTENT_UPTIME_COLUMN);
+					downip = cursor.getString(User.CONTENT_DOWNIP_COLUMN);
+					downtime = cursor.getString(User.CONTENT_DOWNTIME_COLUMN);
+					startdate = cursor.getString(User.CONTENT_STARTDATE_COLUMN);
+					enddate = cursor.getString(User.CONTENT_EDNDATE_COLUMN);
+					inttime = cursor.getInt(User.CONTENT_INITIME_COLUMN);
+					maxord = cursor.getInt(User.CONTENT_MAXORD_COLUMN);
+					ftpuser = cursor.getString(User.CONTENT_FTPUSER_COLUMN);
+					ftppwd = cursor.getString(User.CONTENT_FTPPWD_COLUMN);
+					indentname = cursor.getString(User.CONTENT_INDENTNAME_COLUMN);
+				}
+			return this;
+		}
+
+		@Override
+		public ContentValues toContentValues() {
+			ContentValues values = new ContentValues();
+			values.put(UserColumns.DEPTCODE, deptcode);
+			values.put(UserColumns.LOGPWD, logpwd);
+			values.put(UserColumns.DEPTNAME, deptname);
+			values.put(UserColumns.LOGINDATE, logindate);
+			values.put(UserColumns.STATE, state);
+			values.put(UserColumns.STOPSTATE, stopstate);
+			values.put(UserColumns.MACID, macid);
+			values.put(UserColumns.MACADDR, macaddr);
+			values.put(UserColumns.UPIP, upip);
+			values.put(UserColumns.UPTIME, uptime);
+			values.put(UserColumns.DOWNIP, downip);
+			values.put(UserColumns.DOWNTIME, downtime);
+			values.put(UserColumns.STARTDATE, startdate);
+			values.put(UserColumns.ENDDATE, enddate);
+			values.put(UserColumns.INTTIME, inttime);
+			values.put(UserColumns.MAXORD, maxord);
+			values.put(UserColumns.FTPUSER, ftpuser);
+			values.put(UserColumns.FTPPWD, ftppwd);
+			values.put(UserColumns.INDENTNAME, indentname);
+			return values;
+		}
+		
+		private static User restoreUserWithCursor(Cursor c) {
+			return getContent(c, User.class);
+		}
+		
+		public static User resotoreUserWithId(Context context, long id) {
+			Uri u = ContentUris.withAppendedId(User.CONTENT_URI, id);
+			Cursor c = context.getContentResolver().query(u, User.CONTENT_PROJECTION, null, null, null);
+			return restoreUserWithCursor(c);
+		}
 	}
 }

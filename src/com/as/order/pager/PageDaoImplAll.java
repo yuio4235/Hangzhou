@@ -128,7 +128,7 @@ public class PageDaoImplAll implements PageDao {
 
 	@Override
 	public void prevPage() {
-		this.prevPage();
+		this.hasPrevPage();
 	}
 
 	@Override
