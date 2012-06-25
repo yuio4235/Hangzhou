@@ -2310,7 +2310,7 @@ public abstract class AsContent {
 		
 		public static User resotoreUserWithId(Context context, long id) {
 			Uri u = ContentUris.withAppendedId(User.CONTENT_URI, id);
-			Cursor c = context.getContentResolver().query(u, User.CONTENT_PROJECTION, null, null, null);
+			Cursor c = context.getContentResolver().query(User.CONTENT_URI, User.CONTENT_PROJECTION, null, null, null);
 			return restoreUserWithCursor(c);
 		}
 	}

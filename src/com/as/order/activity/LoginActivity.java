@@ -45,6 +45,7 @@ import com.as.db.provider.AsContent.SaWareType;
 import com.as.db.provider.AsContent.ShowSize;
 import com.as.db.provider.AsContent.User;
 import com.as.order.R;
+import com.as.order.service.IndentSyncService;
 import com.as.order.ui.AsProgressDialog;
 import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.DataInitialUtils;
@@ -244,9 +245,13 @@ public class LoginActivity extends AbstractActivity {
 				Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
 				startActivity(mainActivityIntent);
 			}
+			Intent startService = new Intent(LoginActivity.this, IndentSyncService.class);
+			startService(startService);
 			break;
 			
 		case ID_TITLE_BACK:
+			Intent stopService = new Intent(LoginActivity.this, IndentSyncService.class);
+			stopService(stopService);
 			finish();
 			break;
 			
@@ -290,8 +295,9 @@ public class LoginActivity extends AbstractActivity {
 	}
 	
 	public void down_file(String fileName, String path) throws Exception{
+		FTPClient ftp = null;
 		try {
-			FTPClient ftp = new FTPClient();
+			ftp = new FTPClient();
 			ftp.connect(SERVER_HOST);
 			boolean isLogined = ftp.login(USER_NAME, PASSWORD);
 			if(isLogined) {
@@ -340,6 +346,14 @@ public class LoginActivity extends AbstractActivity {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new Exception("IOException");
+		} finally {
+			try {
+				if(ftp != null) {
+					ftp.disconnect();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -798,7 +798,11 @@ public class AsProvider extends ContentProvider{
 				break;
 				
 			case USER:
-				result = db.delete(TABLE_NAMES[table], selection, selectionArgs);
+				result = db.delete(TABLE_NAMES[table], UserColumns.DEPTCODE + " <> ''", selectionArgs);
+//				db.execSQL(" delete from user ");
+				db.execSQL(" delete from user");
+				db.execSQL(" update sqlite_sequence SET seq = 0 where name = 'user'");
+				Log.e(TAG, "==== delete user: " + result);
 				break;
 				
 			case USER_ID:

@@ -10,7 +10,7 @@
 
     <application
         android:icon="@drawable/logo"
-        android:label="@string/app_name" android:theme="@style/MMTheme.Basic">
+        android:label="@string/app_name" android:theme="@style/MMTheme.Basic" android:name=".application.OrderApp">
         <activity
             android:label="@string/app_name"
             android:name=".activity.IndexActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic">
@@ -51,6 +51,12 @@
         <activity android:name=".activity.UnOrderedListActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity android:name=".activity.DaleiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity android:name=".activity.WdDetailActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <service android:name=".service.IndentSyncService">
+            <intent-filter>
+                <action android:name="com.as.order.service.action.SAINDENT_SYNC"/>
+                <category android:name="com.as.order.service.category.SAINDENT_SYNC"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
