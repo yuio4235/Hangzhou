@@ -82,6 +82,7 @@ public class DapeiOrderDetailActivity extends AbstractActivity {
 					
 					@Override
 					public View getView(int position, View convertView, ViewGroup parent) {
+						Log.e(TAG, "current pos: " + currPos);
 						SaWareCode sawarecode = mDao.getWareCodes().get(currPos);
 						LinearLayout insideItemRow = (LinearLayout) ListViewUtils.generateRow(new String[]{
 								sawarecode.warecode, 

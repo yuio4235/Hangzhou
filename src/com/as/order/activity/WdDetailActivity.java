@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +27,8 @@ import com.as.ui.utils.ListViewUtils;
 
 public class WdDetailActivity extends AbstractActivity {
 
+	private static final String TAG = "WdDetailActivity";
+	
 	private LinearLayout mLayout;
 	private ListView mList;
 	private List<WdDetailDAO> mDataSet;
@@ -119,6 +122,18 @@ public class WdDetailActivity extends AbstractActivity {
 			finish();
 			break;
 			
+		case R.id.prev_page:
+			pager.prevPage();
+			mCurrentDataSet = (List<WdDetailDAO>)pager.getCurrentList();
+			mAdapter.notifyDataSetChanged();
+			break;
+			
+		case R.id.next_page:
+			pager.nextPage();
+			mCurrentDataSet = (List<WdDetailDAO>) pager.getCurrentList();
+			mAdapter.notifyDataSetChanged();
+			break;
+			
 			default:
 				break;
 		}
@@ -130,6 +145,7 @@ public class WdDetailActivity extends AbstractActivity {
 		}
 		String sql = " select warename, pagenum, specification from sawarecode where 1=1 "
 			+ (TextUtils.isEmpty(where) ? "" : " and " + where);
+		Log.e(TAG, "sql: " + sql);
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(WdDetailActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try  {

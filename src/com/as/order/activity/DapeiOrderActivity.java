@@ -143,6 +143,9 @@ public class DapeiOrderActivity extends AbstractActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
+//				if(position == 0) {
+//					return;
+//				}
 				DapeiOrderDAO dao = mDataSet.get(currPage*15 + position-1);
 				Intent intent = new Intent(DapeiOrderActivity.this, DapeiOrderDetailActivity.class);
 				intent.putExtra("itemCode", dao.getItemCode());

@@ -30,7 +30,7 @@ public class UnOrderedListActivity extends AbstractActivity {
 			btn.setOnClickListener(this);
 		}
 		
-		setTextForTitle("大类未定分析");
+		setTextForTitle("未定综合分析");
 		setTextForLeftTitleBtn("返回");
 		setTextForTitleRightBtn("查询");
 		
@@ -48,6 +48,24 @@ public class UnOrderedListActivity extends AbstractActivity {
 		case R.id.dalei_wd:
 			Intent daleiwdIntent = new Intent(UnOrderedListActivity.this, DaleiWdFenxi.class);
 			startActivity(daleiwdIntent);
+			break;
+			
+		case R.id.xiaolei_wd:
+			Intent xiaoleiwdIntent = new Intent(UnOrderedListActivity.this, XiaoleiWdFenxi.class);
+			startActivity(xiaoleiwdIntent);
+			
+		case R.id.boduan_wd:
+			Intent boduanIntent = new Intent(UnOrderedListActivity.this, BoduanWdFenxi.class);
+			startActivity(boduanIntent);
+			
+		case R.id.sxz_wd:
+			Intent sxzIntent = new Intent(UnOrderedListActivity.this, SxzWdFenxi.class);
+			startActivity(sxzIntent);
+			break;
+			
+		case R.id.zhuti_wd:
+			Intent zhutiIntent = new Intent(UnOrderedListActivity.this, ZhutiWdFenxi.class);
+			startActivity(zhutiIntent);
 			break;
 		}
 	}

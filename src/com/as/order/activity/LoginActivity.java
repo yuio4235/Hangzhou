@@ -235,9 +235,9 @@ public class LoginActivity extends AbstractActivity {
 			} else {
 				SharedPreferences sp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
 				Editor editor = sp.edit();
-				editor.putString("user_account", "A100");
+				editor.putString("user_account", user.deptcode);
 				editor.commit();
-				DataInitialUtils.initSaIndent(LoginActivity.this, "A100");
+				DataInitialUtils.initSaIndent(LoginActivity.this, user.deptcode);
 				boolean isInitSaSizeSet = sp.getBoolean("initsasizeset", false);
 				if(!isInitSaSizeSet) {
 					initSaSizeSet();

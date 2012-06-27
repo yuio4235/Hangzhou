@@ -1,16 +1,22 @@
 package com.as.order.dao;
 
-public class BoduanWdDAO {
-	private String boduan;
-	private String specno;
+public class XiaoleiWdDAO {
+	private String xiaolei;
 	private int yd;
 	private int wd;
 	private int total;
-	public String getBoduan() {
-		return boduan;
+	private String id;
+	public String getId() {
+		return id;
 	}
-	public void setBoduan(String boduan) {
-		this.boduan = boduan;
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getXiaolei() {
+		return xiaolei;
+	}
+	public void setXiaolei(String xiaolei) {
+		this.xiaolei = xiaolei;
 	}
 	public int getYd() {
 		return yd;
@@ -29,11 +35,5 @@ public class BoduanWdDAO {
 	}
 	public void setTotal(int total) {
 		this.total = total;
-	}
-	public String getSpecno() {
-		return specno;
-	}
-	public void setSpecno(String specno) {
-		this.specno = specno;
 	}
 }
