@@ -31,6 +31,7 @@ import com.as.order.ui.AsListDialog;
 import com.as.order.ui.DialogListener;
 import com.as.order.ui.ListDialogListener;
 import com.as.ui.utils.CommonDataUtils;
+import com.as.ui.utils.CommonQueryUtils;
 import com.as.ui.utils.DialogUtils;
 import com.as.ui.utils.ListViewUtils;
 
@@ -148,9 +149,15 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initData();
+		initData("");
 	}
-	private void initData()	 {
+	
+	private void queryByCond(String where) {
+		initData(where);
+		mAdapter.notifyDataSetChanged();
+	}
+	
+	private void initData(String where )	 {
 		showDialog(ID_DATA_LOADING_DIALOG);
 		String SQL = " select a.specification, a.date3, a.state, a.paraconnent, a.waretypeid, a.waretypename, a.style, a.specification, a.retailprice, b.wareNum, a.pagenum"
 				+ " from "
@@ -158,7 +165,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				+ " from sawarecode "
 				+ " left join sapara on sawarecode.[state] = sapara.[para] "
 				+ " left join sawaretype on sawarecode.[waretypeid] = sawaretype.[waretypeid] "
-				+ " where sapara.[paratype] = 'PD' ) a "
+				+ " where sapara.[paratype] = 'PD' "+ (TextUtils.isEmpty(where) ? "" : where )+") a "
 				+ " left join "
 				+ " (select warecode,  sum(wareNum) wareNum from saindent group by warecode) b "
 				+ " on a.warecode = b.warecode ";
@@ -260,6 +267,10 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				pageNum ++;
 				mAdapter.notifyDataSetChanged(); 
 			}
+			break;
+			
+		case R.id.title_btn_right:
+			queryByCond(getWhere());
 			break;
 			
 			default:
@@ -384,4 +395,29 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		return false;
 	}
 
+	private String getWhere() {
+		StringBuilder where = new StringBuilder();
+		String zhutiStr = themeEt.getText().toString().trim();
+		String boduanStr = boduanEt.getText().toString().trim();
+		String daleiStr = pinleiEt.getText().toString().trim();
+		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
+		
+		if(!TextUtils.isEmpty(zhutiStr)) {
+			where.append(" and type = '"+zhutiStr+"' ");
+		}
+		
+		if(!TextUtils.isEmpty(boduanStr)) {
+			where.append(" and state = '"+ CommonQueryUtils.getStateByName(MustOrderActivity.this, boduanStr)+"' ");
+		}
+		
+		if(!TextUtils.isEmpty(daleiStr)) {
+			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(MustOrderActivity.this, daleiStr)+"' ");
+		}
+		
+		if(!TextUtils.isEmpty(xiaoleiStr)) {
+			where.append(" and id = '"+CommonQueryUtils.getIdByType1(MustOrderActivity.this, xiaoleiStr)+"' ");
+		}
+		
+		return where.toString();
+	}
 }
