@@ -9,22 +9,29 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnTouchListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.as.db.provider.AsProvider;
 import com.as.order.R;
 import com.as.order.dao.SxzFenxiDAO;
+import com.as.order.ui.AsListDialog;
+import com.as.order.ui.ListDialogListener;
 import com.as.ui.utils.AnaUtils;
 import com.as.ui.utils.CommonDataUtils;
+import com.as.ui.utils.CommonQueryUtils;
+import com.as.ui.utils.DialogUtils;
 import com.as.ui.utils.ListViewUtils;
 import com.as.ui.utils.UserUtils;
 
-public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
+public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity implements OnTouchListener{
 	
 	private static final String TAG = "ShangxiazuangZongheAnalysisAcitivity";
 	
@@ -62,6 +69,16 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 	
 	private Button chartsBtn;
 	
+	private EditText zhutiEt;
+	private EditText boduanEt;
+	private EditText daleiEt;
+	private EditText xiaoleiEt;
+	
+	private boolean isBoduanListDialogShow = false;
+	private boolean isZhutiListDialogShow = false;
+	private boolean isDaleiListDialogShow = false;
+	private boolean isXiaoleiListDialogShow = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,6 +112,18 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 		setTextForTitle("上下装综合分析");
 		setTextForLeftTitleBtn("返回");
 		setTextForTitleRightBtn("查询");		
+	}
+	
+	private void initConditionEts() {
+		zhutiEt = (EditText) findViewById(R.id.must_order_theme_et);
+		boduanEt = (EditText) findViewById(R.id.must_order_boduan_et);
+		daleiEt = (EditText) findViewById(R.id.must_order_pinlei_et);
+		xiaoleiEt = (EditText) findViewById(R.id.must_order_xiaolei_et);
+		
+		zhutiEt.setOnTouchListener(this);
+		boduanEt.setOnTouchListener(this);
+		daleiEt.setOnTouchListener(this);
+		xiaoleiEt.setOnClickListener(this);
 	}
 	
 	private void initTotalData() {
@@ -158,6 +187,11 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 		initData();
 	}
 	
+	private void queryByCond(String where) {
+		getSxzFenxiData(where);
+		mAdapter.notifyDataSetChanged();
+	}
+	
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()) {
@@ -166,6 +200,7 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 			break;
 			
 		case R.id.title_btn_right:
+			queryByCond(getWhere());
 			break;
 			
 		case R.id.prev_page:
@@ -248,5 +283,145 @@ public class ShangxiazuangZongheAnalysisAcitivity extends AbstractActivity {
 				db.close();
 			}
 		}
+	}
+	
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		switch(v.getId()) {
+		case R.id.must_order_boduan_et:
+			if(!isBoduanListDialogShow) {
+				final AsListDialog boduanListDialog = 
+					DialogUtils.makeListDialog(
+							ShangxiazuangZongheAnalysisAcitivity.this, 
+							boduanEt, 
+							CommonDataUtils.getBoduan(ShangxiazuangZongheAnalysisAcitivity.this)
+						);
+				boduanListDialog.setDialogListener(new ListDialogListener(){
+
+					@Override
+					public void onCancel() {
+						boduanListDialog.dismiss();
+						isBoduanListDialogShow = false;
+					}
+
+					@Override
+					public void onClick(String text) {
+						boduanEt.setText(text.trim());
+						boduanListDialog.dismiss();
+						isBoduanListDialogShow = false;
+					}});
+				boduanListDialog.show();
+				isBoduanListDialogShow = true;
+			}
+			break;
+			
+		case R.id.must_order_pinlei_et:
+			if(!isDaleiListDialogShow) {
+				final AsListDialog daleiListDialog = 
+					DialogUtils.makeListDialog(
+							ShangxiazuangZongheAnalysisAcitivity.this, 
+							daleiEt, 
+							CommonDataUtils.getWareTypes(ShangxiazuangZongheAnalysisAcitivity.this)
+					);
+				daleiListDialog.setDialogListener(new ListDialogListener(){
+
+					@Override
+					public void onCancel() {
+						daleiListDialog.dismiss();
+						isDaleiListDialogShow = false;
+					}
+
+					@Override
+					public void onClick(String text) {
+						daleiEt.setText(text);
+						daleiListDialog.dismiss();
+						isDaleiListDialogShow = false;
+					}});
+				daleiListDialog.show();
+				isDaleiListDialogShow = false;
+			}
+			break;
+			
+		case R.id.must_order_xiaolei_et:
+			if(!isXiaoleiListDialogShow) {
+				final AsListDialog xiaoleiListDialog = 
+					DialogUtils.makeListDialog(
+							ShangxiazuangZongheAnalysisAcitivity.this, 
+						xiaoleiEt, 
+						CommonDataUtils.getType1s(ShangxiazuangZongheAnalysisAcitivity.this)
+					);
+				xiaoleiListDialog.setDialogListener(new ListDialogListener(){
+
+					@Override
+					public void onCancel() {
+						xiaoleiListDialog.dismiss();
+						isXiaoleiListDialogShow = false;
+					}
+
+					@Override
+					public void onClick(String text) {
+						xiaoleiEt.setText(text);
+						xiaoleiListDialog.dismiss();
+						isXiaoleiListDialogShow = false;
+					}});
+				xiaoleiListDialog.show();
+				isXiaoleiListDialogShow = false;
+			}
+			break;
+			
+		case R.id.must_order_theme_et:
+			if(!isZhutiListDialogShow) {
+				final AsListDialog
+					zhutiListDialog = 
+						DialogUtils.makeListDialog(ShangxiazuangZongheAnalysisAcitivity.this, zhutiEt, CommonDataUtils.getThemes(ShangxiazuangZongheAnalysisAcitivity.this));
+				zhutiListDialog.setDialogListener(new ListDialogListener(){
+
+					@Override
+					public void onCancel() {
+						zhutiListDialog.dismiss();
+						isZhutiListDialogShow = false;
+					}
+
+					@Override
+					public void onClick(String text) {
+						zhutiEt.setText(text);
+						zhutiListDialog.dismiss();
+						isZhutiListDialogShow = false;
+					}});
+				zhutiListDialog.show();
+				isZhutiListDialogShow = true;
+			}
+			break;
+			
+			default:
+				break;
+		}
+		return false;
+	}
+	
+	private String getWhere() {
+		StringBuilder where = new StringBuilder();
+		String zhutiStr = zhutiEt.getText().toString().trim();
+		String boduanStr = boduanEt.getText().toString().trim();
+		String daleiStr = daleiEt.getText().toString().trim();
+		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
+		
+		if(!TextUtils.isEmpty(zhutiStr)) {
+			where.append(" and type = '"+zhutiStr+"' ");
+		}
+		
+		if(!TextUtils.isEmpty(boduanStr)) {
+			where.append(" and state = '"+ CommonQueryUtils.getStateByName(ShangxiazuangZongheAnalysisAcitivity.this, boduanStr)+"' ");
+		}
+		
+		if(!TextUtils.isEmpty(daleiStr)) {
+			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(ShangxiazuangZongheAnalysisAcitivity.this, daleiStr)+"' ");
+		}
+		
+		if(!TextUtils.isEmpty(xiaoleiStr)) {
+			where.append(" and id = '"+CommonQueryUtils.getIdByType1(ShangxiazuangZongheAnalysisAcitivity.this, xiaoleiStr)+"' ");
+		}
+		
+		return where.toString();
 	}
 }
