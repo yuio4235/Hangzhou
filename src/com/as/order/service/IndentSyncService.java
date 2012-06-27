@@ -48,7 +48,6 @@ public class IndentSyncService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		mHandler = new Handler(Looper.getMainLooper());
-		timer = new Timer("saindentservice");
 	}
 	
 	@Override
@@ -64,6 +63,7 @@ public class IndentSyncService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		timer = new Timer("saindentservice");
 		timer.scheduleAtFixedRate(task, 2000*60, 1000*60);
 		return super.onStartCommand(intent, flags, startId);
 	}

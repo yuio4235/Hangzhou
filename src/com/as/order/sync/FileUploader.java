@@ -148,7 +148,7 @@ public class FileUploader {
 				ftpClient.setControlEncoding("UTF-16LE");
 				ftpClient.enterLocalPassiveMode();
 				fis = new FileInputStream(indentFile);
-				ftpClient.storeFile(UserUtils.getUserAccount(context)+"-"+System.currentTimeMillis()+".txt", fis);
+				ftpClient.storeFile(UserUtils.getUserAccount(context)+".txt", fis);
 				return true;
 			} else {
 				return false;

@@ -2,6 +2,8 @@ package com.as.order.pager;
 
 import java.util.List;
 
+import android.util.Log;
+
 public class PageDaoImplAll implements PageDao {
 
 	private int perPage = 15;
@@ -128,7 +130,11 @@ public class PageDaoImplAll implements PageDao {
 
 	@Override
 	public void prevPage() {
-		this.hasPrevPage();
+		if(this.hasPrevPage()) {
+			Log.e("==", "======================= has prevpage ===============");
+		} else {
+			Log.e("==", "======================= has not prevpage ===============");
+		}
 	}
 
 	@Override
