@@ -6,12 +6,15 @@ package com.as.ui.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.as.db.provider.AsProvider;
 import com.as.db.provider.AsContent.SaWareType;
 import com.as.db.provider.AsContent.SaWareTypeColumns;
 
 public class CommonQueryUtils {
+	
+	private static final String TAG = "CommonQueryUtils";
 	
 	/**
 	 * waretypeid relates to waretypeid in waretype table
@@ -47,12 +50,13 @@ public class CommonQueryUtils {
 	 */
 	public static String getStateByName(Context context, String boduan) {
 		String sql = " select para from sapara where paratype = 'PD' and paraconnent= '"+boduan+"' ";
-		String state = commonQuery(context, boduan);
+		String state = commonQuery(context, sql);
 		return state;
 	}
 	
 	
 	private static String commonQuery(Context context, String sql) {
+		Log.e(TAG, "sql: " + sql);
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {

@@ -57,6 +57,11 @@
                 <category android:name="com.as.order.service.category.SAINDENT_SYNC"/>
             </intent-filter>
         </service>
+        <activity android:name=".activity.XiaoleiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.BoduanWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.SxzWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.ZhutiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".preference.AsSettings" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
     </application>
 
 </manifest>

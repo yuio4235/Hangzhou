@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +77,8 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 		setTextForLeftTitleBtn("返回");
 		setTextForTitle("波段未定分析");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -87,13 +90,13 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initData();
+		initData(getWhere());
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
@@ -103,8 +106,8 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 		mAdapter.notifyDataSetChanged();
 	}
 
-	private void initData() {
-		getData("");
+	private void initData(String where) {
+		getData(where);
 		mAdapter = new BaseAdapter() {
 			
 			@Override
@@ -182,6 +185,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<BoduanWdDAO>();
 		}
+		mDataSet.clear();
 		String sql = " select "
 			+ "       sawarecode.state, "
 			+ "       (select rtrim(paraconnent) from sapara where rtrim(para) = rtrim(sawarecode.state) and rtrim(paratype) = 'PD') boduan, "
@@ -191,14 +195,15 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 			+ " from sawarecode "
 			+ " left join saindent b on sawarecode.[warecode] = b.warecode and b.warenum > 0 "
 			+ " left join saindent c on sawarecode.[warecode] = c.warecode and c.warenum = 0 "
-			+ (TextUtils.isEmpty(where) ? "" : " where " + where)
+			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.[state]";
+		
+		Log.e(TAG, "sql: " + sql);
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(BoduanWdFenxi.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				while(!cursor.isAfterLast()) {
 					BoduanWdDAO dao = new BoduanWdDAO();
 					dao.setSpecno(cursor.getString(0));
@@ -237,6 +242,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -264,6 +270,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
 						isDaleiListDialogShow = false;
 					}
@@ -275,7 +282,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -291,6 +298,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -298,11 +306,11 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 					@Override
 					public void onClick(String text) {
 						xiaoleiEt.setText(text);
-						xiaoleiListDialog.dismiss();
+						xiaoleiListDialog.show();
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
-				isXiaoleiListDialogShow = false;
+				isXiaoleiListDialogShow = true;
 			}
 			break;
 			
@@ -315,6 +323,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -343,19 +352,19 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(BoduanWdFenxi.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !("=====全部=====".equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(BoduanWdFenxi.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !("=====全部=====".equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(BoduanWdFenxi.this, xiaoleiStr)+"' ");
 		}
 		

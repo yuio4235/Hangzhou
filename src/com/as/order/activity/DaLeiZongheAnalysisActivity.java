@@ -109,6 +109,8 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		setTextForTitle("大类综合分析");
 		setTextForLeftTitleBtn("返回");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -120,7 +122,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	private void initData() {
@@ -230,6 +232,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<DaleiFenxiDAO>();
 		}
+		mDataSet.clear();
 //		String sql = " SELECT "
 //			+ " (select waretypename From sawaretype Where rtrim(sawaretype.waretypeid) = rtrim(sawarecode.waretypeid)) dalei, "
 //			/*+ " (Select type1 From type1 Where rtrim(id) = trim(sawarecode.id)) xiaolei, "*/
@@ -261,7 +264,6 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				if(cursor.getCount()%10 ==0) {
 					totalPage = cursor.getCount()/10;
 				} else {
@@ -307,6 +309,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -334,6 +337,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
 						isDaleiListDialogShow = false;
 					}
@@ -345,7 +349,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -361,6 +365,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -372,7 +377,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
-				isXiaoleiListDialogShow = false;
+				isXiaoleiListDialogShow = true;
 			}
 			break;
 			
@@ -385,6 +390,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -413,19 +419,19 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(DaLeiZongheAnalysisActivity.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !(CommonDataUtils.ALL_OPT.equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(DaLeiZongheAnalysisActivity.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !(CommonDataUtils.ALL_OPT.equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(DaLeiZongheAnalysisActivity.this, xiaoleiStr)+"' ");
 		}
 		

@@ -111,6 +111,8 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		setTextForTitle("尺码综合分析");
 		setTextForLeftTitleBtn("返回");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -122,7 +124,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	@Override
@@ -226,6 +228,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<ChimaFenxiDAO>();
 		}
+		mDataSet.clear();
 		String sql = " SELECT "
 			+ " (select paraconnent from sapara, sawarecode b, showsize where sapara.[paratype] = 'CM' and sapara.[para] = showsize.[type] and showsize.[type] = b.[flag] and b.[warecode] = sawarecode.warecode) chimazu, "
 			+ "        view_ord_list.[sizecode] sizecode,       "
@@ -246,7 +249,6 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				if(cursor.getCount()%10 ==0) {
 					totalPage = cursor.getCount()/10;
 				} else  {
@@ -290,6 +292,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -317,8 +320,9 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
-						isDaleiListDialogShow = false;
+						isDaleiListDialogShow = true;
 					}
 
 					@Override
@@ -328,7 +332,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -344,6 +348,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -368,6 +373,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -396,19 +402,19 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !(CommonDataUtils.ALL_OPT.equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !(CommonDataUtils.ALL_OPT.equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(ChimaZongheAnalysisActivity.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !(CommonDataUtils.ALL_OPT.equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(ChimaZongheAnalysisActivity.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !(CommonDataUtils.ALL_OPT.equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(ChimaZongheAnalysisActivity.this, xiaoleiStr)+"' ");
 		}
 		

@@ -557,7 +557,8 @@ public class AsProvider extends ContentProvider{
 			+ UserColumns.MAXORD + " integer default 0, "
 			+ UserColumns.FTPUSER + " text default '', "
 			+ UserColumns.FTPPWD + " text default '', "
-			+ UserColumns.INDENTNAME + " text default '');";
+			+ UserColumns.INDENTNAME + " text default '', "
+			+ UserColumns.STAT + " integer default 0 );";
 		String createString = " ( " + AsContent.User.RECORD_ID + " integer primary key autoincrement, " + columns;
 		db.execSQL(" create table " + AsContent.User.TABLE_NAME + createString);
 	}

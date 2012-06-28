@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.as.order.R;
+import com.as.order.preference.AsSettings;
 
 public class MainActivity extends AbstractActivity {
 
@@ -129,7 +130,7 @@ public class MainActivity extends AbstractActivity {
 			break;
 			
 		case ID_ORDER_SETTING:
-			Intent orderSetttingIntent = new Intent(MainActivity.this, OrderSetttingActivity.class);
+			Intent orderSetttingIntent = new Intent(MainActivity.this, AsSettings.class);
 			startActivity(orderSetttingIntent);
 			break;
 			 

@@ -107,6 +107,8 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 		setTextForTitle("波段综合分析");
 		setTextForLeftTitleBtn("返回");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -118,7 +120,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	private void initTotalData() {
@@ -228,7 +230,8 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<BoduanFenxiDAO>();
 		}
-		
+
+		mDataSet.clear();
 		String sql = 
 			"select (select rtrim(paraconnent) from sapara where rtrim(para) = rtrim(sawarecode.state) AND trim(paratype) = 'PD') boduan, "
 			+ " sum(saindent.warenum) amount, "
@@ -245,7 +248,6 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				if(cursor.getCount()%10 ==0) {
 					totalPage = cursor.getCount()/10;
 				} else {
@@ -291,6 +293,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -318,6 +321,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
 						isDaleiListDialogShow = false;
 					}
@@ -329,7 +333,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -345,6 +349,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -356,7 +361,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
-				isXiaoleiListDialogShow = false;
+				isXiaoleiListDialogShow = true;
 			}
 			break;
 			
@@ -369,6 +374,7 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -397,19 +403,19 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !(CommonDataUtils.ALL_OPT.equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !(CommonDataUtils.ALL_OPT.equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(BoduanZongheAnalysisActivity.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !(CommonDataUtils.ALL_OPT.equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(BoduanZongheAnalysisActivity.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !(CommonDataUtils.ALL_OPT.equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(BoduanZongheAnalysisActivity.this, xiaoleiStr)+"' ");
 		}
 		

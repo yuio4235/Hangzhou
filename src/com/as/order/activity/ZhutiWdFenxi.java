@@ -77,6 +77,8 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 		setTextForLeftTitleBtn("返回");
 		setTextForTitle("主题未定分析");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -88,13 +90,13 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initData();
+		initData(getWhere());
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
@@ -104,8 +106,8 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 		mAdapter.notifyDataSetChanged();
 	}
 	
-	private void initData() {
-		getData("");
+	private void initData(String where) {
+		getData(where);
 		mAdapter = new BaseAdapter() {
 			
 			@Override
@@ -191,12 +193,13 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 			+ " from sawarecode "
 			+ " left join saindent b on sawarecode.[warecode] = b.warecode and b.warenum > 0 "
 			+ " left join saindent c on sawarecode.[warecode] = c.warecode and c.warenum = 0 "
+			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.[style] ";
+		mDataSet.clear();
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(ZhutiWdFenxi.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				while(!cursor.isAfterLast()) {
 					ZhutiWdDAO dao = new ZhutiWdDAO();
 					dao.setZhuti(cursor.getString(0));
@@ -234,6 +237,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -261,6 +265,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
 						isDaleiListDialogShow = false;
 					}
@@ -272,7 +277,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -288,6 +293,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -299,7 +305,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
-				isXiaoleiListDialogShow = false;
+				isXiaoleiListDialogShow = true;
 			}
 			break;
 			
@@ -312,6 +318,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -340,19 +347,19 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(ZhutiWdFenxi.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !("=====全部=====".equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(ZhutiWdFenxi.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !("=====全部=====".equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(ZhutiWdFenxi.this, xiaoleiStr)+"' ");
 		}
 		

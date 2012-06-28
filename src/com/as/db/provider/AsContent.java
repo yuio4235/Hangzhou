@@ -2178,6 +2178,7 @@ public abstract class AsContent {
 		public static final String FTPUSER = "ftpuser";
 		public static final String FTPPWD = "ftppwd";
 		public static final String INDENTNAME = "indentname";
+		public static final String STAT = "stat";
 	}
 	
 	public static final class User extends AsContent implements UserColumns {
@@ -2204,6 +2205,7 @@ public abstract class AsContent {
 		public static final int CONTENT_FTPUSER_COLUMN = 17;
 		public static final int CONTENT_FTPPWD_COLUMN = 18;
 		public static final int CONTENT_INDENTNAME_COLUMN = 19;
+		public static final int CONENT_STAT_COLUMN = 20;
 		
 		public static final String[] CONTENT_PROJECTION = new String[]{
 			RECORD_ID,
@@ -2225,7 +2227,8 @@ public abstract class AsContent {
 			UserColumns.MAXORD,
 			UserColumns.FTPUSER,
 			UserColumns.FTPPWD,
-			UserColumns.INDENTNAME
+			UserColumns.INDENTNAME,
+			UserColumns.STAT
 		};
 		
 		public String deptcode;
@@ -2247,6 +2250,7 @@ public abstract class AsContent {
 		public String ftpuser;
 		public String ftppwd;
 		public String indentname;
+		public int stat;
 		
 		public User() {
 			mBaseUri = CONTENT_URI;
@@ -2275,6 +2279,7 @@ public abstract class AsContent {
 					ftpuser = cursor.getString(User.CONTENT_FTPUSER_COLUMN);
 					ftppwd = cursor.getString(User.CONTENT_FTPPWD_COLUMN);
 					indentname = cursor.getString(User.CONTENT_INDENTNAME_COLUMN);
+					stat = cursor.getInt(User.CONTENT_STATE_COLUMN);
 				}
 			return this;
 		}
@@ -2301,6 +2306,7 @@ public abstract class AsContent {
 			values.put(UserColumns.FTPUSER, ftpuser);
 			values.put(UserColumns.FTPPWD, ftppwd);
 			values.put(UserColumns.INDENTNAME, indentname);
+			values.put(UserColumns.STAT, stat);
 			return values;
 		}
 		

@@ -80,6 +80,8 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 		setTextForLeftTitleBtn("返回");
 		setTextForTitle("上下装未定分析");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -91,13 +93,13 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initData();
+		initData(getWhere());
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
@@ -108,8 +110,8 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 	}
 
 	
-	private void initData() {
-		getData("");
+	private void initData(String where) {
+		getData(where);
 		mAdapter = new BaseAdapter() {
 			
 			@Override
@@ -187,6 +189,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<SxzWdDAO>();
 		}
+		mDataSet.clear();
 		String sql = " select "
 			+ "      sawarecode.[sxz] sxz,      "
 			+ "       count(distinct b.warecode) ware_order, "
@@ -195,13 +198,12 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 			+ " from sawarecode "
 			+ " left join saindent b on sawarecode.[warecode] = b.warecode and b.warenum > 0 "
 			+ " left join saindent c on sawarecode.[warecode] = c.warecode and c.warenum = 0 "
-			+ (TextUtils.isEmpty(where) ? "" : " where " + where)
+			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.[sxz] ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(SxzWdFenxi.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				while(!cursor.isAfterLast()) {
 					SxzWdDAO dao = new SxzWdDAO();
 					dao.setSxz(cursor.getString(0));
@@ -239,6 +241,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -266,6 +269,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
 						isDaleiListDialogShow = false;
 					}
@@ -277,7 +281,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -293,6 +297,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -304,7 +309,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
-				isXiaoleiListDialogShow = false;
+				isXiaoleiListDialogShow = true;
 			}
 			break;
 			
@@ -317,6 +322,7 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -345,19 +351,19 @@ public class SxzWdFenxi extends AbstractActivity implements OnTouchListener{
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(SxzWdFenxi.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !("=====全部=====".equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(SxzWdFenxi.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !("=====全部=====".equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(SxzWdFenxi.this, xiaoleiStr)+"' ");
 		}
 		

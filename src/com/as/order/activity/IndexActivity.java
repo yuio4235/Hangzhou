@@ -92,6 +92,21 @@ public class IndexActivity extends Activity implements OnClickListener{
 //		Looper.prepare();
 //		Looper.myLooper();
 //		Looper.loop();
+		
+		Cursor cursor = getContentResolver().query(User.CONTENT_URI, User.CONTENT_PROJECTION, null, null, null);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				if(cursor.getCount() > 0) {
+					AlertUtils.toastMsg(IndexActivity.this, "已经存在用户，不能注册");
+					return;
+				}
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+		}
+		
 		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		WifiInfo info = wifi.getConnectionInfo();
 		String macAddr = info.getMacAddress();

@@ -39,9 +39,12 @@ import com.as.order.dao.YanseFenxiDAO;
 import com.as.order.dao.ZhutiFenxiDAO;
 
 public class CommonDataUtils {
+	
+	public static final String ALL_OPT = "=====全部=====";
 
 	public static String[] getBoduan(Context context) {
 		ArrayList<String> boduan = new ArrayList<String>();
+		boduan.add("=====全部=====");
 		Uri u = SaPara.CONTENT_URI;
 		Cursor cursor = context.getContentResolver().query(u, SaPara.CONTENT_PROJECTION, SaPara.PARATYPE + " = ?", new String[]{"PD"}, SaPara.RECORD_ID + " asc ");
 		if(cursor != null && cursor.moveToFirst()) {
@@ -61,6 +64,7 @@ public class CommonDataUtils {
 	//大类   SaWareType
 	public static String[] getWareTypes(Context context) {
 		List<String> waretypeids = new ArrayList<String>();
+		waretypeids.add("=====全部=====");
 		Cursor cursor = context.getContentResolver().query(SaWareType.CONTENT_URI, SaWareType.CONTENT_PROJECTION, null, null, SaWareTypeColumns.WARETYPEID + " asc ");
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
@@ -81,6 +85,7 @@ public class CommonDataUtils {
 	//小类 type1
 	public static String[] getType1s(Context context) {
 		List<String> type1s = new ArrayList<String>();
+		type1s.add("=====全部=====");
 		Cursor cursor = context.getContentResolver().query(AsContent.Type1.CONTENT_URI, Type1.CONTENT_PROJECTION, null, null, Type1Columns.IID + " asc ");
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
@@ -101,6 +106,7 @@ public class CommonDataUtils {
 	// theme
 	public static String[] getThemes(Context context) {
 		List<String> themes = new ArrayList<String>();
+		themes.add("=====全部=====");
 		Cursor cursor = context.getContentResolver().query(AsContent.SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, null, null, SawarecodeColumns.ID + " asc ");
 		try {
 			if(cursor != null && cursor.moveToFirst()) {

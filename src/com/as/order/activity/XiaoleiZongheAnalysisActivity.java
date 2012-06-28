@@ -112,6 +112,8 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		setTextForTitle("小类综合分析");
 		setTextForLeftTitleBtn("返回");
 		setTextForTitleRightBtn("查询");
+		
+		initConditionEts();
 	}
 	
 	private void initConditionEts() {
@@ -123,7 +125,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		zhutiEt.setOnTouchListener(this);
 		boduanEt.setOnTouchListener(this);
 		daleiEt.setOnTouchListener(this);
-		xiaoleiEt.setOnClickListener(this);
+		xiaoleiEt.setOnTouchListener(this);
 	}
 	
 	private void initData() {
@@ -235,6 +237,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		if(mDataSet == null) {
 			mDataSet = new ArrayList<XiaoleiFenxiDAO>();
 		}
+		mDataSet.clear();
 		String sql = " SELECT "
 			+ " (select type1 from type1 where rtrim(id) = rtrim(sawarecode.[id])) xiaolei, "
 			+ " (select count(distinct warecode ) from sawarecode b where rtrim(b.id) = rtrim(sawarecode.[id])) ware_all, "
@@ -251,7 +254,6 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				mDataSet.clear();
 				if(cursor.getCount()%10 == 0) {
 					totalPage = cursor.getCount()/10;
 				} else {
@@ -297,6 +299,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 
 					@Override
 					public void onCancel() {
+						boduanEt.setText("");
 						boduanListDialog.dismiss();
 						isBoduanListDialogShow = false;
 					}
@@ -324,6 +327,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 
 					@Override
 					public void onCancel() {
+						daleiEt.setText("");
 						daleiListDialog.dismiss();
 						isDaleiListDialogShow = false;
 					}
@@ -335,7 +339,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 						isDaleiListDialogShow = false;
 					}});
 				daleiListDialog.show();
-				isDaleiListDialogShow = false;
+				isDaleiListDialogShow = true;
 			}
 			break;
 			
@@ -351,6 +355,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 
 					@Override
 					public void onCancel() {
+						xiaoleiEt.setText("");
 						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}
@@ -362,7 +367,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
-				isXiaoleiListDialogShow = false;
+				isXiaoleiListDialogShow = true;
 			}
 			break;
 			
@@ -375,6 +380,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 
 					@Override
 					public void onCancel() {
+						zhutiEt.setText("");
 						zhutiListDialog.dismiss();
 						isZhutiListDialogShow = false;
 					}
@@ -403,19 +409,19 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		String daleiStr = daleiEt.getText().toString().trim();
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
+		if(!TextUtils.isEmpty(zhutiStr) && !(CommonDataUtils.ALL_OPT.equals(zhutiStr))) {
 			where.append(" and type = '"+zhutiStr+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
+		if(!TextUtils.isEmpty(boduanStr) && !(CommonDataUtils.ALL_OPT.equals(boduanStr))) {
 			where.append(" and state = '"+ CommonQueryUtils.getStateByName(XiaoleiZongheAnalysisActivity.this, boduanStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(daleiStr)) {
+		if(!TextUtils.isEmpty(daleiStr) && !(CommonDataUtils.ALL_OPT.equals(daleiStr))) {
 			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(XiaoleiZongheAnalysisActivity.this, daleiStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
+		if(!TextUtils.isEmpty(xiaoleiStr) && !(CommonDataUtils.ALL_OPT.equals(xiaoleiStr))) {
 			where.append(" and id = '"+CommonQueryUtils.getIdByType1(XiaoleiZongheAnalysisActivity.this, xiaoleiStr)+"' ");
 		}
 		
