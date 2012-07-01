@@ -8,7 +8,9 @@ import java.util.Map;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.as.db.provider.AsContent;
+import com.as.db.provider.AsProvider;
 import com.as.db.provider.AsContent.SaWareCode;
 import com.as.db.provider.AsContent.SaWareGroup;
 import com.as.db.provider.AsContent.SaWareGroupColumns;
@@ -73,14 +76,6 @@ public class DapeiOrderActivity extends AbstractActivity {
 		lastPage.setOnClickListener(this);
 
 		mDapeiSearchText = (EditText) findViewById(R.id.dapei_order_query_text);
-		
-//		totalDapeiAmount = (TextView) findViewById(R.id.dapei_total_amount);
-//		orderedDapeiAmount = (TextView) findViewById(R.id.dapei_ordered_amount);
-//		unOrderedDapeiAmount = (TextView) findViewById(R.id.dapei_unordered_amount);
-//		
-//		totalDapeiAmount.setText(Html.fromHtml("全部搭配组数:<u><i><font color=\"red\">15</font></i></u>"));
-//		orderedDapeiAmount.setText(Html.fromHtml("已订搭配组数:<u><i><font color=\"red\">11</font></i></u>"));
-//		unOrderedDapeiAmount.setText(Html.fromHtml("未订搭配组数:<u><i><font color=\"red\">5</font></i></u>"));
 		
 		setTextForLeftTitleBtn(this.getString(R.string.title_back));
 		setTextForTitle(this.getString(R.string.main_dape_order));
@@ -143,14 +138,16 @@ public class DapeiOrderActivity extends AbstractActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-//				if(position == 0) {
-//					return;
-//				}
+				if(position == 0) {
+					return;
+				}
+				Log.e(TAG, "position: " + position);
 				DapeiOrderDAO dao = mDataSet.get(currPage*15 + position-1);
 				Intent intent = new Intent(DapeiOrderActivity.this, DapeiOrderDetailActivity.class);
 				intent.putExtra("itemCode", dao.getItemCode());
 				intent.putExtra("groupName", dao.getGroupName());
-//				Bundle mBundle = new Bundle();
+				intent.putExtra("from", "d");
+				//Bundle mBundle = new Bundle();
 //				mBundle.putString("itemCode", dao.getItemCode());
 //				mBundle.putString("groupName", dao.getGroupName());
 //				mBundle.putSerializable("warecodes", (Serializable)dao.getWareCodes());
@@ -159,11 +156,51 @@ public class DapeiOrderActivity extends AbstractActivity {
 			}
 		});
 		
-		initData();
 	}
 	
-	private void initData() {
-		Cursor cursor = getContentResolver().query(AsContent.SaWareGroup.CONTENT_URI, SaWareGroup.CONTENT_PROJECTION, null, null, SaWareGroupColumns.ITEMCODE + " asc ");
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Intent intent = getIntent();
+		String warecode = intent.getStringExtra("warecode");
+		Log.e(TAG, "================ dapei order warecode: " + warecode);
+		if(TextUtils.isEmpty(warecode)) {
+			Log.e(TAG, "====== null warecode ========");
+			initData("");
+		} else {
+			initData(TextUtils.isEmpty(warecode) ? "" : warecode);
+		}
+	}
+	
+	private void initData(String sc) {
+		StringBuilder sb = new StringBuilder();
+		if(!TextUtils.isEmpty(sc)) {
+			String sql = " select itemcode from sawaregroup where warecode = '"+sc+"'";
+			SQLiteDatabase db = AsProvider.getWriteableDatabase(DapeiOrderActivity.this);
+			Cursor cc = db.rawQuery(sql, null);
+			try {
+				if(cc != null && cc.moveToFirst()) {
+					while(!cc.isAfterLast()) {
+						sb.append("'"+cc.getString(0)+"', ");
+						cc.moveToNext();
+					}
+				}
+			} finally {
+				if(cc != null) {
+					cc.close();
+				}
+				
+				if(db != null) {
+					db.close();
+				}
+			}
+		}
+		Cursor cursor = null;
+		if(TextUtils.isEmpty(sb.toString())) {
+			cursor = getContentResolver().query(AsContent.SaWareGroup.CONTENT_URI, SaWareGroup.CONTENT_PROJECTION, null, null, SaWareGroupColumns.ITEMCODE + " asc ");
+		} else {
+			cursor = getContentResolver().query(AsContent.SaWareGroup.CONTENT_URI, SaWareGroup.CONTENT_PROJECTION, TextUtils.isEmpty(sb.toString()) ? (SaWareGroupColumns.ITEMCODE + " in ( " + sb.toString() + " ) ") : ( SaWareGroupColumns.ITEMCODE + " in ( " + sb.substring(0, sb.length()-2) + " ) " ), null, SaWareGroupColumns.ITEMCODE + " asc ");
+		}
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				while(!cursor.isAfterLast()) {

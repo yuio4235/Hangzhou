@@ -1,6 +1,5 @@
 package com.as.db.provider;
 
-import android.R;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -13,12 +12,13 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.ToggleButton;
 
 import com.as.db.provider.AsContent.SaColorCode;
 import com.as.db.provider.AsContent.SaColorCodeColumns;
 import com.as.db.provider.AsContent.SaIndent;
 import com.as.db.provider.AsContent.SaIndentColumns;
+import com.as.db.provider.AsContent.SaOrderScore;
+import com.as.db.provider.AsContent.SaOrderScoreColumns;
 import com.as.db.provider.AsContent.SaOrderTrget;
 import com.as.db.provider.AsContent.SaOrderTrgetColumns;
 import com.as.db.provider.AsContent.SaPara;
@@ -42,6 +42,7 @@ import com.as.db.provider.AsContent.Type1Columns;
 import com.as.db.provider.AsContent.User;
 import com.as.db.provider.AsContent.UserColumns;
 import com.as.db.provider.AsContent.ViewOrderList;
+import com.as.ui.utils.DataInitialUtils;
 
 public class AsProvider extends ContentProvider{
 	
@@ -110,6 +111,10 @@ public class AsProvider extends ContentProvider{
 	private static final int USER = USER_BASE;
 	private static final int USER_ID = USER_BASE + 1;
 	
+	private static final int SAORDERSCORE_BASE = 0xE000;
+	private static final int SAORDERSCORE = SAORDERSCORE_BASE;
+	private static final int SAORDERSCORE_ID = SAORDERSCORE_BASE + 1;
+	
 	private static final int BASE_SHIFT = 12;
 	
 	private static final String[] TABLE_NAMES = {
@@ -126,7 +131,8 @@ public class AsProvider extends ContentProvider{
 		SaOrderTrget.TABLE_NAME,
 		SaSizeSet.TABLE_NAME,
 		ViewOrderList.TABLE_NAME,
-		User.TABLE_NAME
+		User.TABLE_NAME,
+		SaOrderScore.TABLE_NAME
 	};
 	
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -189,6 +195,10 @@ public class AsProvider extends ContentProvider{
 		//all users
 		matcher.addURI(AS_AUTHORITY, "user", USER);
 		matcher.addURI(AS_AUTHORITY, "user/#", USER_ID);
+		
+		//all saorderscores
+		matcher.addURI(AS_AUTHORITY, "saorderscore", SAORDERSCORE);
+		matcher.addURI(AS_AUTHORITY, "saorderscore/#", SAORDERSCORE_ID);
 	}
 	
 	/**
@@ -500,26 +510,26 @@ public class AsProvider extends ContentProvider{
 	
 	static void createSaSizeSetTable(SQLiteDatabase db) {
 		String columns = SaSizeSetColumns.SIZEGROUP + " text not null, "
-			+ SaSizeSetColumns.S01 + " integer default 0, "
-			+ SaSizeSetColumns.S02 + " integer default 0, "
-			+ SaSizeSetColumns.S03 + " integer default 0, "
-			+ SaSizeSetColumns.S04 + " integer default 0, "
-			+ SaSizeSetColumns.S05 + " integer default 0, "
-			+ SaSizeSetColumns.S06 + " integer default 0, "
-			+ SaSizeSetColumns.S07 + " integer default 0, "
-			+ SaSizeSetColumns.S08 + " integer default 0, "
-			+ SaSizeSetColumns.S09 + " integer default 0, "
-			+ SaSizeSetColumns.S10 + " integer default 0, "
-			+ SaSizeSetColumns.S11 + " integer default 0, "
-			+ SaSizeSetColumns.S12 + " integer default 0, "
-			+ SaSizeSetColumns.S13 + " integer default 0, "
-			+ SaSizeSetColumns.S14 + " integer default 0, "
-			+ SaSizeSetColumns.S15 + " integer default 0, "
-			+ SaSizeSetColumns.S16 + " integer default 0, "
-			+ SaSizeSetColumns.S17 + " integer default 0, "
-			+ SaSizeSetColumns.S18 + " integer default 0, "
-			+ SaSizeSetColumns.S19 + " integer default 0, "
-			+ SaSizeSetColumns.S20 + " integer default 0); ";
+			+ SaSizeSetColumns.S01 + " integer default -1, "
+			+ SaSizeSetColumns.S02 + " integer default -1, "
+			+ SaSizeSetColumns.S03 + " integer default -1, "
+			+ SaSizeSetColumns.S04 + " integer default -1, "
+			+ SaSizeSetColumns.S05 + " integer default -1, "
+			+ SaSizeSetColumns.S06 + " integer default -1, "
+			+ SaSizeSetColumns.S07 + " integer default -1, "
+			+ SaSizeSetColumns.S08 + " integer default -1, "
+			+ SaSizeSetColumns.S09 + " integer default -1, "
+			+ SaSizeSetColumns.S10 + " integer default -1, "
+			+ SaSizeSetColumns.S11 + " integer default -1, "
+			+ SaSizeSetColumns.S12 + " integer default -1, "
+			+ SaSizeSetColumns.S13 + " integer default -1, "
+			+ SaSizeSetColumns.S14 + " integer default -1, "
+			+ SaSizeSetColumns.S15 + " integer default -1, "
+			+ SaSizeSetColumns.S16 + " integer default -1, "
+			+ SaSizeSetColumns.S17 + " integer default -1, "
+			+ SaSizeSetColumns.S18 + " integer default -1, "
+			+ SaSizeSetColumns.S19 + " integer default -1, "
+			+ SaSizeSetColumns.S20 + " integer default -1); ";
 		String createString = " ( " + AsContent.SaSizeSet.RECORD_ID + " integer primary key autoincrement, " + columns;
 		db.execSQL(" create table " + AsContent.SaSizeSet.TABLE_NAME + createString);
 	}
@@ -572,6 +582,23 @@ public class AsProvider extends ContentProvider{
 		createUserTable(db);
 	}
 	
+	static void createSaOrderScoreTable(SQLiteDatabase db) {
+		String columns = SaOrderScoreColumns.DEPARTCODE + " text default '', "
+		+ SaOrderScoreColumns.WARECODE + " text default '', "
+		+ SaOrderScoreColumns.SCORE + " integer default 0 ) ;";
+		String createString = " ( " + AsContent.SaOrderScore.RECORD_ID + " integer primary key autoincrement, " + columns;
+		db.execSQL(" create table " + AsContent.SaOrderScore.TABLE_NAME +  createString);
+	}
+	
+	static void resetSaOrderScoreTable(SQLiteDatabase db, int oldVersion, int newViersion) {
+		try {
+			db.execSQL(" drop table " + AsContent.SaOrderScore.TABLE_NAME);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		createSaOrderScoreTable(db);
+	}
+	
 	private SQLiteDatabase mDatabase;
 	
 	public synchronized SQLiteDatabase getDatabase(Context context) {
@@ -620,6 +647,7 @@ public class AsProvider extends ContentProvider{
 			createSaSizeSetTable(db);
 			createViewOrdListView(mContext, db);
 			createUserTable(db);
+			createSaOrderScoreTable(db);
 		}
 
 		@Override
@@ -637,6 +665,7 @@ public class AsProvider extends ContentProvider{
 				resetSaOrderTrgetTable(db, oldVersion, newVersion);
 				resetSaSizeSetTable(db, oldVersion, newVersion);
 				resetUserTable(db, oldVersion, newVersion);
+				resetSaOrderScoreTable(db, oldVersion, newVersion);
 			}
 		}
 		
@@ -680,6 +709,8 @@ public class AsProvider extends ContentProvider{
 			case VIEWORDLIST:
 			case USER:
 			case USER_ID:
+			case SAORDERSCORE:
+			case SAORDERSCORE_ID:
 				db.beginTransaction();
 				break;
 			}
@@ -811,6 +842,15 @@ public class AsProvider extends ContentProvider{
 				result = db.delete(TABLE_NAMES[table], whereWithId(id, selection), selectionArgs);
 				break;
 				
+			case SAORDERSCORE:
+				result = db.delete(TABLE_NAMES[table], selection, selectionArgs);
+				break;
+				
+			case SAORDERSCORE_ID:
+				id = uri.getPathSegments().get(1);
+				result = db.delete(TABLE_NAMES[table], whereWithId(id, selection), selectionArgs);
+				break;
+				
 				default:
 					throw new IllegalArgumentException("Unknow URI" + uri);
 			}
@@ -911,6 +951,12 @@ public class AsProvider extends ContentProvider{
 		case USER_ID:
 			return "vnd.android.item/user";
 			
+		case SAORDERSCORE_ID:
+			return "vnd.android.item/saorderscore";
+			
+		case SAORDERSCORE:
+			return "vnd.android.dir/saorderscore";
+			
 			default:
 				throw new IllegalArgumentException("Unknow URI " + uri);
 		}
@@ -990,6 +1036,11 @@ public class AsProvider extends ContentProvider{
 			case USER:
 				id = db.insert(TABLE_NAMES[table], "foo", values);
 				resultUri = ContentUris.withAppendedId(User.CONTENT_URI, id);
+				break;
+				
+			case SAORDERSCORE:
+				id = db.insert(TABLE_NAMES[table], "foo", values);
+				resultUri = ContentUris.withAppendedId(SaOrderScore.CONTENT_URI, id);
 				break;
 				
 				default:
@@ -1145,6 +1196,16 @@ public class AsProvider extends ContentProvider{
 				c = db.query(TABLE_NAMES[table], User.CONTENT_PROJECTION, whereWithId(id, selection), selectionArgs, null, null, sortOrder);
 				break;
 				
+			case SAORDERSCORE:
+				Log.e(TAG, "================================ saorderscore ==========================");
+				c = db.query(TABLE_NAMES[table], SaOrderScore.CONTENT_PROJECTION, selection, selectionArgs, null, null, sortOrder);
+				break;
+				
+			case SAORDERSCORE_ID:
+				id = uri.getPathSegments().get(1);
+				c = db.query(TABLE_NAMES[table], SaOrderScore.CONTENT_PROJECTION, whereWithId(id, selection), selectionArgs, null, null, sortOrder);
+				break;
+				
 				default:
 					throw new IllegalArgumentException("UnKnown URI " + uri);
 			}
@@ -1282,6 +1343,15 @@ public class AsProvider extends ContentProvider{
 			case USER_ID:
 				id = uri.getPathSegments().get(1);
 				result= db.update(TABLE_NAMES[table], values, whereWithId(id, selection), selectionArgs);
+				break;
+				
+			case SAORDERSCORE:
+				result = db.update(TABLE_NAMES[table], values, selection, selectionArgs);
+				break;
+				
+			case SAORDERSCORE_ID:
+				id = uri.getPathSegments().get(1);
+				result = db.update(TABLE_NAMES[table], values, whereWithId(id, selection), selectionArgs);
 				break;
 				
 				default:

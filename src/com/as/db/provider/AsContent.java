@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 public abstract class AsContent {
 	public static final String AUTHORITY = AsProvider.AS_AUTHORITY;
@@ -1937,11 +1938,11 @@ public abstract class AsContent {
 		public static final Uri CONTENT_URI = Uri.parse(AsContent.CONTENT_URI + "/sasizeset");
 		
 		public static final int CONTENT_ID_COLUMN = 0;
+		public static final int CONTENT_S04_COLUMN = 5;
 		public static final int CONTENT_SIZEGROUP_COLUMN = 1;
 		public static final int CONTENT_S01_COLUMN = 2;
 		public static final int CONTENT_S02_COLUMN = 3;
 		public static final int CONTENT_S03_COLUMN = 4;
-		public static final int CONTENT_S04_COLUMN = 5;
 		public static final int CONTENT_S05_COLUMN = 6;
 		public static final int CONTENT_S06_COLUMN = 7;
 		public static final int CONTENT_S07_COLUMN = 8;
@@ -1985,26 +1986,26 @@ public abstract class AsContent {
 		};
 		
 		public String sizeGroup;
-		public int s01;
-		public int s02;
-		public int s03;
-		public int s04;
-		public int s05;
-		public int s06;
-		public int s07;
-		public int s08;
-		public int s09;
-		public int s10;
-		public int s11;
-		public int s12;
-		public int s13;
-		public int s14;
-		public int s15;
-		public int s16;
-		public int s17;
-		public int s18;
-		public int s19;
-		public int s20;
+		public int s01 = -1;
+		public int s02 = -1;
+		public int s03 = -1;
+		public int s04 = -1;
+		public int s05 = -1;
+		public int s06 = -1;
+		public int s07 = -1;
+		public int s08 = -1;
+		public int s09 = -1;
+		public int s10 = -1;
+		public int s11 = -1;
+		public int s12 = -1;
+		public int s13 = -1;
+		public int s14 = -1;
+		public int s15 = -1;
+		public int s16 = -1;
+		public int s17 = -1;
+		public int s18 = -1;
+		public int s19 = -1;
+		public int s20 = -1;
 		
 		public SaSizeSet() {
 			mBaseUri = CONTENT_URI;
@@ -2088,6 +2089,7 @@ public abstract class AsContent {
 		public static SaSizeSet restoreSaSizeSetWithSiezeGroup(Context context, String sizeGroup) {
 			Cursor cursor = context.getContentResolver()
 				.query(SaSizeSet.CONTENT_URI, CONTENT_PROJECTION, SaSizeSetColumns.SIZEGROUP + "=?", new String[]{sizeGroup}, null);
+			Log.e("SaSizeSet", "================= cursor: " + cursor.getCount());
 			return restoreSaSizeSetWithCursor(cursor);
 		}
 	}
@@ -2319,5 +2321,77 @@ public abstract class AsContent {
 			Cursor c = context.getContentResolver().query(User.CONTENT_URI, User.CONTENT_PROJECTION, null, null, null);
 			return restoreUserWithCursor(c);
 		}
+	}
+	
+	public interface SaOrderScoreColumns {
+		public static final String ID = "_id";
+		public static final String DEPARTCODE = "departcode";
+		public static final String WARECODE = "warecode";
+		public static final String SCORE = "score";
+	}
+	
+	public static final class SaOrderScore extends AsContent implements SaOrderScoreColumns {
+
+		public static final String TABLE_NAME = "saorderscore";
+		
+		public static final Uri CONTENT_URI = Uri.parse(AsContent.CONTENT_URI + "/saorderscore");
+		
+		public static final int CONTENT_ID_COLUMN = 0;
+		public static final int CONTENT_DEPARTCODE_COLUMN = 1;
+		public static final int CONTENT_WARECODE_COLUMN =2 ;
+		public static final int CONTENT_SCORE_COLUMN = 3;
+		
+		public static final String[] CONTENT_PROJECTION = new String[]{
+			RECORD_ID,
+			SaOrderScoreColumns.DEPARTCODE,
+			SaOrderScoreColumns.WARECODE,
+			SaOrderScoreColumns.SCORE
+		};
+		
+		public String departcode;
+		public String warecode;
+		public int score;
+		
+		public SaOrderScore() {
+			mBaseUri = CONTENT_URI;
+		}
+		
+		@Override
+		public SaOrderScore restore(Cursor cursor) {
+			mBaseUri = CONTENT_URI;
+			if(cursor != null) {
+				try {
+					if(cursor.moveToFirst()) {
+						departcode = cursor.getString(CONTENT_DEPARTCODE_COLUMN);
+						warecode = cursor.getString(CONTENT_WARECODE_COLUMN);
+						score = cursor.getInt(CONTENT_SCORE_COLUMN);
+					}
+				} finally {
+					cursor.close();
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public ContentValues toContentValues() {
+			ContentValues values = new ContentValues();
+			values.put(SaOrderScoreColumns.DEPARTCODE, departcode);
+			values.put(SaOrderScoreColumns.WARECODE, warecode);
+			values.put(SaOrderScoreColumns.SCORE, score);
+			return values;
+		}
+		
+		private SaOrderScore restoreSaOrderScoreWithCursor(Cursor cursor) {
+			if(cursor != null) {
+				if(cursor.moveToFirst()) {
+					return getContent(cursor, SaOrderScore.class);
+				} else  {
+					return null;
+				}
+			}
+			return null;
+		}
+		
 	}
 }

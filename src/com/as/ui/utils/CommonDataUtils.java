@@ -41,6 +41,39 @@ import com.as.order.dao.ZhutiFenxiDAO;
 public class CommonDataUtils {
 	
 	public static final String ALL_OPT = "=====全部=====";
+	
+	//尺码组
+	public static String[] getSizeGroup(Context context) {
+		ArrayList<String> sizegroup = new ArrayList<String>();
+		String sql = " select paraconnent from sapara where paratype = 'CM' ";
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(context);
+		Cursor cursor = db.rawQuery(sql, null);
+		if(db!=null && cursor!=null) {
+			
+			try {
+				if(cursor.moveToFirst()) {
+					while(!cursor.isAfterLast()) {
+						sizegroup.add(cursor.getString(0));
+						cursor.moveToNext();
+					}
+				}
+			} finally {
+				db.close();
+				cursor.close();
+			}
+		} else {
+			if(cursor != null) {
+				cursor.close();
+			}
+			
+			if(db != null) {
+				db.close();
+			}
+		}
+		
+		String[] sizegroupArr = new String[sizegroup.size()];
+		return sizegroup.toArray(sizegroupArr);
+	}
 
 	public static String[] getBoduan(Context context) {
 		ArrayList<String> boduan = new ArrayList<String>();
@@ -125,6 +158,54 @@ public class CommonDataUtils {
 		}
 		String[] themesArr = new String[themes.size()];
 		return themes.toArray(themesArr);
+	}
+	
+	//xilie
+	public static String[] getXilie(Context context) {
+		List<String> xilies = new ArrayList<String>();
+		xilies.add("=====全部=====");
+		Cursor cursor = context.getContentResolver().query(AsContent.SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, null, null, SawarecodeColumns.ID + " asc ");
+		if(cursor != null) {
+			try {
+				if(cursor.moveToFirst()) {
+					while(!cursor.isAfterLast()) {
+						String xilie = cursor.getString(SaWareCode.CONTENT_SPECDEF_COLUMN);
+						if(!TextUtils.isEmpty(xilie)) {
+							xilies.add(xilie);
+						}
+						cursor.moveToNext();
+					}
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+		String[] xiliesAr = new String[xilies.size()];
+		return xilies.toArray(xiliesAr);
+	}
+	
+	//pagenum
+	public static String[] getPagenum(Context context) {
+		List<String> pagenums = new ArrayList<String>();
+		pagenums.add("=====全部=====");
+		Cursor cursor = context.getContentResolver().query(AsContent.SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, null, null, SawarecodeColumns.ID + " asc ");
+		if(cursor != null) {
+			try {
+				if(cursor.moveToFirst()) {
+					while(!cursor.isAfterLast()) {
+						String pagenum = cursor.getString(SaWareCode.CONTENT_PAGENUM_COLUMN);
+						if(!TextUtils.isEmpty(pagenum)) {
+							pagenums.add(pagenum);
+						}
+						cursor.moveToNext();
+					}
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+		String[] pagenumArr = new String[pagenums.size()];
+		return pagenums.toArray(pagenumArr);
 	}
 	
 	private static String getUserAccount(Context context) {

@@ -48,7 +48,19 @@
 	         android:textSize="30.0dip"
 	      />    
 	      <View style="@style/MMSplit"/>
-	      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="@string/register_with_user_account"/>        
+	      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="@string/register_with_user_account"/>  
+	      <Button 
+	         android:id="@id/index_setting"
+	         android:layout_marginTop="30dip"
+	         android:layout_width="300.0dip"
+	         android:layout_height="wrap_content"
+	         android:background="@drawable/btn_style_two"
+	         android:text="订货设置"
+	         android:textColor="@color/black"
+	         android:textSize="30.0dip"
+	      />    
+	      <View style="@style/MMSplit"/>
+	      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:hint="设置登录服务器等"/> 	            
     </LinearLayout>
 
 </LinearLayout>

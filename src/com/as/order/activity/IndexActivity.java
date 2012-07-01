@@ -4,16 +4,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +28,8 @@ import com.as.order.R;
 import com.as.order.net.JsonAsyncTask;
 import com.as.order.net.ResultListener;
 import com.as.order.net.ServerResponse;
+import com.as.order.preference.AsSettings;
+import com.as.order.preference.IndextSetting;
 import com.as.ui.utils.AlertUtils;
 
 public class IndexActivity extends Activity implements OnClickListener{
@@ -57,9 +63,11 @@ public class IndexActivity extends Activity implements OnClickListener{
         
         Button loginBtn = (Button) findViewById(R.id.login_with_phone_num);
         Button regBtn = (Button) findViewById(R.id.reg_with_phone_num);
+        Button settingBtn = (Button) findViewById(R.id.index_setting);
         
         loginBtn.setOnClickListener(this);
         regBtn.setOnClickListener(this);
+        settingBtn.setOnClickListener(this);
     }
 
 	@Override
@@ -78,6 +86,11 @@ public class IndexActivity extends Activity implements OnClickListener{
 			register();
 			break;
 			
+		case R.id.index_setting:
+			Intent settingIntent = new Intent(this, IndextSetting.class);
+			startActivity(settingIntent);
+			break;
+			
 			default:
 				break;
 		}
@@ -92,7 +105,6 @@ public class IndexActivity extends Activity implements OnClickListener{
 //		Looper.prepare();
 //		Looper.myLooper();
 //		Looper.loop();
-		
 		Cursor cursor = getContentResolver().query(User.CONTENT_URI, User.CONTENT_PROJECTION, null, null, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
@@ -185,7 +197,7 @@ public class IndexActivity extends Activity implements OnClickListener{
 		case DIALOG_NETWORK:
 			mLoading = ProgressDialog.show(IndexActivity.this, "зЂВс","");
 			mLoading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			mLoading.setCancelable(true);
+			mLoading.setCancelable(false);
 			return mLoading;
 			
 			default:

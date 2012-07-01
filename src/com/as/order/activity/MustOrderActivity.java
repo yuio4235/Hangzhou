@@ -93,6 +93,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		themeEt.setOnTouchListener(this);
 		pinleiEt.setOnTouchListener(this);
 		xiaoleiEt.setOnTouchListener(this);
+		xilieEt.setOnTouchListener(this);
 		bianhaoEt.setOnTouchListener(this);
 		
 		mustOrderList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
@@ -137,6 +138,9 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
+				if(position == 0) {
+					return;
+				}
 				Intent intent = new Intent(MustOrderActivity.this, OrderByStyleActivity.class);
 				MustOrderDAO dao = dataset.get(pageNum*15 + (position -1));
 				intent.putExtra("style_code", dao.getSpecNo()+"");
@@ -149,7 +153,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initData("");
+		initData(getWhere());
 	}
 	
 	private void queryByCond(String where) {
@@ -165,16 +169,18 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				+ " from sawarecode "
 				+ " left join sapara on sawarecode.[state] = sapara.[para] "
 				+ " left join sawaretype on sawarecode.[waretypeid] = sawaretype.[waretypeid] "
-				+ " where sapara.[paratype] = 'PD' "+ (TextUtils.isEmpty(where) ? "" : where )+") a "
+				+ " where sapara.[paratype] = 'PD' "+ (TextUtils.isEmpty(where) ? "" :  where )+") a "
 				+ " left join "
 				+ " (select warecode,  sum(wareNum) wareNum from saindent group by warecode) b "
 				+ " on a.warecode = b.warecode ";
 		Log.e("==", "sql: " + SQL);
 		SQLiteDatabase db  = AsProvider.getWriteableDatabase(MustOrderActivity.this);
 		Cursor cursor = db.rawQuery(SQL, null);
+		if(dataset != null) {
+			dataset.clear();
+		}
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				dataset.clear();
 				totalPage = (cursor.getCount()%15 == 0) ? cursor.getCount()/15 : (cursor.getCount()/15 + 1);
 				int serial = 0;
 				while(!cursor.isAfterLast()) {
@@ -195,6 +201,8 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 					cursor.moveToNext();
 				}
 				mAdapter.notifyDataSetChanged();
+				dismissDialog(ID_DATA_LOADING_DIALOG);
+			} else {
 				dismissDialog(ID_DATA_LOADING_DIALOG);
 			}
 		} finally {
@@ -389,35 +397,120 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 			}
 			break;
 			
+		case R.id.must_order_xilie_et:
+			if(!isXilieListDialogShow) {
+				final AsListDialog xilieListDialog = 
+					DialogUtils.makeListDialog(MustOrderActivity.this, xilieEt, CommonDataUtils.getXilie(MustOrderActivity.this));
+				xilieListDialog.setDialogListener(new ListDialogListener() {
+					
+					@Override
+					public void onClick(String text) {
+						xilieEt.setText(text);
+						xilieListDialog.dismiss();
+						isXilieListDialogShow = false;
+					}
+					
+					@Override
+					public void onCancel() {
+						xilieListDialog.dismiss();
+						isXilieListDialogShow = false;
+					}
+				});
+				xilieListDialog.show();
+				isXilieListDialogShow = true;
+			}
+			break;
+			
+		case R.id.must_order_bianhao_et:
+			if(!isBianhaoListDialogShow) {
+				final AsListDialog bianhaoListDialog = 
+					DialogUtils.makeListDialog(MustOrderActivity.this, bianhaoEt, CommonDataUtils.getPagenum(MustOrderActivity.this));
+				bianhaoListDialog.setDialogListener(new ListDialogListener() {
+					
+					@Override
+					public void onClick(String text) {
+						bianhaoEt.setText(text);
+						bianhaoListDialog.dismiss();
+						isBianhaoListDialogShow = false;
+					}
+					
+					@Override
+					public void onCancel() {
+						bianhaoListDialog.dismiss();
+						isBianhaoListDialogShow = false;
+					}
+				});
+				bianhaoListDialog.show();
+				isBianhaoListDialogShow = true;
+			}
+			break;
+			
 			default:
 				break;
 		}
 		return false;
 	}
 
+//	private String getWhere() {
+//		StringBuilder where = new StringBuilder();
+//		String zhutiStr = themeEt.getText().toString().trim();
+//		String boduanStr = boduanEt.getText().toString().trim();
+//		String daleiStr = pinleiEt.getText().toString().trim();
+//		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
+//		
+//		if(!TextUtils.isEmpty(zhutiStr)) {
+//			where.append(" and type = '"+zhutiStr+"' ");
+//		}
+//		
+//		if(!TextUtils.isEmpty(boduanStr)) {
+//			where.append(" and state = '"+ CommonQueryUtils.getStateByName(MustOrderActivity.this, boduanStr)+"' ");
+//		}
+//		
+//		if(!TextUtils.isEmpty(daleiStr)) {
+//			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(MustOrderActivity.this, daleiStr)+"' ");
+//		}
+//		
+//		if(!TextUtils.isEmpty(xiaoleiStr)) {
+//			where.append(" and id = '"+CommonQueryUtils.getIdByType1(MustOrderActivity.this, xiaoleiStr)+"' ");
+//		}
+//		
+//		return where.toString();
+//	}
+	
 	private String getWhere() {
 		StringBuilder where = new StringBuilder();
-		String zhutiStr = themeEt.getText().toString().trim();
-		String boduanStr = boduanEt.getText().toString().trim();
-		String daleiStr = pinleiEt.getText().toString().trim();
-		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
+		String stateStr = boduanEt.getText().toString().trim();
+		String styleStr = themeEt.getText().toString().trim();
+		String sawaretypeStr = pinleiEt.getText().toString().trim();
+		String idStr = xiaoleiEt.getText().toString().trim();
+		String specdefStr = xilieEt.getText().toString().trim();
+		String pagenumStr = bianhaoEt.getText().toString().trim();
 		
-		if(!TextUtils.isEmpty(zhutiStr)) {
-			where.append(" and type = '"+zhutiStr+"' ");
+		if(!TextUtils.isEmpty(stateStr) && !(CommonDataUtils.ALL_OPT.equals(stateStr))) {
+			where.append(" and sawarecode.state = '"+CommonQueryUtils.getStateByName(MustOrderActivity.this, stateStr)+"' ");
 		}
 		
-		if(!TextUtils.isEmpty(boduanStr)) {
-			where.append(" and state = '"+ CommonQueryUtils.getStateByName(MustOrderActivity.this, boduanStr)+"' ");
+
+		if(!TextUtils.isEmpty(styleStr) && !(CommonDataUtils.ALL_OPT.equals(styleStr))) {
+			where.append(" and sawarecode.type = '"+styleStr+"' ");
 		}
-		
-		if(!TextUtils.isEmpty(daleiStr)) {
-			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(MustOrderActivity.this, daleiStr)+"' ");
+
+		if(!TextUtils.isEmpty(sawaretypeStr) && !(CommonDataUtils.ALL_OPT.equals(sawaretypeStr))) {
+			where.append(" and sawarecode.waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(MustOrderActivity.this, sawaretypeStr)+"' ");
 		}
-		
-		if(!TextUtils.isEmpty(xiaoleiStr)) {
-			where.append(" and id = '"+CommonQueryUtils.getIdByType1(MustOrderActivity.this, xiaoleiStr)+"' ");
+
+		if(!TextUtils.isEmpty(idStr) && !(CommonDataUtils.ALL_OPT.equals(idStr))) {
+			where.append(" and sawarecode.id = '"+CommonQueryUtils.getIdByType1(MustOrderActivity.this, idStr)+"' ");
 		}
-		
+
+		if(!TextUtils.isEmpty(specdefStr) && !(CommonDataUtils.ALL_OPT.equals(specdefStr))) {
+			where.append(" and sawarecode.specdef = '"+specdefStr+"' ");
+		}
+
+		if(!TextUtils.isEmpty(pagenumStr) && !(CommonDataUtils.ALL_OPT.equals(pagenumStr))) {
+			where.append(" and sawarecode.pagenum = '"+ pagenumStr+"' ");
+		}
+
 		return where.toString();
 	}
 }

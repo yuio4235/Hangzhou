@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,6 +15,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -26,13 +29,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.RatingBar.OnRatingBarChangeListener;
 
 import com.as.db.provider.AsContent;
 import com.as.db.provider.AsProvider;
 import com.as.db.provider.AsContent.SaIndent;
 import com.as.db.provider.AsContent.SaIndentColumns;
+import com.as.db.provider.AsContent.SaOrderScore;
+import com.as.db.provider.AsContent.SaOrderScoreColumns;
 import com.as.db.provider.AsContent.SaSizeSet;
 import com.as.db.provider.AsContent.SaWareCode;
 import com.as.db.provider.AsContent.SaWareColorColumns;
@@ -42,8 +49,9 @@ import com.as.order.ui.OrderByStyleFooter;
 import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.FileUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
-public class OrderByStyleActivity extends AbstractActivity {
+public class OrderByStyleActivity extends AbstractActivity implements OnRatingBarChangeListener{
 
 	private static final String TAG = "OrderByStyleActivity";
 	
@@ -82,6 +90,7 @@ public class OrderByStyleActivity extends AbstractActivity {
 	private BaseAdapter mmAdapter;
 	
 	private Button peimaBtn;
+	private RatingBar rb;
 	
 	//pagenum 编号
 	private TextView tv01;
@@ -114,6 +123,7 @@ public class OrderByStyleActivity extends AbstractActivity {
 					try {
 						if(c != null && c.moveToFirst()) {
 							swarecodeTv.setText(c.getString(SaWareCode.CONTENT_WARECODE_COLUMN));
+							rb.setRating(getScoreByWareCode());
 							displayImgs = FileUtils.getBitmapsFileCode(OrderByStyleActivity.this, /*swarecodeTv.getText().toString()*/c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
 							Log.e(TAG, "imgs count: " + displayImgs.length + " SPECNO: " + c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
 							if(displayImgs != null && displayImgs.length>0) {
@@ -257,6 +267,7 @@ public class OrderByStyleActivity extends AbstractActivity {
 //									updateSaIndentDialog.show();
 								}});
 							orderByStyleList.setVisibility(ListView.VISIBLE);
+							
 						} else {
 							AlertUtils.toastMsg(OrderByStyleActivity.this, "没有找到指定编号的商品");
 						}
@@ -310,6 +321,9 @@ public class OrderByStyleActivity extends AbstractActivity {
 		
 		peimaBtn = (Button) findViewById(R.id.peima);
 		peimaBtn.setOnClickListener(this);
+		rb = (RatingBar) findViewById(R.id.order_by_style_ratting);
+		rb.setOnClickListener(this);
+		rb.setOnRatingBarChangeListener(this);
 		searchBtn = (Button) findViewById(R.id.order_by_style_search_btn);
 		searchBtn.setOnClickListener(this);
 		searchEt = (EditText) findViewById(R.id.order_by_style_search_code_et);
@@ -378,12 +392,22 @@ public class OrderByStyleActivity extends AbstractActivity {
 			break;
 			
 		case R.id.title_btn_right:
+			SharedPreferences sp2 = PreferenceManager.getDefaultSharedPreferences(this);
+			if(sp2.getBoolean("order_locked", false)) {
+				AlertUtils.toastMsg(OrderByStyleActivity.this, "订单已经锁定,请联系管理员解锁定");
+				return;
+			}
 			Message saveOrderMsg = mHandler.obtainMessage();
 			saveOrderMsg.what = MSG_SAVE_ORDER;
 			saveOrderMsg.sendToTarget();
 			break;
 			
 		case R.id.peima:
+			SharedPreferences spp1 = PreferenceManager.getDefaultSharedPreferences(this);
+			if(spp1.getBoolean("order_locked", false)) {
+				AlertUtils.toastMsg(OrderByStyleActivity.this, "订单已经锁定,请联系管理员解锁定");
+				return;
+			}
 			Message peimaMsg = mHandler.obtainMessage();
 			peimaMsg.what = MSG_PEIMA;
 			peimaMsg.sendToTarget();
@@ -411,6 +435,34 @@ public class OrderByStyleActivity extends AbstractActivity {
 				searchMsg.what = MSG_SEARCH_CODE;
 				searchMsg.sendToTarget();
 			}
+			break;
+			
+		case R.id.order_by_style_dapei_dingliang:
+			String sql = " select itemcode from sawaregroup where warecode  = '"+swarecodeTv.getText().toString().trim()+"'";
+			SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
+			Cursor cursor = db.rawQuery(sql, null);
+			try {
+				if(cursor != null && cursor.getCount() <= 0) {
+					AlertUtils.toastMsg(OrderByStyleActivity.this, "该款没有搭配款");
+					return;
+				}
+			} finally {
+				if(cursor != null) {
+					cursor.close();
+				}
+				
+				if(db != null) {
+					db.close();
+				}
+			}
+			Intent dapeiOrderIntent = new Intent(OrderByStyleActivity.this, DapeiOrderDetailActivity.class);
+			dapeiOrderIntent.putExtra("warecode", swarecodeTv.getText().toString().trim());
+			dapeiOrderIntent.putExtra("from", "o");
+			startActivity(dapeiOrderIntent);
+			break;
+			
+		case R.id.order_by_style_ratting:
+			break;
 			
 			default:
 				break;
@@ -622,7 +674,29 @@ public class OrderByStyleActivity extends AbstractActivity {
 	}
 	
 	private void peima() {
-		SaSizeSet sasizeset = SaSizeSet.restoreSaSizeSetWithSiezeGroup(OrderByStyleActivity.this, "11");
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
+		String sql = " select flag from sawarecode where warecode = '"+swarecodeTv.getText().toString().trim()+"'";
+		Cursor cursor = db.rawQuery(sql, null);
+		String sizeGroup = "";
+		if(db != null && cursor!= null) {
+			try {
+				if(cursor.moveToFirst()) {
+					sizeGroup = cursor.getString(0);
+				}
+			} finally {
+				cursor.close();
+				db.close();
+			}
+		} else {
+			if(cursor != null) {
+				cursor.close();
+			}
+			
+			if(db != null) {
+				db.close();
+			}
+		}
+		SaSizeSet sasizeset = SaSizeSet.restoreSaSizeSetWithSiezeGroup(OrderByStyleActivity.this, sizeGroup);
 		int i;
 		int m;
 		int currRowTotal = 0;
@@ -739,4 +813,58 @@ public class OrderByStyleActivity extends AbstractActivity {
 		return null;		
 	}
 	
+	private float getScoreByWareCode() {
+//		Cursor cursor = getContentResolver().query(SaOrderScore.CONTENT_URI, SaOrderScore.CONTENT_PROJECTION, SaOrderScoreColumns.WARECODE + " = ? ", new String[]{swarecodeTv.getText().toString().trim()}, null);
+//		if(cursor != null) {
+//			try {
+//				if(cursor.moveToFirst()) {
+//					return cursor.getFloat(SaOrderScore.CONTENT_SCORE_COLUMN);
+//				} else {
+//					return 0;
+//				}
+//			} finally {
+//				cursor.close();
+//			}
+//		} else  {
+// 			return 0;
+//		}
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
+		String sql = " select score from saorderscore where warecode = '"+swarecodeTv.getText().toString().trim()+"'";
+		Cursor cursor = db.rawQuery(sql, null);
+		try {
+			if(cursor != null && cursor.moveToFirst()) {
+				return cursor.getFloat(0);
+			}
+		} finally {
+			if(cursor != null) {
+				cursor.close();
+			}
+			if(db != null) {
+				db.close();
+			}
+		}
+		return 0.0f;
+	}
+
+	@Override
+	public void onRatingChanged(RatingBar ratingBar, float rating,
+			boolean fromUser) {
+		if(!TextUtils.isEmpty(swarecodeTv.getText().toString().trim())) {
+			String delSql = " delete from saorderscore where warecode = '"+swarecodeTv.getText().toString().trim()+"'";
+			SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
+			if(db != null) {
+				db.execSQL(delSql);
+				db.close();
+			}
+			float rtVal = rb.getRating();
+			ContentValues rbValues = new ContentValues();
+			rbValues.put(SaOrderScoreColumns.DEPARTCODE, UserUtils.getUserAccount(OrderByStyleActivity.this));
+			rbValues.put(SaOrderScoreColumns.WARECODE, swarecodeTv.getText().toString().trim());
+			rbValues.put(SaOrderScoreColumns.SCORE, rtVal);
+			getContentResolver().insert(SaOrderScore.CONTENT_URI, rbValues);
+		} else {
+			AlertUtils.toastMsg(OrderByStyleActivity.this, "没有指定款号");
+		}
+	}
 }
+ 

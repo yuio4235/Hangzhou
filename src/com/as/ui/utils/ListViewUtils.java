@@ -364,6 +364,46 @@ public class ListViewUtils {
 		return mLayout;		
 	}
 	
+	public static LinearLayout generatePeimaRow(String[] data, int columnsCount, Context context) {
+		LayoutInflater layoutInflater = LayoutInflater.from(context);
+		LinearLayout mLayout = new LinearLayout(context);
+		mLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.list_selector_background));
+		mLayout.setPadding(0, 0, 0, 0);
+		if(data.length<=0) {
+			return mLayout;
+		}
+		View fv = layoutInflater.inflate(R.layout.table_item_divider, null);
+		mLayout.addView(fv, dLp);
+		//add sizegroup
+		TextView sizeGroupTv = new TextView(context);
+		sizeGroupTv.setTextSize(25);
+		sizeGroupTv.setText(data[0]);
+		sizeGroupTv.setTextColor(Color.BLACK);
+		sizeGroupTv.setGravity(Gravity.CENTER);
+		
+		View v1 = layoutInflater.inflate(R.layout.table_item_divider, null);
+		mLayout.addView(sizeGroupTv, cellLp);
+		mLayout.addView(v1, dLp);
+		
+		for(int i=1; i<columnsCount; i++) {
+			EditText et = new EditText(context);
+			et.setTextSize(25);
+			et.setSelectAllOnFocus(true);
+			et.setImeOptions(EditorInfo.IME_ACTION_DONE|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+			et.setTextColor(Color.BLACK);
+			et.setGravity(Gravity.CENTER);
+			et.setText(data[i]);
+			et.setKeyListener(new DigitsKeyListener(false, false));
+			
+			
+			View v = layoutInflater.inflate(R.layout.table_item_divider, null);
+			mLayout.addView(et, cellLp);
+			mLayout.addView(v, dLp);
+		}
+		
+		return mLayout;
+	}
+	
 	
 	public static LinearLayout generateEditTextRow(SaIndent saIndent, int sizeCount, Context ctx) {
 		LayoutInflater layoutInflater = LayoutInflater.from(ctx);

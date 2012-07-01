@@ -112,4 +112,6 @@
     <item name="chiamfenxi_chimazu" type="id">false</item>
     <item name="order_by_style_next_warecode" type="id">false</item>
     <item type="id" name="order_by_style_prev_warecode">false</item>
+    <item name="index_setting" type="id">false</item>
+    <item name="sum_analysis" type="id">false</item>
 </resources>

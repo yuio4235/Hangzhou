@@ -5,10 +5,10 @@
     android:orientation="vertical" >
 
     <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0">
-        <ImageView android:layout_width="220.0dip" android:layout_height="270.0dip" android:src="@drawable/test01" android:scaleType="fitXY" android:background="@drawable/profile_bothsides_circle_normal" android:padding="5.0dip"/>
+        <ImageView android:id="@+id/my_order_item_iv" android:layout_width="220.0dip" android:layout_height="270.0dip" android:src="@drawable/test01" android:scaleType="fitXY" android:background="@drawable/profile_bothsides_circle_normal" android:padding="5.0dip"/>
     </LinearLayout>
 	<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
-	    <TextView android:id="@id/my_order_item_specno" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:layout_marginRight="5.0dip"/>
-	    <TextView android:id="@id/my_order_item_warenum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=""/>
+	    <TextView android:id="@id/my_order_item_specno" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:textSize="18.0dip" android:layout_marginRight="5.0dip"/>
+	    <TextView android:id="@id/my_order_item_warenum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:textSize="18.0dip"/>
 	</LinearLayout>
 </LinearLayout>

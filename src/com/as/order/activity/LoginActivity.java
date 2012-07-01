@@ -11,23 +11,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +41,7 @@ import android.widget.LinearLayout;
 import com.as.db.provider.AsContent;
 import com.as.db.provider.AsContent.SaColorCode;
 import com.as.db.provider.AsContent.SaPara;
+import com.as.db.provider.AsContent.SaSizeSet;
 import com.as.db.provider.AsContent.SaWareCode;
 import com.as.db.provider.AsContent.SaWareColor;
 import com.as.db.provider.AsContent.SaWareGroup;
@@ -51,6 +56,8 @@ import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.DataInitialUtils;
 
 public class LoginActivity extends AbstractActivity {
+	
+	private static final String TAG = "LoginActivity";
 
 	private LinearLayout login;
 	private static final int ID_LOGIN_BTN = R.id.title_btn_right;
@@ -59,10 +66,12 @@ public class LoginActivity extends AbstractActivity {
 	private EditText accountEt;
 	private EditText passwdEt;
 	
+	private AlertDialog ad;
+	
 	private User user;
 	
 	//dlndl.vicp.cc
-	private static final String REMOTE_HOST = "dlndl.vicp.cc";
+	private  String REMOTE_HOST = "dlndl.vicp.cc";
 	private static final String USER_NAME = "dln";
 	private static final String PASSWORD = "dlnfeiyang";
 //	private static final String USER_NAME = "admin";
@@ -72,7 +81,7 @@ public class LoginActivity extends AbstractActivity {
 	private int totalFileSize = 0;
 	
 	//
-	private static final String SERVER_HOST = "dlndl.vicp.cc";
+	private String SERVER_HOST = "dlndl.vicp.cc";
 	
 	private AsProgressDialog mUpdatingDialog;
 	private AsProgressDialog mUpdatingDataDialog;
@@ -86,7 +95,8 @@ public class LoginActivity extends AbstractActivity {
 			"showsize.txt",
 			"type1.txt",
 			"sawaretype.txt",
-			"sawaregroup.txt"
+			"sawaregroup.txt",
+			"saSizeSet.txt"
 	};
 	
 	private static final int ID_DOWNLOADING_DIALOG  = 1001;
@@ -204,9 +214,13 @@ public class LoginActivity extends AbstractActivity {
 		
 		accountEt = (EditText) findViewById(R.id.login_account);
 		passwdEt = (EditText) findViewById(R.id.login_password);
-		
 		setTextForLeftTitleBtn(this.getString(R.string.title_back));
 		setTextForTitleRightBtn(this.getString(R.string.login));
+		
+		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(this);
+		REMOTE_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
+		SERVER_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
+		Log.e("ftp_url", spp.getString("ftp_url", "dlndl.vicp.cc"));
 	}
 	
 	@Override
@@ -222,7 +236,10 @@ public class LoginActivity extends AbstractActivity {
 		}
 		
 		user = User.resotoreUserWithId(LoginActivity.this, 1);
-		accountEt.setText(user.deptcode);
+		if(user != null) {
+			accountEt.setText(user.deptcode);
+		}
+		
 	}
 
 	@Override
@@ -230,6 +247,42 @@ public class LoginActivity extends AbstractActivity {
 		switch(v.getId()) 
 		{
 		case ID_LOGIN_BTN:
+			SharedPreferences wpp = PreferenceManager.getDefaultSharedPreferences(this);
+			boolean order_locked = wpp.getBoolean("order_locked", false);
+			boolean order_commit = wpp.getBoolean("order_commit", false);
+			if(order_commit && order_locked && !("dln".equals(accountEt.getText().toString().trim()))) {
+				boolean view_order = wpp.getBoolean("order_view", false);
+				Log.e(TAG, "========== view_order: " + view_order);
+				if(!view_order) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+					builder.setIcon(R.drawable.logo);
+					builder.setTitle("提示");
+					builder.setMessage("订单已锁定,解锁请联系管理员解锁");
+					builder.setPositiveButton("确定", new OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+					ad = builder.create();
+					ad.show();		
+					return;					
+				}
+			}
+			if("dln".equals(accountEt.getText().toString().trim())) {
+				if("dln87751870".equals(passwdEt.getText().toString().trim())) {
+					SharedPreferences spp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+					Editor editor = spp.edit();
+					editor.putString("user_account", "dln");
+					editor.commit();
+					Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
+					startActivity(mainActivityIntent);
+					return;
+				} else {
+					return;
+				}
+			}
 			if(!(user.deptcode.equals(accountEt.getText().toString().trim()) && user.logpwd.equals(passwdEt.getText().toString().trim()))) {
 				AlertUtils.toastMsg(LoginActivity.this, "用户名或密码错误");
 			} else {
@@ -246,6 +299,7 @@ public class LoginActivity extends AbstractActivity {
 				startActivity(mainActivityIntent);
 			}
 			Intent startService = new Intent(LoginActivity.this, IndentSyncService.class);
+			stopService(startService);
 			startService(startService);
 			break;
 			
@@ -1119,6 +1173,38 @@ public class LoginActivity extends AbstractActivity {
 			} 
 		}
 		
+		private void addSaSizeSet() throws Exception {
+			localFile = new File(getCacheDir() + "/info/saSizeSet.txt");
+			totalLines = getLinesForFile(localFile);
+			currLine = 0;
+			mUpdatingDataDialog.setMax(totalLines);
+			getContentResolver().delete(SaSizeSet.CONTENT_URI, null, null);
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(localFile), "UTF16-LE"));
+			String line;
+			while((line = br.readLine()) != null) {
+				String[] arr = line.split("\t");
+				SaSizeSet sizeSet = new SaSizeSet();
+				sizeSet.sizeGroup = arr[0];
+				for(int i=1; i<arr.length; i++) {
+					if(!TextUtils.isEmpty(arr[i])) {
+						Field field = sizeSet.getClass().getField("s" + (i<10 ? ("0" + i) : i));
+						field.setInt(sizeSet, Integer.parseInt(arr[i]));
+					}
+				}
+				ContentValues values = sizeSet.toContentValues();
+				Uri u = getContentResolver().insert(AsContent.SaSizeSet.CONTENT_URI, values);
+				
+				DialogMessage dm = new DialogMessage(++currLine, "sasizeset, id: " + u.getPathSegments().get(1));
+				
+				Message msg = mHandler.obtainMessage();
+				msg.what = MSG_INSERT_PROGRESS_DIALG;
+				msg.obj = dm;
+				msg.sendToTarget();	
+				
+				Thread.sleep(2000);
+			}
+		}
+		
 		@Override
 		public void run() {
 			Looper.prepare();
@@ -1133,6 +1219,7 @@ public class LoginActivity extends AbstractActivity {
 				addType1();
 				addSaWareType();
 				addSaWareGroup();
+				addSaSizeSet();
 				dismissDialog(ID_UPDATING_DATA_DIALOG);
 				SharedPreferences spe = getSharedPreferences("data_downloaded", 0); 
 				SharedPreferences.Editor editor = spe.edit();

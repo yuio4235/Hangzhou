@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="订货终端系统设置" android:key="all_setting">
     <PreferenceCategory android:key="order_setting" android:title="订单设置">
-        <Preference android:summary="提交提交之后不能进行修改,只能有管理员解锁" android:title="提交订单" android:key="order_commit"/>
-        <Preference android:summary="解锁订单,该功能只能由管理员使用" android:title="订单解锁" android:key="order_unlock"/>
-        <Preference android:title="下载订单" android:key="download_saindent" android:summary="下载订单"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:key="system_setting" android:title="系统设置">
-        <Preference android:title="系统初始化" android:key="system_initial" android:summary="初始化系统资料和用户订单"/>
-        <EditTextPreference android:title="设置FTP地址" android:key="ftp_addr" android:summary="设置资料存放和更新的FTP服务器地址"/>
-        <EditTextPreference android:title="设置动态报表地址" android:key="report_url" android:summary="动态报表的URL"/>
-        <EditTextPreference android:title="设置订单同步间隔" android:key="saindent_upload_period"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:key="ord_info_setting" android:title="基础资料设置">
-        <Preference android:title="更新图片" android:key="update_imgs"/>
-        <Preference android:title="更新资料" android:key="update_info"/>
+        <CheckBoxPreference android:summary="只能由管理员使用" android:title="订单锁定" android:key="order_locked" android:defaultValue="false"/><CheckBoxPreference android:title="订单提交后可查看订单" android:key="order_view" android:summary="只能由管理员使用"/><Preference android:title="下载订单" android:key="download_saindent" android:summary="下载订单"/>
+        <Preference android:key="erase_order" android:title="清空订单" android:summary="将所有的订单清零"/>
+        
+        
+        
     </PreferenceCategory>
 
     

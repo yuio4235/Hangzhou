@@ -10,7 +10,7 @@
 
     <application
         android:icon="@drawable/logo"
-        android:label="@string/app_name" android:theme="@style/MMTheme.Basic" android:name=".application.OrderApp">
+        android:label="@string/app_name" android:name=".application.OrderApp">
         <activity
             android:label="@string/app_name"
             android:name=".activity.IndexActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic">
@@ -22,7 +22,7 @@
         </activity>
         <activity android:name=".activity.LoginActivity" android:theme="@style/MMTheme.Basic" android:screenOrientation="landscape"></activity>
         <activity android:name=".activity.MainActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name=".activity.OrderByStyleActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.OrderByStyleActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
         <activity android:name=".activity.ChenpinChenlieActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
         <activity android:name=".activity.MustOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
         <activity android:name=".activity.StyleReviewActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
@@ -61,7 +61,9 @@
         <activity android:name=".activity.BoduanWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity android:name=".activity.SxzWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity android:name=".activity.ZhutiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".preference.AsSettings" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".preference.AsSettings" android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".preference.IndextSetting" android:screenOrientation="landscape"  android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.PeimaSetting"  android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden" android:theme="@style/MMTheme.Basic"></activity>
     </application>
 
 </manifest>

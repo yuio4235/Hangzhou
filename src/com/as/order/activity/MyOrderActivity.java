@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -22,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.as.db.provider.AsProvider;
 import com.as.order.R;
 import com.as.order.dao.MyOrderDAO;
+import com.as.ui.utils.FileUtils;
 
 public class MyOrderActivity extends AbstractActivity {
 
@@ -104,11 +107,16 @@ public class MyOrderActivity extends AbstractActivity {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				View v = layoutInflater.inflate(R.layout.my_order_item, null);
+				ImageView iv = (ImageView) v.findViewById(R.id.my_order_item_iv);
 				TextView sepcNoTv = (TextView) v.findViewById(R.id.my_order_item_specno);
 				TextView wareNumTv = (TextView) v.findViewById(R.id.my_order_item_warenum);
 				MyOrderDAO dao = mDataSet.get(10*pageNum + position);
 				sepcNoTv.setText("±àºÅ:"+dao.getSpecNo());
 				wareNumTv.setText("ÊýÁ¿:" + dao.getWareNum());
+				Bitmap[] imgs = FileUtils.getBitmapsFileCode(MyOrderActivity.this, dao.getSpecNo());
+				if(imgs != null && imgs.length > 0) {
+					iv.setImageBitmap(imgs[0]);
+				}
 				return v;
 			}
 			

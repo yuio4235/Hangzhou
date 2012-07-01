@@ -16,7 +16,7 @@ public class AlertUtils {
 		toast.setView(toastV);
 		TextView tv = (TextView) toastV.findViewById(R.id.toast_txt);
 		tv.setText(msg);
-		toast.setDuration(Toast.LENGTH_LONG);
+		toast.setDuration(Toast.LENGTH_SHORT);
 		toast.show();
 //		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 	}

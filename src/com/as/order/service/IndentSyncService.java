@@ -7,10 +7,12 @@ import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.as.order.sync.FileUploader;
@@ -20,6 +22,9 @@ import com.as.ui.utils.AlertUtils;
 public class IndentSyncService extends Service {
 
 	private static final String TAG = "IndentSyncService";
+	
+	private int p = 0;
+	
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
 	private Handler mHandler;
 	private Timer timer;
@@ -47,6 +52,8 @@ public class IndentSyncService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(this);
+		p = Integer.valueOf(spp.getString("saindent_upload_time", "1"));
 		mHandler = new Handler(Looper.getMainLooper());
 	}
 	
@@ -64,10 +71,16 @@ public class IndentSyncService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		timer = new Timer("saindentservice");
-		timer.scheduleAtFixedRate(task, 2000*60, 1000*60);
+		timer.scheduleAtFixedRate(task, 2000*60, p*60*1000);
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
+	@Override
+	public boolean onUnbind(Intent intent) {
+		timer.cancel();
+		timer = null;
+		return super.onUnbind(intent);
+	}
 	@Override
 	public void onDestroy() {
 		super.onDestroy();

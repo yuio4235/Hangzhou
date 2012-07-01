@@ -30,8 +30,14 @@
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
 	            <Button android:id="@id/my_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_my_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
-	            <Button android:id="@id/order_setting" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_order_setting" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+	            <Button android:id="@id/order_setting" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_order_setting" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize" android:background="@drawable/shezhi"/>
             </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="订单确认" android:id="@+id/order_commit" android:background="@drawable/btn_style_zero"/>
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="配码设置" android:id="@+id/main_peima_setting" android:background="@drawable/btn_style_one"/>
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="更新图片" android:id="@+id/main_update_pics" android:background="@drawable/btn_style_one"/>
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="更新资料" android:id="@+id/main_update_infos" android:background="@drawable/btn_style_one"/>
         </LinearLayout>
     </LinearLayout>
 
