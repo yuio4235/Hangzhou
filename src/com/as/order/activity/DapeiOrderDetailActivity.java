@@ -62,6 +62,8 @@ public class DapeiOrderDetailActivity extends AbstractActivity {
 		detailLayout = (LinearLayout) layoutInflater.inflate(R.layout.dapei_order_detail, null);
 		mRootView.addView(detailLayout, FF);
 		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 //		if(savedInstanceState != null) {
 //			savedItemCode = savedInstanceState.getString("itemCode");
 //			savedGroupName = savedInstanceState.getString("groupName");

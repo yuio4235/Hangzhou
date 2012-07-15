@@ -5,24 +5,27 @@
     android:orientation="vertical" >
 
     <LinearLayout style="@style/ASBody">
-        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="vertical" android:gravity="center">
-            <View style="@style/MMLabelSplit"/>
-            <View style="@style/MMLabelSplit"/>    
-            <Button android:id="@+id/dalei_wd" android:text="大类未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
-            <View style="@style/MMLabelSplit"/>
-            <View style="@style/MMLabelSplit"/>     
-			<Button android:id="@+id/xiaolei_wd" android:text="小类未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
-            <View style="@style/MMLabelSplit"/>
-            <View style="@style/MMLabelSplit"/>  
-            <Button android:id="@+id/sxz_wd" android:text="上下装未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
-            <View style="@style/MMLabelSplit"/>
-            <View style="@style/MMLabelSplit"/> 
-            <Button android:id="@+id/zhuti_wd" android:text="主题未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
-            <View style="@style/MMLabelSplit"/>
-            <View style="@style/MMLabelSplit"/> 
-            <Button android:id="@+id/boduan_wd" android:text="波段未订分析" android:textSize="30.0dip" android:background="@drawable/btn_style_one" android:layout_width="300.0dip" android:layout_height="wrap_content"/>
-            <View style="@style/MMLabelSplit"/>
-            <View style="@style/MMLabelSplit"/>                         
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:orientation="horizontal" android:gravity="center">
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip">
+            	<Button android:id="@+id/dalei_wd"  android:background="@drawable/dlwdfx" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="大类未订分析" android:layout_gravity="center_vertical" android:gravity="center"/>    
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip">
+            	<Button android:id="@+id/xiaolei_wd" android:background="@drawable/xlwdfx" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="小类未订分析" android:layout_gravity="center_vertical" android:gravity="center"/>    
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip">
+            	<Button android:id="@+id/sxz_wd"  android:background="@drawable/sxzwdfx" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="上下装未订分析" android:layout_gravity="center_vertical" android:gravity="center"/>    
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip">
+            	<Button android:id="@+id/zhuti_wd" android:background="@drawable/ztwdfx" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="主题未订分析" android:layout_gravity="center_vertical" android:gravity="center"/>    
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip">
+            	<Button android:id="@+id/boduan_wd" android:background="@drawable/bdwdfx" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="波段未订分析" android:layout_gravity="center_vertical" android:gravity="center"/>    
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

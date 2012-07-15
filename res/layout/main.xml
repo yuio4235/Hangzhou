@@ -13,31 +13,73 @@
         </LinearLayout>
         <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0" android:padding="50.0dip" android:gravity="center_horizontal" android:orientation="horizontal">
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
-	            <Button android:layout_width="wrap_content" android:id="@id/order_by_style" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="@string/main_order_by_style" android:textSize="@dimen/LargerTextSize"/>
-	            <Button android:layout_width="wrap_content" android:id="@id/chenpin_chenlie" android:layout_height="wrap_content" android:text="@string/main_chenpin_chenlie" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                	<Button android:layout_width="wrap_content" android:id="@id/order_by_style" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:background="@drawable/akdh" android:textSize="@dimen/LargerTextSize"/>
+                	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="按款订货" android:layout_gravity="center_horizontal" android:gravity="center"/>    
+                </LinearLayout>
+	            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+	                <Button android:layout_width="wrap_content" android:id="@id/chenpin_chenlie" android:layout_height="wrap_content" android:background="@drawable/cpcl" android:layout_marginTop="10.0dip" />
+	                <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="产品陈列" android:layout_gravity="center_vertical" android:gravity="center"/>
+	            </LinearLayout>
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
-	            <Button android:layout_width="wrap_content" android:id="@id/must_order" android:layout_height="wrap_content" android:text="@string/main_must_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
-	            <Button android:id="@id/style_review" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_style_review" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                	<Button android:layout_width="wrap_content" android:id="@id/must_order" android:layout_height="wrap_content" android:background="@drawable/bdk" android:layout_marginBottom="10.0dip" />
+                	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="必订款" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>    
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+					<Button android:id="@id/style_review" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/ksps" android:layout_marginTop="10.0dip"/>
+					<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="款式评审" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>                
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
-	            <Button android:id="@id/dapei_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_dape_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
-	            <Button android:id="@id/order_analysis" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_order_analysis" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                	<Button android:id="@id/dapei_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/dpdh" android:layout_marginBottom="10.0dip"/>
+                	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="搭配订货" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                	<Button android:id="@id/order_analysis" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/ddfx" android:layout_marginTop="10.0dip" />
+                	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="订单分析" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>                                
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
-	            <Button android:id="@id/theme_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_theme_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
-	            <Button android:id="@id/summrize_analysis" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_summarize_analysis" android:layout_marginTop="10.0dip"  android:textSize="@dimen/LargerTextSize"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+               		<Button android:id="@id/theme_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:background="@drawable/ztdh"/>
+               		<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="主题订货" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+					<Button android:id="@id/summrize_analysis" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/zxfx"  android:layout_marginTop="10.0dip" />
+					<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="在线分析" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>                                
             </LinearLayout>
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_margin="10.0dip" android:padding="5.0dip" android:gravity="center_horizontal">
-	            <Button android:id="@id/my_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_my_order" android:layout_marginBottom="10.0dip" android:textSize="@dimen/LargerTextSize"/>
-	            <Button android:id="@id/order_setting" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/main_order_setting" android:layout_marginTop="10.0dip" android:textSize="@dimen/LargerTextSize" android:background="@drawable/shezhi"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                	<Button android:id="@id/my_order" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:background="@drawable/wddd" />
+                	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="我的订单" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+					<Button android:id="@id/order_setting" android:layout_width="wrap_content" android:layout_height="wrap_content"  android:layout_marginTop="10.0dip"  android:background="@drawable/sz"/>
+					<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="订货设置" android:layout_gravity="center_vertical" android:gravity="center"/>
+                </LinearLayout>                                
             </LinearLayout>
         </LinearLayout>
         <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="订单确认" android:id="@+id/order_commit" android:background="@drawable/btn_style_zero"/>
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="配码设置" android:id="@+id/main_peima_setting" android:background="@drawable/btn_style_one"/>
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="更新图片" android:id="@+id/main_update_pics" android:background="@drawable/btn_style_one"/>
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:minWidth="200.0dip" android:textSize="25.0dip" android:text="更新资料" android:id="@+id/main_update_infos" android:background="@drawable/btn_style_one"/>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginRight="5.0dip">
+				<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/dhqr" android:id="@+id/order_commit"/>
+				<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="订货确认" android:layout_gravity="center_vertical" android:gravity="center"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip">
+            	<Button android:layout_width="wrap_content" android:layout_height="wrap_content"  android:id="@+id/main_peima_setting" android:background="@drawable/pmsz"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="配码设置" android:layout_gravity="center_vertical" android:gravity="center"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip">
+            	<Button android:layout_width="wrap_content" android:layout_height="wrap_content"  android:id="@+id/main_update_pics" android:background="@drawable/gxtp"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="更新图片" android:layout_gravity="center_vertical" android:gravity="center"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="5.0dip">
+            	<Button android:layout_width="wrap_content" android:layout_height="wrap_content"  android:id="@+id/main_update_infos" android:background="@drawable/gxzl"/>
+            	<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/BasicTextSize" android:text="更新资料" android:layout_gravity="center_vertical" android:gravity="center"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

@@ -25,27 +25,22 @@ public class IndentSyncService extends Service {
 	
 	private int p = 0;
 	
-	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-	private Handler mHandler;
+	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private Timer timer;
 	private TimerTask task = new TimerTask() {
 		
 		@Override
 		public void run() {
-			mHandler.post(new Runnable(){
-
-				@Override
-				public void run() {
-					AlertUtils.toastMsg(getApplicationContext(), "后台于 " + formatter.format(new Date()) +" 开始同步订单,同步过程不影响您订货");
-					if(FileUploader.createSaIndentFile(getApplicationContext())) {
-						AlertUtils.toastMsg(getApplicationContext(), "后台与" + formatter.format(new Date()) + " 开始向服务器传送订单");
-						if(FileUploader.uploadSaIndent(getApplicationContext())) {
-							AlertUtils.toastMsg(getApplicationContext(), "本地订单已经于 " + formatter.format(new Date()) + " 传送到服务器");
-						}
-					} else {
-						AlertUtils.toastMsg(getApplicationContext(), formatter.format(new Date()) +  " 保存订单成功");
-					}
-				}});
+			Log.e(TAG, "============================= syncing ===============================");
+//			AlertUtils.toastMsg(getApplicationContext(), "后台于 " + formatter.format(new Date()) +" 开始同步订单,同步过程不影响您订货");
+			if(FileUploader.createSaIndentFile(getApplicationContext())) {
+//				AlertUtils.toastMsg(getApplicationContext(), "后台与" + formatter.format(new Date()) + " 开始向服务器传送订单");
+				if(FileUploader.uploadSaIndent(getApplicationContext())) {
+//					AlertUtils.toastMsg(getApplicationContext(), "本地订单已经于 " + formatter.format(new Date()) + " 传送到服务器");
+				}
+			} else {
+//				AlertUtils.toastMsg(getApplicationContext(), formatter.format(new Date()) +  " 保存订单成功");
+			}
 		}
 	};
 	
@@ -54,7 +49,6 @@ public class IndentSyncService extends Service {
 		super.onCreate();
 		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(this);
 		p = Integer.valueOf(spp.getString("saindent_upload_time", "1"));
-		mHandler = new Handler(Looper.getMainLooper());
 	}
 	
 	@Override
@@ -70,8 +64,14 @@ public class IndentSyncService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		if(timer != null) {
+//			timer.cancel();
+			return super.onStartCommand(intent, flags, startId);
+		}
 		timer = new Timer("saindentservice");
 		timer.scheduleAtFixedRate(task, 2000*60, p*60*1000);
+//		timer.scheduleAtFixedRate(task, 2000, 20000);
+		Log.e(TAG, "===================== service started  ============================");
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
@@ -81,9 +81,11 @@ public class IndentSyncService extends Service {
 		timer = null;
 		return super.onUnbind(intent);
 	}
+	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.e(TAG, "======================= service detroyed ===========================");
 		timer.cancel();
 	}
 

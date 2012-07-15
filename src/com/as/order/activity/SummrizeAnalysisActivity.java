@@ -1,16 +1,21 @@
 package com.as.order.activity;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.as.order.R;
+import com.as.ui.utils.Constant;
 import com.as.ui.utils.UserUtils;
 
 public class SummrizeAnalysisActivity extends AbstractActivity {
@@ -26,10 +31,12 @@ public class SummrizeAnalysisActivity extends AbstractActivity {
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.summarize_ana, null);
 		mRootView.addView(mLayout, FF);
 		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 		wv = (WebView) findViewById(R.id.sum_analysis);
 		
 		setTextForLeftTitleBtn(this.getString(R.string.title_back));
-		setTextForTitle(this.getString(R.string.main_summarize_analysis));
+		setTextForTitle("在线分析");
 		
 //		wv = (WebView) findViewById(R.id.sum_ana);
 //		wv.getSettings().setJavaScriptEnabled(true);
@@ -43,7 +50,7 @@ public class SummrizeAnalysisActivity extends AbstractActivity {
 //			
 //		});
 		initData();
-		loadUrl(wv, "http://dlndl.vicp.cc/orderreport/report/reportviewer.aspx");
+//		loadUrl(wv, reportUrl);
 //        handler=new Handler(){
 //        	public void handleMessage(Message msg)
 //    	    {
@@ -68,7 +75,10 @@ public class SummrizeAnalysisActivity extends AbstractActivity {
 //    	wv=(WebView)findViewById(R.id.summrize_analysis);
         wv.getSettings().setJavaScriptEnabled(true);
         wv.setScrollBarStyle(0);
-        wv.loadUrl("http://dlndl.vicp.cc/orderreport/main.aspx?deptcode=" + UserUtils.getUserAccount(this));
+		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(SummrizeAnalysisActivity.this);
+		String reportUrl = spp.getString(Constant.SP_REPORT_URL, "");
+		Log.e("在线分析", "report: " + reportUrl);
+        wv.loadUrl(reportUrl+"?deptcode=" + UserUtils.getUserAccount(this));
 //        wv.setWebViewClient(new WebViewClient(){   
 //            public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
 //            	loadUrl(view,url);

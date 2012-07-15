@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.as.ui.utils.AlertUtils;
+
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
@@ -42,8 +44,9 @@ public class HttpDataFetcher {
 	
 	private static JSONObject FAIL_JSON = new JSONObject();
 	
+	private Context mContext;
+	
 	private HttpDataFetcher() {
-		
 	}
 	
 	public static HttpDataFetcher getInstance() {
@@ -121,7 +124,9 @@ public class HttpDataFetcher {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("error");
+//			throw new Exception("error");
+//			AlertUtils.toastMsg(, msg)
+			return genFailResult("网络出错");
 		}
 		return genFailResult("没有返回结果");
 	}

@@ -31,6 +31,7 @@ import com.as.ui.utils.CommonQueryUtils;
 import com.as.ui.utils.DialogUtils;
 import com.as.ui.utils.ListViewUtils;
 import com.as.ui.utils.PagerUtils;
+import com.as.ui.utils.UserUtils;
 
 public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements OnTouchListener {
 	
@@ -40,6 +41,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 	private ListView mList;
 	private List<XiaoleiFenxiDAO> mDataSet;
 	private BaseAdapter mAdapter;
+	private View listFooter;
 	
 	private Button prevBtn;
 	private Button nextBtn;
@@ -86,6 +88,9 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		super.onCreate(savedInstanceState);
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.xiaolei_fenxi, null);
 		mRootView.addView(mLayout, FF);
+		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 		mList = (ListView) findViewById(R.id.as_list);
 		mList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
 				"小类",
@@ -93,7 +98,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 				"总款数占比",
 				"订货款",
 				"占款总比",
-				"占已订比",
+				"已订占比",
 				"订量",
 				"订量占比",
 				"订货金额",
@@ -169,6 +174,16 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 			}
 		};
 		
+		if(listFooter != null) {
+			mList.removeFooterView(listFooter);
+		}
+		
+		listFooter = ListViewUtils.generateRow(new String[]{
+				"合计", sumWareAll+ "", "100%", sumWareCnt+"", "100%", formatter.format((((double)sumWareCnt/sumWareAll)*100))+"%", sumAmount+"", "100%",sumPrice+"", "100%"
+		}, XiaoleiZongheAnalysisActivity.this);
+		
+		mList.addFooterView(listFooter);
+		
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();		
 	}
@@ -192,7 +207,8 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 	
 	private void queryByCond(String where) {
 		getXiaoleiFenxiData(where);
-		mAdapter.notifyDataSetChanged();
+		initData();
+//		mAdapter.notifyDataSetChanged();
 	}
 	
 	@Override
@@ -246,30 +262,50 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 			+ " sum(sawarecode.[retailprice]*saindent.[warenum]) price "
 			+ " from sawarecode "
 			+ " left join saindent "
-			+ " on sawarecode.[warecode] = saindent.warecode "
-			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
+			+ " on sawarecode.[warecode] = saindent.warecode and rtrim(saindent.departcode) = '"+UserUtils.getUserAccount(XiaoleiZongheAnalysisActivity.this)+"' and saindent.warenum >  0 "
+			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 and saindent.warenum > 0 " + where)
 			+ " group by sawarecode.id ";
+
+		String sql1 = " SELECT "
+			+ "   (select rtrim(type1) from type1 where rtrim(type1.id) = rtrim(sawarecode.id)) type1, "
+			+ "    Sum(saindent.warenum) amount,                            "
+			+ "    Sum(saindent.warenum*sawarecode.retailprice) totalmoney, "
+			+ "    count( distinct saindent.warecode) ware_cnt,            "
+			+ "     (Select count(warecode) From sawarecode B where Rtrim(sawarecode.id)= Rtrim(B.id)) ware_all "
+			+ " FROM  saindent,sawarecode "
+			+ " WHERE saindent.departcode = '"+UserUtils.getUserAccount(XiaoleiZongheAnalysisActivity.this)+"'                and "
+			+ "       saindent.[warenum]> 0                       and "
+			+ "       saindent.warecode =sawarecode.specification "
+			+ (TextUtils.isEmpty(where) ? "" : where)
+			+ " GROUP BY sawarecode.id  ";
+		
+		Log.e(TAG, "sql: " + sql);
+		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(XiaoleiZongheAnalysisActivity.this);
-		Cursor cursor = db.rawQuery(sql, null);
+		Cursor cursor = db.rawQuery(sql1, null);
 		
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				sumWareAll = 0;
+				sumWareCnt = 0;
+				sumAmount = 0;
+				sumPrice = 0;
 				if(cursor.getCount()%10 == 0) {
 					totalPage = cursor.getCount()/10;
 				} else {
 					totalPage = cursor.getCount()/10 + 1;
 				}
 				while(!cursor.isAfterLast()) {
-					sumWareAll += cursor.getInt(INDEX_WAREALL);
-					sumWareCnt += cursor.getInt(INDEX_WARECNT);
-					sumAmount += cursor.getInt(INDEX_AMOUNT);
-					sumPrice += cursor.getInt(INDEX_PRICE);
+					sumWareAll += cursor.getInt(4);
+					sumWareCnt += cursor.getInt(3);
+					sumAmount += cursor.getInt(1);
+					sumPrice += cursor.getInt(2);
 					XiaoleiFenxiDAO dao = new XiaoleiFenxiDAO();
 					dao.setXiaolei(cursor.getString(INDEX_XIAOLEI));
-					dao.setWareAll(cursor.getInt(INDEX_WAREALL));
-					dao.setWareCnt(cursor.getInt(INDEX_WARECNT));
-					dao.setAmount(cursor.getInt(INDEX_AMOUNT));
-					dao.setPrice(cursor.getInt(INDEX_PRICE));
+					dao.setWareAll(cursor.getInt(4));
+					dao.setWareCnt(cursor.getInt(3));
+					dao.setAmount(cursor.getInt(1));
+					dao.setPrice(cursor.getInt(2));
 					mDataSet.add(dao);
 					cursor.moveToNext();
 				}
@@ -410,7 +446,7 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !(CommonDataUtils.ALL_OPT.equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !(CommonDataUtils.ALL_OPT.equals(boduanStr))) {

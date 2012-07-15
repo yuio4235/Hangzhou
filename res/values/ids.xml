@@ -114,4 +114,18 @@
     <item type="id" name="order_by_style_prev_warecode">false</item>
     <item name="index_setting" type="id">false</item>
     <item name="sum_analysis" type="id">false</item>
+    <item name="multi_select_item_tv" type="id">false</item>
+    <item name="multi_select_item_checkbox" type="id">false</item>
+    <item name="theme_order_et" type="id">false</item>
+    <item name="login_depart_name" type="id">false</item>
+    <item name="my_order_jine_zhibiao" type="id">false</item>
+    <item name="my_order_zongjine" type="id">false</item>
+    <item name="my_order_zdl" type="id">false</item>
+    <item name="my_order_dl_zb" type="id">false</item>
+    <item name="my_order_jine_rate" type="id">false</item>
+    <item name="my_order_dl_rate" type="id">false</item>
+    <item name="my_order_un_order_query" type="id">false</item>
+    <item name="my_order_order_query" type="id">false</item>
+    <item name="page_indicator" type="id">false</item>
+    <item name="title_btn_home" type="id">false</item>
 </resources>

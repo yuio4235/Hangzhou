@@ -64,6 +64,7 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 	public static final int INDEX_WAREALL = 4;
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
+	private View listFooter;
 	
 	private Button chartsBtn;
 	
@@ -84,6 +85,8 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.zhuti_fenxi, null);
 		mRootView.addView(mLayout, FF);
 		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
 		chartsBtn = (Button) findViewById(R.id.charts_btn);
@@ -99,7 +102,7 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 				"总款数占比",
 				"订货款",
 				"占款总比",
-				"占已订比",
+				"已订占比",
 				"订量",
 				"订量占比",
 				"订货金额",
@@ -175,6 +178,16 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 			}
 		};
 		
+		if(listFooter != null) {
+			mList.removeFooterView(listFooter);
+		}
+		
+		listFooter = ListViewUtils.generateRow(new String[]{
+				"合计", sumWareAll+"", "100%", sumWareCnt+"", "100%", formatter.format((((double)sumWareCnt/sumWareAll)*100))+"%", sumAmount+"", "100%", sumPrice+"", "100%"
+		}, ZhutiZongheAnalysisActivity.this);
+		
+		mList.addFooterView(listFooter);
+		
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}	
@@ -189,7 +202,8 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 	
 	private void queryByCond(String where) {
 		getZhutiFenxiData(where);
-		mAdapter.notifyDataSetChanged();
+		initData();
+//		mAdapter.notifyDataSetChanged();
 	}
 	
 	@Override
@@ -246,12 +260,16 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 			+ " where rtrim(saindent.warecode) = rtrim(sawarecode.warecode) "
 			+ " and saindent.departcode = '"+UserUtils.getUserAccount(this)+"' "
 			+ " and saindent.warenum > 0 "
-			+ (TextUtils.isEmpty(where ) ? "" : " and " + where )
+			+ (TextUtils.isEmpty(where ) ? "" : " " + where )
 			+ " group by sawarecode.style ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				sumWareAll = 0;
+				sumWareCnt = 0;
+				sumAmount = 0;
+				sumPrice = 0;
 				if(cursor.getCount()%10 == 0) {
 					totalPage = cursor.getCount()/10;
 				} else {
@@ -408,7 +426,7 @@ public class ZhutiZongheAnalysisActivity extends AbstractActivity implements OnT
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !(CommonDataUtils.ALL_OPT.equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !(CommonDataUtils.ALL_OPT.equals(boduanStr))) {

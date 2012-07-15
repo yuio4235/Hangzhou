@@ -38,7 +38,7 @@ public class ListViewUtils {
 		mLayout.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.table_header_normal));
 		for(int i=0; i<header.length-1; i++) {
 			TextView tv = new TextView(ctx);
-			tv.setTextSize(25);
+			tv.setTextSize(20);
 			tv.setText(header[i]);
 			tv.setTextColor(Color.BLACK);
 			tv.setGravity(Gravity.CENTER);
@@ -52,10 +52,42 @@ public class ListViewUtils {
 		}
 		if(header.length >=1) {
 			TextView tv = new TextView(ctx);			
-			tv.setTextSize(25);
+			tv.setTextSize(20);
 			tv.setText(header[header.length-1]);
 			tv.setGravity(Gravity.CENTER);
 
+			tv.setTextColor(Color.BLACK);
+			mLayout.addView(tv, cellLp);
+		}
+		return mLayout;
+	}
+	
+	public static LinearLayout generateSumRow(String[] data, Context ctx) {
+		LinearLayout mLayout = new LinearLayout(ctx);
+		LayoutInflater layoutInflater = LayoutInflater.from(ctx);
+		
+		mLayout.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.list_selector_background));
+		mLayout.setPadding(0, 0, 0, 0);
+		
+		for(int i=0; i<data.length-1; i++) {
+			TextView tv = new TextView(ctx);
+			tv.setTextSize(25);
+			tv.setText(data[i]);
+			tv.setTextColor(Color.BLACK);
+			tv.setGravity(Gravity.CENTER);
+			tv.setEllipsize(TruncateAt.MARQUEE);
+			tv.setMarqueeRepeatLimit(-1);
+			
+			View v = layoutInflater.inflate(R.layout.table_item_divider, null);
+			mLayout.addView(tv, cellLp);
+			mLayout.addView(v, dLp);
+		}
+		
+		if(data.length >= 1) {
+			TextView tv = new TextView(ctx);
+			tv.setTextSize(25);
+			tv.setText(data[data.length-1]);
+			tv.setGravity(Gravity.CENTER);
 			tv.setTextColor(Color.BLACK);
 			mLayout.addView(tv, cellLp);
 		}
@@ -334,6 +366,7 @@ public class ListViewUtils {
 				tv.setText(field.getInt(saIndent) +"");
 				tv.setTextColor(Color.BLACK);
 				tv.setGravity(Gravity.CENTER);
+				tv.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.mm_edit_single));
 				tv.setKeyListener(new DigitsKeyListener(false, false));
 				
 				View v = layoutInflater.inflate(R.layout.table_item_divider, null);

@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.as.db.provider.AsProvider;
@@ -37,6 +38,7 @@ import com.as.ui.utils.ListViewUtils;
 
 public class MustOrderActivity extends AbstractActivity implements OnTouchListener{
 
+	private static final String TAG = "MustOrderActivity";
 	private LinearLayout mustOrder;
 	private ListView mustOrderList;
 	
@@ -46,6 +48,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 	private EditText xiaoleiEt;
 	private EditText xilieEt;
 	private EditText bianhaoEt;
+	private TextView pagerIndicator;
 	
 	private boolean isBoduanListDialogShow = false;
 	private boolean isThemeListDialogShow = false;
@@ -63,8 +66,16 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 	int pageNum = 0;
 	int totalPage = 0;
 	
+	private static final int pageSize = 10;
+	
+	private int sumPrice = 0;
+	private int sumWareNum = 0;
+	
 	private Button prevPageBtn;
 	private Button nextPageBtn;
+	
+	private View listHeader;
+	private View listFooter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +87,11 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		setTextForTitle(this.getString(R.string.main_must_order));
 		setTextForTitleRightBtn("查询");
 		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 		prevPageBtn = (Button) findViewById(R.id.prev_page);
 		nextPageBtn = (Button) findViewById(R.id.next_page);
+		pagerIndicator = (TextView) findViewById(R.id.page_indicator);
 		
 		prevPageBtn.setOnClickListener(this);
 		nextPageBtn.setOnClickListener(this);
@@ -96,9 +110,15 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		xilieEt.setOnTouchListener(this);
 		bianhaoEt.setOnTouchListener(this);
 		
-		mustOrderList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
-				"序号", "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "已订量"
-		}, MustOrderActivity.this));
+//		initData();
+	}
+	
+	private void updatePagerIndicator() {
+		int currentPage = pageNum + 1;
+		pagerIndicator.setText(currentPage+"/"+totalPage);
+	}
+	
+	private void initList() {
 //		dataset.add(new String[]{"1", "002", "2012-3-1", "第一波", "裤子", "都市女人", "2103118", "198", "50"});
 //		dataset.add(new String[]{"2", "005", "2012-3-5", "第一波", "毛衣", "都市女人", "2103108", "258", "35"});
 //		dataset.add(new String[]{"3", "008", "2012-4-5", "第二波", "上衣", "都市女人", "2103008", "238", "32"});
@@ -109,7 +129,9 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				return ListViewUtils.generateMustOrderItem(dataset.get(pageNum*15 + position), MustOrderActivity.this);
+//				sumWareNum+=dataset.get(pageNum*pageSize + position).getWareNum();
+//				Log.e(TAG, "================= sumWareNum: " + sumWareNum);
+				return ListViewUtils.generateMustOrderItem(dataset.get(pageNum*pageSize + position), MustOrderActivity.this);
 			}
 			
 			@Override
@@ -124,14 +146,33 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 			
 			@Override
 			public int getCount() {
-				if(dataset.size() < 15) {
+				if(dataset.size() < pageSize) {
 					return dataset.size();
-				} else if((pageNum + 1)*15 > dataset.size()) {
-					return dataset.size()%15;
+				} else if((pageNum + 1)*pageSize > dataset.size()) {
+					return dataset.size()%pageSize;
 				}
-				return 15;
+				return pageSize;
 			}
 		};
+		
+		if(listHeader!=null) {
+			mustOrderList.removeHeaderView(listHeader);
+		}
+		if(listFooter!=null) {
+			mustOrderList.removeFooterView(listFooter);
+		}
+		
+		listHeader = ListViewUtils.generateListViewHeader(new String[]{
+				"序号", "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "已订量"
+		}, MustOrderActivity.this);
+		
+		Log.e(TAG, "================= sumWareNum: " + sumWareNum + " :=======");
+		listFooter = ListViewUtils.generateSumRow(new String[]{"合计", "", "", "", "", "", "", "" + sumPrice, "" + sumWareNum}, MustOrderActivity.this);
+		
+		
+		mustOrderList.addHeaderView(listHeader);
+		mustOrderList.addFooterView(listFooter);
+		
 		mustOrderList.setAdapter(mAdapter);
 		mustOrderList.setOnItemClickListener(new OnItemClickListener() {
 
@@ -141,23 +182,37 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				if(position == 0) {
 					return;
 				}
+				Log.e(TAG, "count: " + mAdapter.getCount() + " pos: " + position);
+				if(position == mAdapter.getCount()+1) {
+					return;
+				}
 				Intent intent = new Intent(MustOrderActivity.this, OrderByStyleActivity.class);
-				MustOrderDAO dao = dataset.get(pageNum*15 + (position -1));
+				MustOrderDAO dao = dataset.get(pageNum*pageSize + (position -1));
 				intent.putExtra("style_code", dao.getSpecNo()+"");
 				startActivity(intent);
 			}
 		});
-//		initData();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		sumWareNum = 0;
+		sumPrice = 0;
 		initData(getWhere());
+		initList();
 	}
 	
 	private void queryByCond(String where) {
+		sumWareNum = 0;
+		sumPrice = 0;
 		initData(where);
+		if(listFooter != null) {
+			mustOrderList.removeFooterView(listFooter);
+		}
+		listFooter = ListViewUtils.generateSumRow(new String[]{"合计", "", "", "", "", "", "", "" + sumPrice, "" + sumWareNum}, MustOrderActivity.this);
+		mustOrderList.addFooterView(listFooter);
+//		mustOrderList.removeFooterView(listFooter);
 		mAdapter.notifyDataSetChanged();
 	}
 	
@@ -169,7 +224,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				+ " from sawarecode "
 				+ " left join sapara on sawarecode.[state] = sapara.[para] "
 				+ " left join sawaretype on sawarecode.[waretypeid] = sawaretype.[waretypeid] "
-				+ " where sapara.[paratype] = 'PD' "+ (TextUtils.isEmpty(where) ? "" :  where )+") a "
+				+ " where sawarecode.specdef='必订款' and  sapara.[paratype] = 'PD' "+ (TextUtils.isEmpty(where) ? "" :  where )+" ) a "
 				+ " left join "
 				+ " (select warecode,  sum(wareNum) wareNum from saindent group by warecode) b "
 				+ " on a.warecode = b.warecode ";
@@ -181,7 +236,8 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		}
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				totalPage = (cursor.getCount()%15 == 0) ? cursor.getCount()/15 : (cursor.getCount()/15 + 1);
+				totalPage = (cursor.getCount()%pageSize == 0) ? cursor.getCount()/pageSize : (cursor.getCount()/pageSize + 1);
+				updatePagerIndicator();
 				int serial = 0;
 				while(!cursor.isAfterLast()) {
 					MustOrderDAO dao = new MustOrderDAO();
@@ -197,10 +253,11 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 					dao.setHuohao(TextUtils.isEmpty(cursor.getString(10)) ? "" : cursor.getString(10));
 					dao.setRetailPrice(TextUtils.isEmpty(cursor.getString(8)) ? "" : cursor.getString(8));
 					dao.setWareNum(cursor.getInt(9));
+					sumWareNum += cursor.getInt(9);
+					sumPrice += cursor.getInt(8)*cursor.getInt(9);
 					dataset.add(dao);
 					cursor.moveToNext();
 				}
-				mAdapter.notifyDataSetChanged();
 				dismissDialog(ID_DATA_LOADING_DIALOG);
 			} else {
 				dismissDialog(ID_DATA_LOADING_DIALOG);
@@ -266,6 +323,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				pageNum--;
 				mAdapter.notifyDataSetChanged();
 			}
+			updatePagerIndicator();
 			break;
 			
 		case R.id.next_page:
@@ -275,6 +333,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				pageNum ++;
 				mAdapter.notifyDataSetChanged(); 
 			}
+			updatePagerIndicator();
 			break;
 			
 		case R.id.title_btn_right:
@@ -492,7 +551,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		
 
 		if(!TextUtils.isEmpty(styleStr) && !(CommonDataUtils.ALL_OPT.equals(styleStr))) {
-			where.append(" and sawarecode.type = '"+styleStr+"' ");
+			where.append(" and sawarecode.style = '"+styleStr+"' ");
 		}
 
 		if(!TextUtils.isEmpty(sawaretypeStr) && !(CommonDataUtils.ALL_OPT.equals(sawaretypeStr))) {

@@ -1,6 +1,20 @@
 package com.as.order.preference;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.SocketException;
+
+import org.apache.commons.net.ftp.FTPClient;
+
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,8 +23,11 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -23,6 +40,9 @@ import com.as.db.provider.AsProvider;
 import com.as.db.provider.AsContent.SaIndent;
 import com.as.order.R;
 import com.as.ui.utils.AlertUtils;
+import com.as.ui.utils.Constant;
+import com.as.ui.utils.SaIndentUtils;
+import com.as.ui.utils.UserUtils;
 
 public class AsSettings extends PreferenceActivity implements
 		OnPreferenceClickListener, OnPreferenceChangeListener {
@@ -39,6 +59,25 @@ public class AsSettings extends PreferenceActivity implements
 	SharedPreferences spp ;
 	ProgressDialog mLoading;
 	AlertDialog at;
+	
+	private static final int DIALOG_DOWNLOAD_SAINDENT = 2001;
+	
+	private static final int MSG_DOWNLOAD_SAINDNET = 1001;
+	private static final int MSG_DOWNLOAD = 1002;
+	
+	private Handler mHandler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch(msg.what) {
+			case MSG_DOWNLOAD_SAINDNET:
+				showDialog(DIALOG_DOWNLOAD_SAINDENT);
+				break;
+			case MSG_DOWNLOAD:
+				downloadSaIndent();
+				break;
+			}
+		};
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -132,6 +171,31 @@ public class AsSettings extends PreferenceActivity implements
 			dlg.show();
 			return true;
 		}
+		
+		if(preference == downloadSaIndentP) {
+//			if(mLoading == null) {
+//				mLoading =  ProgressDialog.show(AsSettings.this, "下载订单", "订单下载中，请稍后", true);	
+//				mLoading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//				mLoading.setCancelable(false);
+//			}
+//			mLoading.show();
+//			Message msg = mHandler.obtainMessage();
+//			msg.what = MSG_DOWNLOAD_SAINDNET;
+//			msg.sendToTarget();
+			showDialog(DIALOG_DOWNLOAD_SAINDENT);
+//			Message msg1 = mHandler.obtainMessage();
+//			msg1.what = MSG_DOWNLOAD;
+//			msg1.sendToTarget();
+			new DownloadThread().start();
+//			mLoading.dismiss();
+//			downloadSaIndent();
+//			Log.e(TAG, "===================== download =======================");
+////			new InsertData().start();
+//			addSaIndent();
+//			dismissDialog(DIALOG_DOWNLOAD_SAINDENT);
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -203,5 +267,159 @@ public class AsSettings extends PreferenceActivity implements
 			}
 		}
 		return 0;
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DIALOG_DOWNLOAD_SAINDENT:
+			mLoading =  ProgressDialog.show(AsSettings.this, "下载订单", "订单下载中，请稍后", true);	
+			mLoading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			mLoading.setCancelable(false);
+			return mLoading;
+			
+			default:
+				break;
+		}
+		return null;
+	}
+	
+	private void downloadSaIndent() {
+		String REMOTE_HOST = spp.getString(Constant.SP_FTP_HOST, "");
+		String USER_NAME = spp.getString(Constant.SP_FTP_USERNAME, "");
+		String PASSWORD = spp.getString(Constant.SP_FTP_PASSWORD, "");
+		
+		Log.e(TAG, "===========================");
+		
+		SharedPreferences spp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+		String departCode = spp.getString("departcode", "");
+		
+		FTPClient ftp = null;
+		
+		try {
+			ftp = new FTPClient();
+			ftp.connect(REMOTE_HOST);
+			boolean isLogined = ftp.login(USER_NAME, PASSWORD);
+			if(isLogined) {
+				ftp.setControlEncoding("UTF-16LE");
+				ftp.changeWorkingDirectory("/ORD/downdata");
+				String fileName = departCode + ".txt";
+				Log.e(TAG, "=========== fileName: " + fileName);
+				InputStream is = ftp.retrieveFileStream(fileName);
+				if(is != null) {
+					File infoDir = new File(getCacheDir() + "/info");
+					if(!infoDir.exists()) {
+						infoDir.mkdirs();
+					}
+					File localFile = new File(getCacheDir() + "/info/" + fileName);
+					if(!localFile.exists()) {
+						localFile.createNewFile();
+					}
+					OutputStream os = new FileOutputStream(localFile);
+					byte[] buff = new byte[1024];
+					int len;
+					while((len = is.read(buff)) != -1) {
+						os.write(buff, 0, len);
+					}
+					os.close();
+					is.close();
+					
+					ftp.completePendingCommand();
+					ftp.disconnect();
+				}
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void addSaIndent() {
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(AsSettings.this);
+		
+		try {
+			AsProvider.updateSaIndet(db);
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		} finally {
+			if(db != null) {
+				db.close();
+			}
+		}
+		
+		SharedPreferences sp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+		String departCode = sp.getString("departcode", "");
+		
+		File localFile = new File(getCacheDir()+"/info/" + departCode + ".txt");
+		
+		Log.e(TAG, "====== file name: " + localFile.getName());
+		if(!localFile.exists()) {
+			return;
+		}
+		
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(localFile)));
+			String line;
+			while((line = br.readLine()) != null) {
+				Log.e(TAG, "=====================================================================================");
+				String[] arr = line.split("\t");
+				SaIndent indent = new SaIndent();
+				indent.indentNo = arr[0];
+				indent.departCode = arr[1];
+				indent.wareCode = arr[2];
+				indent.colorCode = arr[3];
+				indent.s01 = Integer.parseInt(arr[4]);
+				indent.s02 = Integer.parseInt(arr[5]);
+				indent.s03 = Integer.parseInt(arr[6]);
+				indent.s04 = Integer.parseInt(arr[7]);
+				indent.s05 = Integer.parseInt(arr[8]);
+				indent.s06 = Integer.parseInt(arr[9]);
+				indent.s07 = Integer.parseInt(arr[10]);
+				indent.s08 = Integer.parseInt(arr[11]);
+				indent.s09 = Integer.parseInt(arr[12]);
+				indent.s10 = Integer.parseInt(arr[13]);
+				indent.s11 = Integer.parseInt(arr[14]);
+				indent.s12 = Integer.parseInt(arr[15]);
+				indent.s13 = Integer.parseInt(arr[16]);
+				indent.s14 = Integer.parseInt(arr[17]);
+				indent.s15 = Integer.parseInt(arr[18]);
+				indent.s16 = Integer.parseInt(arr[19]);
+				indent.s17 = Integer.parseInt(arr[20]);
+				indent.s18 = Integer.parseInt(arr[21]);
+				indent.s19 = Integer.parseInt(arr[22]);
+				indent.s20 = Integer.parseInt(arr[23]);
+				indent.inputDate = arr[24];
+				indent.inputMan = arr[25];
+				indent.wareNum = Integer.parseInt(arr[26]);
+				indent.remark = arr[27];
+				indent.oFlag = arr[28];
+				getContentResolver().insert(SaIndent.CONTENT_URI, indent.toContentValues());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private class InsertData extends Thread  {
+		@Override
+		public void run() {
+			super.run();
+			addSaIndent();
+			SaIndentUtils.checkSaIndents(AsSettings.this);
+			dismissDialog(DIALOG_DOWNLOAD_SAINDENT);
+		}
+	}
+	
+	public class DownloadThread extends Thread {
+		@Override
+		public void run() {
+			super.run();
+			downloadSaIndent();
+			addSaIndent();
+			dismissDialog(DIALOG_DOWNLOAD_SAINDENT);
+		}
 	}
 }

@@ -63,6 +63,8 @@ public class DapeiOrderActivity extends AbstractActivity {
 		dapeiOrder = (LinearLayout) layoutInflater.inflate(R.layout.dapei_order, null);
 		mRootView.addView(dapeiOrder, FF);
 		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 		setTextForTitleRightBtn(getString(R.string.app_query));
 		
 		firstPage = (Button) findViewById(R.id.first_page);
@@ -201,6 +203,8 @@ public class DapeiOrderActivity extends AbstractActivity {
 		} else {
 			cursor = getContentResolver().query(AsContent.SaWareGroup.CONTENT_URI, SaWareGroup.CONTENT_PROJECTION, TextUtils.isEmpty(sb.toString()) ? (SaWareGroupColumns.ITEMCODE + " in ( " + sb.toString() + " ) ") : ( SaWareGroupColumns.ITEMCODE + " in ( " + sb.substring(0, sb.length()-2) + " ) " ), null, SaWareGroupColumns.ITEMCODE + " asc ");
 		}
+		mItemCodeMap.clear();
+		mDataSet.clear();
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				while(!cursor.isAfterLast()) {

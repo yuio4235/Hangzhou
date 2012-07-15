@@ -135,6 +135,53 @@ public class AsProvider extends ContentProvider{
 		SaOrderScore.TABLE_NAME
 	};
 	
+	private static final String[] UPDATE_INFO_TABLE_NAMES = new String[]{
+		AsContent.SaWareCode.TABLE_NAME,
+		AsContent.SaColorCode.TABLE_NAME,
+		AsContent.SaWareColor.TABLE_NAME,
+		AsContent.SaWareSize.TABLE_NAME,
+		AsContent.SaPara.TABLE_NAME
+	};
+	
+	public static void updateInfo(SQLiteDatabase db) {
+		for(int i=0; i<UPDATE_INFO_TABLE_NAMES.length; i++) {
+			db.execSQL(" drop table " + UPDATE_INFO_TABLE_NAMES[i]);
+		}
+		createSawareCodeTable(db);
+		createSaColorCodeTable(db);
+		createSaWareColorTable(db);
+		createSaWareSizeTable(db);
+		createSaParaTable(db);
+	}
+	
+	public static void updateSaIndet(SQLiteDatabase db) {
+		db.execSQL(" drop table saindent ");
+		createSaIndentTable(db);
+	}
+	
+	public static void systemInitial(SQLiteDatabase db, Context context) {
+		for(int i=0; i<TABLE_NAMES.length; i++) {
+			db.execSQL(" drop table " + TABLE_NAMES[i]);
+		}
+		
+		createSaColorCodeTable(db);
+		createSaIndentTable(db);
+		createSaOrderScoreTable(db);
+		createSaOrderTrgetTable(db);
+		createSaParaTable(db);
+		createSaParaTable(db);
+		createSaSizeSetTable(db);
+		createSawareCodeTable(db);
+		createSaWareColorTable(db);
+		createSaWareGroupTable(db);
+		createSaWareSizeTable(db);
+		createSaWareTypeTable(db);
+		createShowSizeTable(db);
+		createType1Table(db);
+		createUserTable(db);
+		createViewOrdListView(context, db);
+	}
+	
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	
 	static {

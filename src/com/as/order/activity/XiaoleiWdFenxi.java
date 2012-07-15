@@ -1,5 +1,6 @@
 package com.as.order.activity;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,11 +55,15 @@ public class XiaoleiWdFenxi extends AbstractActivity implements OnTouchListener{
 	private boolean isXiaoleiListDialogShow = false;	
 	
 	PageDao pager;
+	
+	private DecimalFormat formatter = new DecimalFormat("0.00");
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.dalei_wd_fenxi, null);
 		mRootView.addView(mLayout, FF);
+		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
@@ -70,7 +75,8 @@ public class XiaoleiWdFenxi extends AbstractActivity implements OnTouchListener{
 				"小类",
 				"未订款",
 				"已订款",
-				"总款数"
+				"总款数",
+				"未定占比"
 		}, XiaoleiWdFenxi.this));
 		
 		setTextForLeftTitleBtn("返回");
@@ -144,7 +150,8 @@ public class XiaoleiWdFenxi extends AbstractActivity implements OnTouchListener{
 						dao.getXiaolei(),
 						dao.getWd()+"",
 						dao.getYd()+"",
-						dao.getTotal()+""
+						dao.getTotal()+"",
+						formatter.format(((double)dao.getWd()/dao.getTotal())*100)+"%"
 				}, XiaoleiWdFenxi.this);
 			}
 			
@@ -195,6 +202,22 @@ public class XiaoleiWdFenxi extends AbstractActivity implements OnTouchListener{
 			+ " left join saindent c on sawarecode.[warecode] = c.warecode and c.warenum = 0 "
 			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.[id] ";
+		
+//		String sql1 = " select type1.type1, sum(allorder), sum(orderware), summ(allorder)-sum(orderware) "
+//			 + " from ( select sawarecode.id, "
+//			 + " count(distinct sawarecode.warecode) allorder, "
+//			 + " 0 orderware"
+//			 + " from saindent, sawarecode "
+//			 + " where (saindent.warecode = sawarecode.warecode) "
+//			 + " group by sawarecode.id "
+//			 + " union all "
+//			 + " select sawarecode.id, 0, count(distinct sawarecode.warecode) "
+//			 + " from saindent, sawarecode "
+//			 + " where (rtrim(saindent.warecode) = rtrim(sawarecode.warecode)) "
+//			 + " and saindent.warenum > 0 "
+//			 + " group by sawarecode.id) A, type1 "
+//			 + " where A.id = type1.id  "
+//			 + " group by type1.type1 ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(XiaoleiWdFenxi.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
@@ -348,7 +371,7 @@ public class XiaoleiWdFenxi extends AbstractActivity implements OnTouchListener{
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {

@@ -42,6 +42,8 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 	
 	private Button chartsBtn;
 	
+	private View listFooter;
+	
 	private int currPage=0;
 	private int totalPage=0;
 	
@@ -84,6 +86,8 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.chima_fenxi, null);
 		mRootView.addView(mLayout, FF);
 		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
+		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
 		chartsBtn = (Button) findViewById(R.id.charts_btn);
@@ -100,7 +104,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 				"总款占比",
 				"订货款",
 				"订货款占比",
-				"已定占比",
+				"已订占比",
 				"订量",
 				"订量占比",
 				"金额",
@@ -175,7 +179,8 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 	
 	private void queryByCond(String where) {
 		getChimaData(where);
-		mAdapter.notifyDataSetChanged();
+		initData();
+//		mAdapter.notifyDataSetChanged();
 	}
 	
 
@@ -220,6 +225,17 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 				return 10;
 			}
 		};
+		
+		if(listFooter != null) {
+			mList.removeFooterView(listFooter);
+		}
+		
+		listFooter = ListViewUtils.generateRow(new String[]{
+				"合计", "",  sumWareAll+"", "100%", sumWareCnt+"", "100%", formatter.format((((double)sumWareCnt/sumWareAll)*100))+"%", sumAmount+"", "100%", sumPrice+"", "100%"
+		}, ChimaZongheAnalysisActivity.this);
+		
+		mList.addFooterView(listFooter);
+		
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
@@ -243,12 +259,16 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 			+ " and "
 			+ "    view_ord_list.[amount] > 0 "
 			+ " and view_ord_list.departcode = '"+UserUtils.getUserAccount(this)+"'"
-			+ (TextUtils.isEmpty(where) ? "" : " and " + where)
+			+ (TextUtils.isEmpty(where) ? "" :  " " + where)
 			+ " group by sawarecode.[flag], view_ord_list.[sizecode] ";
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(ChimaZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				sumWareAll = 0;
+				sumWareCnt = 0;
+				sumAmount = 0;
+				sumPrice = 0;
 				if(cursor.getCount()%10 ==0) {
 					totalPage = cursor.getCount()/10;
 				} else  {
@@ -403,7 +423,7 @@ public class ChimaZongheAnalysisActivity extends AbstractActivity implements OnT
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !(CommonDataUtils.ALL_OPT.equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !(CommonDataUtils.ALL_OPT.equals(boduanStr))) {

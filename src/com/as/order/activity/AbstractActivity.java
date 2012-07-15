@@ -1,8 +1,10 @@
 package com.as.order.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -21,6 +23,7 @@ public abstract class AbstractActivity extends Activity implements OnClickListen
 	protected LinearLayout mRootView;
 	protected Button titleLeftBtn;
 	protected Button titleRightBtn;
+	protected Button titleHomeBtn;
 	protected TextView titleTextView;
 	protected ImageView titleNetwrokIv;
 	protected ImageView titleActivityLogoIv;
@@ -45,7 +48,16 @@ public abstract class AbstractActivity extends Activity implements OnClickListen
 		titleNetwrokIv = (ImageView) findViewById(R.id.title_network_sts);
 		titleActivityLogoIv = (ImageView) findViewById(R.id.title_logo);
 		titleTextView = (TextView) findViewById(R.id.title);
+		titleHomeBtn = (Button) findViewById(R.id.title_btn_home);
 		
+		titleHomeBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent homeIntent = new Intent(AbstractActivity.this, MainActivity.class);
+				startActivity(homeIntent);
+			}
+		});
 		titleLeftBtn.setOnClickListener(this);
 		titleRightBtn.setOnClickListener(this);
 	}

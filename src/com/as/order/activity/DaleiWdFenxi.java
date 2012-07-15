@@ -1,5 +1,6 @@
 package com.as.order.activity;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.CommonQueryUtils;
 import com.as.ui.utils.DialogUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 
@@ -46,6 +48,8 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 	private Button prevBtn;
 	private Button nextBtn;
 	
+	private int totalWare = 0;
+	
 	private EditText zhutiEt;
 	private EditText boduanEt;
 	private EditText daleiEt;
@@ -56,12 +60,16 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 	private boolean isDaleiListDialogShow = false;
 	private boolean isXiaoleiListDialogShow = false;
 	
+	private DecimalFormat formatter = new DecimalFormat("0.00");
+	
 	PageDao pager;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.dalei_wd_fenxi, null);
 		mRootView.addView(mLayout, FF);
+		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
@@ -73,7 +81,8 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 				"大类",
 				"未订款",
 				"已订款",
-				"总款数"
+				"总款数",
+				"未定占比"
 		}, DaleiWdFenxi.this));
 		
 		setTextForLeftTitleBtn("返回");
@@ -120,7 +129,8 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 						dao.getDalei(),
 						dao.getWd()+"",
 						dao.getYd()+"",
-						dao.getTotal()+""
+						dao.getTotal()+"",
+						formatter.format(((double)dao.getWd()/dao.getTotal())*100)+"%"
 				}, DaleiWdFenxi.this);
 			}
 			
@@ -201,12 +211,49 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.waretypeid  ";
 		
+		String sql1 = " Select sawaretype.WareTypeName,sum(unorder) zongkuanshu,sum(orderware) yd,sum(unorder)-sum(orderware) wd "
+			+ " From (SELECT  sawarecode.waretypeid, "
+			+ "             count(distinct sawarecode.warecode) unorder, "
+			+ "            0 orderware "
+			+ " FROM saindent,   sawarecode "
+			+ " WHERE ( saindent.warecode = sawarecode.warecode ) "
+			+ " Group By    sawarecode.waretypeid,saindent.warecode "
+			+ " Union All "
+			+ " SELECT  sawarecode.waretypeid, "
+			+ "            0, "
+			+ "            count(distinct sawarecode.warecode) orderware "
+			+ " FROM saindent,   sawarecode  "
+			+ " WHERE ( saindent.warecode = sawarecode.warecode ) "
+			+ " and saindent.departcode = '"+UserUtils.getUserAccount(DaleiWdFenxi.this)+"' "
+			+ " And    saindent.WARENUM > 0 "
+			+ " Group By    sawarecode.waretypeid) A,sawaretype "
+			+ " where    sawaretype.WareTypeID = A.waretypeid "
+			+ " Group By sawaretype.WareTypeName ";
+		
+//		String sql1 = " Select Type1.Type1,sum(allorder) zongkuanshu ,sum(orderware) yiding ,sum(allorder)-sum(orderware) weid "
+//			+ " From(SELECT   sawarecode.id, "
+//			+ " count(distinct sawarecode.warecode) allorder, "
+//			+ "  0 orderware " 
+//			+ " FROM saindent,sawarecode  "
+//			+ " WHERE ( saindent.warecode = sawarecode.warecode )   "
+//			+ " Group By  sawarecode.id "
+//			+ " Union All "
+//			+ " SELECT   sawarecode.id,   "
+//			+ "  0, "
+//		    + "  count(distinct sawarecode.warecode) "
+//		    + " FROM saindent,sawarecode "
+//		    + " WHERE ( rtrim(saindent.warecode) = rtrim(sawarecode.warecode )) "
+//		    + " and saindent.warenum > 0 "
+//		    + " Group By  sawarecode.id) A,type1 "
+//		    + " where   A.id = type1.ID "
+//		    + " Group By type1.Type1 ";
 		Log.e(TAG, "sql: " + sql);
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(DaleiWdFenxi.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				totalWare = 0;
 				while(!cursor.isAfterLast()) {
 					DaleiWdDAO dao = new DaleiWdDAO();
 					dao.setWaretypeid(cursor.getString(0));
@@ -356,7 +403,7 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {

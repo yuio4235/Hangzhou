@@ -20,50 +20,53 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity" android:theme="@style/MMTheme.Basic" android:screenOrientation="landscape"></activity>
-        <activity android:name=".activity.MainActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name=".activity.OrderByStyleActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
-        <activity android:name=".activity.ChenpinChenlieActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.MustOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.StyleReviewActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.DapeiOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"  android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.OrderAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.ThemeOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.SummrizeAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.MyOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
-        <activity android:name=".activity.OrderSetttingActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"></activity>
+        <activity android:name=".activity.LoginActivity" android:theme="@style/MMTheme.Basic" android:screenOrientation="landscape" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.MainActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateHidden"  android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.OrderByStyleActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden|adjustResize" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ChenpinChenlieActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop" android:windowSoftInputMode="stateHidden"></activity>
+        <activity android:name=".activity.MustOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.StyleReviewActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.DapeiOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic"  android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.OrderAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ThemeOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.SummrizeAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.MyOrderActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.OrderSetttingActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
         <provider android:name="com.as.db.provider.AsProvider" android:authorities="com.as.order.provider"></provider>
-        <activity android:name=".activity.DapeiOrderDetailActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.DaLeiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.XiaoleiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.ZhutiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.BoduanZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.YanseZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.ChimaZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.JiagedaiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.ShangxiazuangZongheAnalysisAcitivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.ZhibiaoFenxiActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.WeidingkuanFenxiActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.PaimingFenxiAcitivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.DinghuoZongheFenxiActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.DaleiPipeChartActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name="org.achartengine.GraphicalActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.UnOrderedListActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.DaleiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.WdDetailActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.DapeiOrderDetailActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.DaLeiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.XiaoleiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ZhutiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.BoduanZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.YanseZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ChimaZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.JiagedaiZongheAnalysisActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ShangxiazuangZongheAnalysisAcitivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ZhibiaoFenxiActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.WeidingkuanFenxiActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.PaimingFenxiAcitivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.DinghuoZongheFenxiActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.DaleiPipeChartActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name="org.achartengine.GraphicalActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.UnOrderedListActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.DaleiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.WdDetailActivity" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
         <service android:name=".service.IndentSyncService">
             <intent-filter>
                 <action android:name="com.as.order.service.action.SAINDENT_SYNC"/>
                 <category android:name="com.as.order.service.category.SAINDENT_SYNC"/>
             </intent-filter>
         </service>
-        <activity android:name=".activity.XiaoleiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.BoduanWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.SxzWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.ZhutiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.XiaoleiWdFenxi" android:launchMode="singleTop" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.BoduanWdFenxi" android:screenOrientation="landscape" android:launchMode="singleTop" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.SxzWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+        <activity android:name=".activity.ZhutiWdFenxi" android:screenOrientation="landscape" android:theme="@style/MMTheme.Basic" android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
         <activity android:name=".preference.AsSettings" android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".preference.IndextSetting" android:screenOrientation="landscape"  android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".activity.PeimaSetting"  android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden" android:theme="@style/MMTheme.Basic"></activity>
+        <activity android:name=".preference.IndextSetting" android:screenOrientation="landscape"  android:windowSoftInputMode="stateAlwaysHidden" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.PeimaSetting"  android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.ThemeOrderDetail"   android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.MyOrderListActivity"  android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
+        <activity android:name=".activity.SameBoduanActivity"  android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden" android:theme="@style/MMTheme.Basic" android:launchMode="singleTop"></activity>
     </application>
 
 </manifest>

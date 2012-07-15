@@ -4,10 +4,21 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
      <LinearLayout style="@style/MMBody">
-        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" android:gravity="center_horizontal">
-	        <EditText android:id="@id/login_account" android:hint="@string/login_account_hint" style="@style/MMEditText" android:width="300.0dip" android:textSize="30.0dip"/>
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" android:gravity="center_horizontal|center_vertical">
+	        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center_horizontal" android:orientation="horizontal">
+			 	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="25.0dip" android:text="店铺名称:" android:textColor="@color/black"/>
+			 	<EditText android:id="@id/login_depart_name" android:hint="@string/login_account_hint" style="@style/MMEditText" android:gravity="center" android:width="300.0dip" android:textSize="30.0dip" android:imeOptions="flagNoExtractUi"/>	            
+	        </LinearLayout>
 	        <View style="@style/MMLabelSplit"/>
-	        <EditText android:id="@id/login_password" android:hint="@string/login_password_hint" style="@style/MMEditPass" android:width="300.0dip" android:textSize="30.0dip"/>            
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center_horizontal" android:orientation="horizontal">
+			 	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="25.0dip" android:text="用  户  名:" android:textColor="@color/black"/>
+			 	<EditText android:id="@id/login_account" android:hint="@string/login_account_hint" style="@style/MMEditText" android:gravity="center" android:width="300.0dip" android:textSize="30.0dip" android:imeOptions="flagNoExtractUi"/>	            
+	        </LinearLayout>
+	        <View style="@style/MMLabelSplit"/>
+	        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center_horizontal" android:orientation="horizontal">
+	            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="25.0dip" android:text="密        码:" android:textColor="@color/black"/>
+				<EditText android:id="@id/login_password" android:hint="@string/login_password_hint" style="@style/MMEditPass" android:width="300.0dip" android:gravity="center" android:textSize="30.0dip" android:imeOptions="flagNoExtractUi"/>	            
+	        </LinearLayout>
         </LinearLayout>
     </LinearLayout>   
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.as.order.activity;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.CommonQueryUtils;
 import com.as.ui.utils.DialogUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.UserUtils;
 
 public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 	private static final String TAG = "BoduanWdFenxi";
@@ -55,11 +57,15 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 	private boolean isDaleiListDialogShow = false;
 	private boolean isXiaoleiListDialogShow = false;
 	
+	private DecimalFormat formatter = new DecimalFormat("0.00");
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.dalei_wd_fenxi, null);
 		mRootView.addView(mLayout, FF);
+		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
@@ -71,7 +77,8 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 				"波段",
 				"未订款",
 				"已订款",
-				"总款数"
+				"总款数",
+				"未定占比"
 		}, BoduanWdFenxi.this));
 		
 		setTextForLeftTitleBtn("返回");
@@ -117,7 +124,8 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 						dao.getBoduan(),
 						dao.getWd()+"",
 						dao.getYd()+"",
-						dao.getTotal()+""
+						dao.getTotal()+"",
+						formatter.format(((double)dao.getWd()/dao.getTotal())*100)+"%"
 				}, BoduanWdFenxi.this);
 			}
 			
@@ -186,31 +194,51 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 			mDataSet = new ArrayList<BoduanWdDAO>();
 		}
 		mDataSet.clear();
-		String sql = " select "
-			+ "       sawarecode.state, "
-			+ "       (select rtrim(paraconnent) from sapara where rtrim(para) = rtrim(sawarecode.state) and rtrim(paratype) = 'PD') boduan, "
-			+ "       count(distinct b.warecode) ware_order,       "
-			+ "       count(distinct c.warecode) ware_unorder, "
-			+ "       count(distinct c.warecode) ware_all "
-			+ " from sawarecode "
-			+ " left join saindent b on sawarecode.[warecode] = b.warecode and b.warenum > 0 "
-			+ " left join saindent c on sawarecode.[warecode] = c.warecode and c.warenum = 0 "
-			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
-			+ " group by sawarecode.[state]";
+//		String sql = " select "
+//			+ "       sawarecode.state, "
+//			+ "       (select rtrim(paraconnent) from sapara where rtrim(para) = rtrim(sawarecode.state) and rtrim(paratype) = 'PD') boduan, "
+//			+ "       count(distinct b.warecode) ware_order,       "
+//			+ "       count(distinct c.warecode) ware_unorder, "
+//			+ "       count(distinct c.warecode) ware_all "
+//			+ " from sawarecode "
+//			+ " left join saindent b on sawarecode.[warecode] = b.warecode and b.warenum > 0 "
+//			+ " left join saindent c on sawarecode.[warecode] = c.warecode and c.warenum = 0 "
+//			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 and sanindent.departcode = '"+UserUtils.getUserAccount(BoduanWdFenxi.this)+"' " + where)
+//			+ " group by sawarecode.[state]";
 		
-		Log.e(TAG, "sql: " + sql);
+		String sql1 = " Select A.state, sapara.ParaConnent,sum(unorder) zongkuanshu,sum(orderware) yidingkuan,sum(unorder)-sum(orderware) weidingk "
+			+ " From(SELECT   sawarecode.state, "
+			+ "            count(distinct sawarecode.warecode) unorder, "
+			+ "            0 orderware "
+			+ "  FROM saindent,sawarecode "
+			+ " WHERE ( saindent.warecode = sawarecode.warecode and saindent.departcode = '"+UserUtils.getUserAccount(BoduanWdFenxi.this)+"' "+ (TextUtils.isEmpty(where) ? " " : where )+" ) "
+			+ " Group By sawarecode.state "
+			+ " Union All "
+			+ " SELECT  sawarecode.state, "
+			+ "            0, "
+			+ "            count(distinct sawarecode.warecode) "
+			+ "  FROM saindent,sawarecode "
+			+ " WHERE ( saindent.warecode = sawarecode.warecode ) "
+			+ " And    saindent.WARENUM > 0 "
+			+ " Group By sawarecode.state) A,sapara "
+			+ " where  A.state =sapara.para AND "
+			+ "        sapara.paratype = 'PD' "
+			+ " Group By sapara.ParaConnent ";
+		
+		Log.e(TAG, "sql: " + sql1);
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(BoduanWdFenxi.this);
-		Cursor cursor = db.rawQuery(sql, null);
+		Cursor cursor = db.rawQuery(sql1, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				Log.e(TAG, "== cursor count: " + cursor.getCount());
 				while(!cursor.isAfterLast()) {
 					BoduanWdDAO dao = new BoduanWdDAO();
 					dao.setSpecno(cursor.getString(0));
 					dao.setBoduan(cursor.getString(1));
-					dao.setYd(cursor.getInt(2));
-					dao.setWd(cursor.getInt(3));
-					dao.setTotal(cursor.getInt(4));
+					dao.setYd(cursor.getInt(3));
+					dao.setWd(cursor.getInt(4));
+					dao.setTotal(cursor.getInt(2));
 					mDataSet.add(dao);
 					cursor.moveToNext();
 				}
@@ -306,7 +334,7 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 					@Override
 					public void onClick(String text) {
 						xiaoleiEt.setText(text);
-						xiaoleiListDialog.show();
+						xiaoleiListDialog.dismiss();
 						isXiaoleiListDialogShow = false;
 					}});
 				xiaoleiListDialog.show();
@@ -353,19 +381,19 @@ public class BoduanWdFenxi extends AbstractActivity implements OnTouchListener{
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and sawarecode.style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {
-			where.append(" and state = '"+ CommonQueryUtils.getStateByName(BoduanWdFenxi.this, boduanStr)+"' ");
+			where.append(" and sawarecode.state = '"+ CommonQueryUtils.getStateByName(BoduanWdFenxi.this, boduanStr)+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(daleiStr) && !("=====全部=====".equals(daleiStr))) {
-			where.append(" and waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(BoduanWdFenxi.this, daleiStr)+"' ");
+			where.append(" and sawarecode.waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(BoduanWdFenxi.this, daleiStr)+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(xiaoleiStr) && !("=====全部=====".equals(xiaoleiStr))) {
-			where.append(" and id = '"+CommonQueryUtils.getIdByType1(BoduanWdFenxi.this, xiaoleiStr)+"' ");
+			where.append(" and sawarecode.id = '"+CommonQueryUtils.getIdByType1(BoduanWdFenxi.this, xiaoleiStr)+"' ");
 		}
 		
 		return where.toString();

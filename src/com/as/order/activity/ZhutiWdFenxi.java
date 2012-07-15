@@ -1,5 +1,6 @@
 package com.as.order.activity;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,11 +56,15 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 	private boolean isDaleiListDialogShow = false;
 	private boolean isXiaoleiListDialogShow = false;	
 	
+	private DecimalFormat formatter = new DecimalFormat("0.00");
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.dalei_wd_fenxi, null);
 		mRootView.addView(mLayout, FF);
+		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
@@ -71,7 +76,8 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 				"主题",
 				"未订款",
 				"已订款",
-				"总款数"
+				"总款数",
+				"未定占比"
 		}, ZhutiWdFenxi.this));
 		
 		setTextForLeftTitleBtn("返回");
@@ -117,7 +123,8 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 						dao.getZhuti(),
 						dao.getWd()+"",
 						dao.getYd()+"",
-						dao.getTotal()+""
+						dao.getTotal()+"",
+						formatter.format(((double)dao.getWd()/dao.getTotal())*100)+"%"
 				}, ZhutiWdFenxi.this);
 			}
 			
@@ -348,7 +355,7 @@ public class ZhutiWdFenxi extends AbstractActivity implements OnTouchListener{
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {

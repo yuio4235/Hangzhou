@@ -16,10 +16,13 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.http.client.UserTokenHandler;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 
 import com.as.db.provider.AsContent.SaIndent;
 import com.as.ui.utils.AlertUtils;
+import com.as.ui.utils.Constant;
 import com.as.ui.utils.UserUtils;
 
 public class FileUploader {
@@ -128,9 +131,13 @@ public class FileUploader {
 	public static boolean uploadSaIndent(Context context) {
 		FTPClient ftpClient = new FTPClient();
 		File indentFile = new File(context.getCacheDir() + "/updata/" + UserUtils.getUserAccount(context) + ".txt");
-		String REMOTE_HOST = "dlndl.vicp.cc";
-		String USER_NAME = "dln";
-		String PASSWORD = "dlnfeiyang";
+		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(context);
+//		String REMOTE_HOST = "dlndl.vicp.cc";
+//		String USER_NAME = "dln";
+//		String PASSWORD = "dlnfeiyang";
+		String REMOTE_HOST = spp.getString(Constant.SP_FTP_HOST, Constant.DEFAULT_SP_FTP_HOST);
+		String USER_NAME = spp.getString(Constant.SP_FTP_USERNAME, Constant.DEFAULT_FTP_USERNAME);
+		String PASSWORD = spp.getString(Constant.SP_FTP_PASSWORD, Constant.DEFAULT_FTP_PASSWORD);
 		FileInputStream fis = null;
 		if(!indentFile.exists()) {
 			return false;

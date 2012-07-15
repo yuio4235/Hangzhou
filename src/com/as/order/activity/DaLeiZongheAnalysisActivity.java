@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,17 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 	private int sumPrice = 0;
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
+	private View listFooter;
+	
+//	private int totalKuanshu;
+//	private double totalZongkuanzhanbi;
+//	private int totalDinghuokuan;
+//	private double totalDinghuokuanzhanbi;
+//	private double totalYidingzhanbi;
+//	private int totalDingliang;
+//	private double totalDingliangzhanbi;
+//	private int totalPrice;
+//	private double totalPriceZhanbi;
 	
 	public static final int INDEX_DALEI = 0;
 	public static final int INDEX_AMOUNT = 1;
@@ -80,6 +92,8 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		
 		mLayout = (LinearLayout) layoutInflater.inflate(R.layout.dalei_fenxi, null);
 		mRootView.addView(mLayout, FF);
+		
+		titleHomeBtn.setVisibility(Button.VISIBLE);
 		
 		prevBtn = (Button) findViewById(R.id.prev_page);
 		nextBtn = (Button) findViewById(R.id.next_page);
@@ -168,6 +182,16 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 			}
 		};
 		
+		if(listFooter != null) {
+			mList.removeFooterView(listFooter);
+		}
+		
+		listFooter = ListViewUtils.generateRow(new String[]{
+				"合计", sumWareAll+"", "100%", sumWareCnt+"", "100%", formatter.format((((double)sumWareCnt/sumWareAll)*100))+"%",  sumAmount+"", "100%", sumPrice+"", "100%"
+		}, DaLeiZongheAnalysisActivity.this);
+		
+		mList.addFooterView(listFooter);
+		
 		mList.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 	}
@@ -177,11 +201,17 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		super.onResume();
 		getDaleiFenxiData("");
 		initData();
+		Log.e(TAG, "mDataSet size: " + mDataSet.size());
 	}
 	
 	private void queryByCond(String where) {
 		getDaleiFenxiData(where);
-		mAdapter.notifyDataSetChanged();
+		initData();
+//		if(listFooter != null) {
+//			mList.removeFooterView(listFooter);
+//		}
+//		mList.addFooterView(listFooter);
+//		mAdapter.notifyDataSetChanged();
 	}
 	
 	@Override
@@ -257,13 +287,19 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 			+" where rtrim(saindent.[warecode]) = rtrim(sawarecode.[warecode]) "
 			+" and rtrim(saindent.[departcode]) = '"+UserUtils.getUserAccount(this)+"' "
 			+" and saindent.[warenum] > 0 "
-			+(TextUtils.isEmpty(where) ? "" : " and " + where)
+			+(TextUtils.isEmpty(where) ? "" : " " + where)
 			+" group by sawarecode.[waretypeid] ";
+		
+		Log.e(TAG, "sql: " + sql);
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(DaLeiZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
+				sumWareAll = 0;
+				sumWareCnt = 0;
+				sumAmount = 0;
+				sumPrice = 0;
 				if(cursor.getCount()%10 ==0) {
 					totalPage = cursor.getCount()/10;
 				} else {
@@ -420,7 +456,7 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 		String xiaoleiStr = xiaoleiEt.getText().toString().trim();
 		
 		if(!TextUtils.isEmpty(zhutiStr) && !("=====全部=====".equals(zhutiStr))) {
-			where.append(" and type = '"+zhutiStr+"' ");
+			where.append(" and style = '"+zhutiStr+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanStr) && !("=====全部=====".equals(boduanStr))) {

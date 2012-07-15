@@ -83,7 +83,11 @@ public class CommonDataUtils {
 		if(cursor != null && cursor.moveToFirst()) {
 			try {
 				while(!cursor.isAfterLast()) {
-					boduan.add(cursor.getString(SaPara.CONTENT_PARACONNENT_COLUMN));
+					String value = cursor.getString(SaPara.CONTENT_PARACONNENT_COLUMN);
+					if(boduan.indexOf(value)<0) {
+						boduan.add(value);
+					}
+//					boduan.add(cursor.getString(SaPara.CONTENT_PARACONNENT_COLUMN));
 					cursor.moveToNext();
 				}
 			} finally {
@@ -102,7 +106,11 @@ public class CommonDataUtils {
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				while(!cursor.isAfterLast()) {
-					waretypeids.add(cursor.getString(SaWareType.CONTENT_WARETYPENAME_COLUMN));
+					String value = cursor.getString(SaWareType.CONTENT_WARETYPENAME_COLUMN);
+					if(waretypeids.indexOf(value)<0) {
+						waretypeids.add(value);
+					}
+//					waretypeids.add(cursor.getString(SaWareType.CONTENT_WARETYPENAME_COLUMN));
 					cursor.moveToNext();
 				}
 			}
@@ -123,7 +131,11 @@ public class CommonDataUtils {
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				while(!cursor.isAfterLast()) {
-					type1s.add(cursor.getString(Type1.CONTENT_TYPE1_COLUMN));
+					String value = cursor.getString(Type1.CONTENT_TYPE1_COLUMN);
+					if(type1s.indexOf(value)<0) {
+						type1s.add(cursor.getString(Type1.CONTENT_TYPE1_COLUMN));
+					}
+//					type1s.add(cursor.getString(Type1.CONTENT_TYPE1_COLUMN));
 					cursor.moveToNext();
 				}
 			}
@@ -146,7 +158,9 @@ public class CommonDataUtils {
 				while(!cursor.isAfterLast()) {
 					String theme = cursor.getString(SaWareCode.CONTENT_STYLE_COLUMN);
 					if(!TextUtils.isEmpty(theme)) {
-						themes.add(theme);
+						if(themes.indexOf(theme)<0) {
+							themes.add(theme);
+						}
 					}
 					cursor.moveToNext();
 				}
@@ -171,7 +185,9 @@ public class CommonDataUtils {
 					while(!cursor.isAfterLast()) {
 						String xilie = cursor.getString(SaWareCode.CONTENT_SPECDEF_COLUMN);
 						if(!TextUtils.isEmpty(xilie)) {
-							xilies.add(xilie);
+							if(xilies.indexOf(xilie)<0) {
+								xilies.add(xilie);
+							}
 						}
 						cursor.moveToNext();
 					}

@@ -318,6 +318,8 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		setTextForLeftTitleBtn(this.getString(R.string.title_back));
 		setTextForTitleRightBtn("±£´æ¶©µ¥");
 		setTextForTitle(this.getString(R.string.main_order_by_style));
+
+		titleHomeBtn.setVisibility(Button.VISIBLE);
 		
 		peimaBtn = (Button) findViewById(R.id.peima);
 		peimaBtn.setOnClickListener(this);
@@ -385,7 +387,7 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			break;
 			
 		case R.id.order_by_style_next_img_btn:
-			if(displayImgs.length<=0) {
+			if(displayImgs == null || displayImgs.length<=0) {
 				return;
 			}
 			displayIv.setImageBitmap(displayImgs[(++imgIndex)%(displayImgs.length)]);
@@ -462,6 +464,21 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			break;
 			
 		case R.id.order_by_style_ratting:
+			break;
+			
+		case R.id.order_by_style_wave_dingliang:
+			Intent boduanIntent = new Intent(OrderByStyleActivity.this, SameBoduanActivity.class);
+			boduanIntent.putExtra("boduan", tv04.getText().toString().trim());
+			startActivity(boduanIntent);
+			break;
+			
+		case R.id.order_by_style_theme_dingliang:
+			if(TextUtils.isEmpty(searchEt.getText().toString().trim())) {
+				return;
+			}
+			Intent themeOrder = new Intent(OrderByStyleActivity.this, ThemeOrderActivity.class);
+			themeOrder.putExtra("style", tv07.getText().toString().trim());
+			startActivity(themeOrder);
 			break;
 			
 			default:
@@ -620,6 +637,9 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 	}
 	
 	private void saveOrder() {
+		if(allIndents==null) {
+			return;
+		}
 		for(int i=1; i<=allIndents.size(); i++) {
 			SaIndent mSaIndent = allIndents.get(i-1);
 			LinearLayout currentRow = (LinearLayout) orderByStyleList.getChildAt(i);
@@ -674,6 +694,9 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 	}
 	
 	private void peima() {
+		if(allIndents == null || allIndents.size() == 0) {
+			return;
+		}
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
 		String sql = " select flag from sawarecode where warecode = '"+swarecodeTv.getText().toString().trim()+"'";
 		Cursor cursor = db.rawQuery(sql, null);

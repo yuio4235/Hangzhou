@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@id/mm_root_view"
-    android:background="@drawable/nav_page_tile"
+    android:background="@drawable/windows_background"
     android:orientation="vertical"
     >
     

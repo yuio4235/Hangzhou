@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, IndexActivity!</string>
-    <string name="app_name">订货终端系统</string>
+    <string name="app_name">依友订货终端系统</string>
     <string name="login_account_hint">请输入用户名</string>
     <string name="login_password_hint">请输入密码</string>
     <string name="login">登录</string>

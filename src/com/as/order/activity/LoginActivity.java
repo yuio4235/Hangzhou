@@ -63,6 +63,7 @@ public class LoginActivity extends AbstractActivity {
 	private static final int ID_LOGIN_BTN = R.id.title_btn_right;
 	private static final int ID_TITLE_BACK = R.id.title_btn_left;
 	
+	private EditText departNamtEt;
 	private EditText accountEt;
 	private EditText passwdEt;
 	
@@ -72,8 +73,8 @@ public class LoginActivity extends AbstractActivity {
 	
 	//dlndl.vicp.cc
 	private  String REMOTE_HOST = "dlndl.vicp.cc";
-	private static final String USER_NAME = "dln";
-	private static final String PASSWORD = "dlnfeiyang";
+	private String USER_NAME = "dln";
+	private String PASSWORD = "dlnfeiyang";
 //	private static final String USER_NAME = "admin";
 //	private static final String PASSWORD = "admin";
 	
@@ -212,6 +213,9 @@ public class LoginActivity extends AbstractActivity {
 		login = (LinearLayout) layoutInflater.inflate(R.layout.login, null);
 		mRootView.addView(login, FF);
 		
+		mRootView.setBackgroundDrawable(getResources().getDrawable(R.drawable.index_tail));
+		
+		departNamtEt = (EditText) findViewById(R.id.login_depart_name);
 		accountEt = (EditText) findViewById(R.id.login_account);
 		passwdEt = (EditText) findViewById(R.id.login_password);
 		setTextForLeftTitleBtn(this.getString(R.string.title_back));
@@ -220,7 +224,12 @@ public class LoginActivity extends AbstractActivity {
 		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(this);
 		REMOTE_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
 		SERVER_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
+		USER_NAME = spp.getString("ftp_username", "dln");
+		PASSWORD = spp.getString("ftp_password", "dlnfeiyang");
 		Log.e("ftp_url", spp.getString("ftp_url", "dlndl.vicp.cc"));
+		
+		SharedPreferences accountSpp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+		departNamtEt.setText(accountSpp.getString("deptname", ""));
 	}
 	
 	@Override
@@ -250,7 +259,8 @@ public class LoginActivity extends AbstractActivity {
 			SharedPreferences wpp = PreferenceManager.getDefaultSharedPreferences(this);
 			boolean order_locked = wpp.getBoolean("order_locked", false);
 			boolean order_commit = wpp.getBoolean("order_commit", false);
-			if(order_commit && order_locked && !("dln".equals(accountEt.getText().toString().trim()))) {
+			Log.e(TAG, "order_locked: " + order_locked + ", order_commit: " + order_commit);
+			if(order_locked && !("dln".equals(accountEt.getText().toString().trim()))) {
 				boolean view_order = wpp.getBoolean("order_view", false);
 				Log.e(TAG, "========== view_order: " + view_order);
 				if(!view_order) {
@@ -272,9 +282,9 @@ public class LoginActivity extends AbstractActivity {
 			}
 			if("dln".equals(accountEt.getText().toString().trim())) {
 				if("dln87751870".equals(passwdEt.getText().toString().trim())) {
-					SharedPreferences spp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
-					Editor editor = spp.edit();
-					editor.putString("user_account", "dln");
+					SharedPreferences sppp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+					Editor editor = sppp.edit();
+					editor.putString("admin_user", "1001");
 					editor.commit();
 					Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
 					startActivity(mainActivityIntent);
@@ -298,9 +308,9 @@ public class LoginActivity extends AbstractActivity {
 				Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
 				startActivity(mainActivityIntent);
 			}
-			Intent startService = new Intent(LoginActivity.this, IndentSyncService.class);
-			stopService(startService);
-			startService(startService);
+//			Intent startService = new Intent(LoginActivity.this, IndentSyncService.class);
+//			stopService(startService);
+//			startService(startService);
 			break;
 			
 		case ID_TITLE_BACK:
@@ -441,7 +451,7 @@ public class LoginActivity extends AbstractActivity {
 				int len;
 				while((len = is.read(buff)) != -1) {
 					os.write(buff, 0, len);
-					currSize += len;
+//					currSize += len;
 					Message msg = mHandler.obtainMessage();
 					currSize += len;
 					DownloadFileInfo fileInfo = new DownloadFileInfo(pic.getName(), "", totalSize, currSize);
@@ -563,7 +573,7 @@ public class LoginActivity extends AbstractActivity {
 		}
 	}
 	
-	private static final class DialogMessage {
+	public static final class DialogMessage {
 		int value;
 		String text;
 		public DialogMessage(int value, String text) {
@@ -585,7 +595,7 @@ public class LoginActivity extends AbstractActivity {
 		}
 	}
 	
-	private class InsertData extends Thread {
+	public class InsertData extends Thread {
 		private DialogMessage dm;
 		private File localFile;
 		
@@ -1200,8 +1210,6 @@ public class LoginActivity extends AbstractActivity {
 				msg.what = MSG_INSERT_PROGRESS_DIALG;
 				msg.obj = dm;
 				msg.sendToTarget();	
-				
-				Thread.sleep(2000);
 			}
 		}
 		
