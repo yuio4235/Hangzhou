@@ -3,7 +3,7 @@
     <Preference android:title="订货资料初始化" android:key="init_sawarecode"/>
 </PreferenceCategory><PreferenceCategory android:key="server_setting" android:title="修改参数">
     </PreferenceCategory>
-    <EditTextPreference android:title="设置订货资料服务器" android:key="ftp_url" android:defaultValue="192.168.1.250" android:dialogIcon="@drawable/logo"/>
+    <EditTextPreference android:title="设置订货资料服务器" android:key="ftp_url" android:defaultValue="dlndl.vicp.cc" android:dialogIcon="@drawable/logo"/>
     
     
     <EditTextPreference android:dialogTitle="服务器用户名" android:negativeButtonText="取消" android:positiveButtonText="确定" android:dialogIcon="@drawable/logo" android:key="ftp_username" android:title="设置服务器用户名" android:defaultValue="dln"/><EditTextPreference android:dialogTitle="服务器密码" android:dialogIcon="@drawable/logo" android:key="ftp_password" android:title="设置服务器密码" android:defaultValue="dlnfeiyang"/><EditTextPreference android:title="设置动态报表服务器" android:key="report_url" android:dialogIcon="@drawable/logo" android:defaultValue="http://192.168.1.250:8090/main.aspx"/>
