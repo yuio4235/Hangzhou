@@ -53,7 +53,12 @@ public class MyOrderListActivity extends AbstractActivity implements OnTouchList
 	private List<OrderListDAO> mData = new ArrayList<OrderListDAO>() ;
 	private OrderListDAO[] mDataArr;
 	
-	private int pageSize = 15;
+	private View listFooter;
+	
+	private int sumWareNum = 0;
+	private int sumPrice = 0;
+	
+	private int pageSize = 10;
 	private int totalPage = 0;
 	private int pageNum = 0;
 	
@@ -133,6 +138,17 @@ public class MyOrderListActivity extends AbstractActivity implements OnTouchList
 				return pageSize;
 			}
 		};
+		
+		if(listFooter != null) {
+			mList.removeFooterView(listFooter);
+		}
+		
+		listFooter = ListViewUtils.generateRow(new String[]{
+				"ºÏ¼Æ", "", "", "", "", "", sumWareNum+"", sumPrice+""
+		}, MyOrderListActivity.this);
+		
+		mList.addFooterView(listFooter);
+		
 		
 		mList.setAdapter(mAdapter);
 		
@@ -274,6 +290,8 @@ public class MyOrderListActivity extends AbstractActivity implements OnTouchList
 
 	private void getData(String where) {
 		mData.clear();
+		sumWareNum = 0;
+		sumPrice = 0;
 		mDataArr = null;
 		String sql = " SELECT sawaretype.WareTypeName,type1.Type1,saPara.ParaConnent,pagenum,specification,retailprice,SUM(warenum),retailprice*SUM(warenum) "
 			+ " from   sawarecode,saindent,sawaretype,type1,saPara "
@@ -303,6 +321,8 @@ public class MyOrderListActivity extends AbstractActivity implements OnTouchList
 							dao.setPrice(cursor.getString(5));
 							dao.setDingliang(cursor.getString(6));
 							dao.setSumPrice(cursor.getString(7));
+							sumWareNum += cursor.getInt(6);
+							sumPrice += cursor.getInt(6)*cursor.getInt(5);
 							mData.add(dao);
 							cursor.moveToNext();							
 						}

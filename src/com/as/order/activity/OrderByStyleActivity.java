@@ -22,6 +22,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -69,6 +70,8 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 	private Button waveBtn;
 	private Button themeBtn;
 	private int imgIndex = 0;
+	
+	private InputMethodManager inputMan;
 	
 	private Bitmap[] displayImgs;
 	
@@ -315,6 +318,9 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		super.onCreate(savedInstanceState);
 		orderByStyle = (LinearLayout) layoutInflater.inflate(R.layout.order_by_style, null);
 		mRootView.addView(orderByStyle, FF);
+		
+		inputMan = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		
 		setTextForLeftTitleBtn(this.getString(R.string.title_back));
 		setTextForTitleRightBtn("±£´æ¶©µ¥");
 		setTextForTitle(this.getString(R.string.main_order_by_style));
@@ -381,6 +387,8 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			break;
 			
 		case R.id.order_by_style_search_btn:
+			inputMan.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+			searchEt.clearFocus();
 			Message msg = mHandler.obtainMessage();
 			msg.what = MSG_SEARCH_CODE;
 			msg.sendToTarget();

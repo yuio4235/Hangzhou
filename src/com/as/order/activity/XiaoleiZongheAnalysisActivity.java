@@ -275,11 +275,11 @@ public class XiaoleiZongheAnalysisActivity extends AbstractActivity implements O
 			+ " FROM  saindent,sawarecode "
 			+ " WHERE saindent.departcode = '"+UserUtils.getUserAccount(XiaoleiZongheAnalysisActivity.this)+"'                and "
 			+ "       saindent.[warenum]> 0                       and "
-			+ "       saindent.warecode =sawarecode.specification "
+			+ "       saindent.warecode =sawarecode.warecode "
 			+ (TextUtils.isEmpty(where) ? "" : where)
 			+ " GROUP BY sawarecode.id  ";
 		
-		Log.e(TAG, "sql: " + sql);
+		Log.e(TAG, "sql: " + sql1);
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(XiaoleiZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql1, null);

@@ -163,11 +163,11 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 		}
 		
 		listHeader = ListViewUtils.generateListViewHeader(new String[]{
-				"序号", "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "已订量"
+				 "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "已订量", "总金额"
 		}, MustOrderActivity.this);
 		
 		Log.e(TAG, "================= sumWareNum: " + sumWareNum + " :=======");
-		listFooter = ListViewUtils.generateSumRow(new String[]{"合计", "", "", "", "", "", "", "" + sumPrice, "" + sumWareNum}, MustOrderActivity.this);
+		listFooter = ListViewUtils.generateSumRow(new String[]{"合计", "", "", "", "", "", "", "" + sumWareNum, "" + sumPrice}, MustOrderActivity.this);
 		
 		
 		mustOrderList.addHeaderView(listHeader);
@@ -241,7 +241,7 @@ public class MustOrderActivity extends AbstractActivity implements OnTouchListen
 				int serial = 0;
 				while(!cursor.isAfterLast()) {
 					MustOrderDAO dao = new MustOrderDAO();
-					dao.setSerialNo(++serial);
+					dao.setSerialNo(cursor.getInt(8)*cursor.getInt(9));
 					if(serial <= 10) {
 						Log.e("", "========== spec no: " + cursor.getString(0));
 					}

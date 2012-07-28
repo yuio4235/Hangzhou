@@ -38,8 +38,10 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,6 +59,7 @@ import com.as.db.provider.AsContent.ShowSize;
 import com.as.order.R;
 import com.as.order.activity.LoginActivity.DialogMessage;
 import com.as.order.preference.AsSettings;
+import com.as.order.preference.IndextSetting;
 import com.as.order.service.IndentSyncService;
 import com.as.order.sync.FileUploader;
 import com.as.order.ui.AsProgressDialog;
@@ -324,7 +327,7 @@ public class MainActivity extends AbstractActivity {
 						for (String f : updateFiles) {
 							updateInfo(f, "/ORD/downinfo");
 						}
-						SaIndentUtils.checkSaIndents(MainActivity.this);
+//						SaIndentUtils.checkSaIndents(MainActivity.this);
 						dismissDialog(DIALOG_ID_DOWNLOADING);
 						Message mg = mHandler.obtainMessage();
 						mg.what = MSG_INSERT_DATA;
@@ -479,19 +482,50 @@ public class MainActivity extends AbstractActivity {
 			break;
 			
 		case ID_ORDER_SETTING:
-			SharedPreferences sp2 = getSharedPreferences("user_account", Context.MODE_PRIVATE);
-			String admin = sp2.getString("admin_user", "");
-			if(!"1001".equals(admin)) {
-				Message msg = mHandler.obtainMessage();
-				msg.what = MSG_ADMIN_LOGIN;
-				msg.sendToTarget();
-				return;	
-			}
+//			SharedPreferences sp2 = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+//			String admin = sp2.getString("admin_user", "");
+//			if(!"1001".equals(admin)) {
+//				Message msg = mHandler.obtainMessage();
+//				msg.what = MSG_ADMIN_LOGIN;
+//				msg.sendToTarget();
+//				return;	
+//			}
 //			if(!"dln".equals(UserUtils.getUserAccount(MainActivity.this))) {
 //
 //			}
-			Intent orderSetttingIntent = new Intent(MainActivity.this, AsSettings.class);
-			startActivity(orderSetttingIntent);
+			AlertDialog.Builder dlgBuiler = new AlertDialog.Builder(MainActivity.this);
+			dlgBuiler.setTitle("管理员验证");
+			dlgBuiler.setIcon(R.drawable.logo);
+			LayoutInflater mInflater = LayoutInflater.from(MainActivity.this);
+			final LinearLayout dlgLayout = (LinearLayout)mInflater.inflate(R.layout.dialog_layout, null);
+			dlgBuiler.setView(dlgLayout);
+			dlgBuiler.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					EditText adminUsername = (EditText) dlgLayout.findViewById(R.id.admin_username);
+					EditText adminPassword = (EditText) dlgLayout.findViewById(R.id.admin_password);
+					if(adminUsername.getText().toString().trim().equals("dln") && adminPassword.getText().toString().trim().equals("dln87751870")) {
+//						Log.e(TAG, "=======                 admin login                  ===================");
+//						dialog.dismiss();
+//						Intent settingIntent = new Intent(MainActivity.this, IndextSetting.class);
+//						startActivity(settingIntent);
+						Intent orderSetttingIntent = new Intent(MainActivity.this, AsSettings.class);
+						startActivity(orderSetttingIntent);
+					} else {
+						dialog.dismiss();
+					}
+				}
+			});
+			dlgBuiler.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			AlertDialog dlg = dlgBuiler.create();
+			dlg.show();
 			break;
 			
 		case R.id.order_commit:
@@ -708,11 +742,11 @@ public class MainActivity extends AbstractActivity {
 					if(is!=null) {
 						int currSize = 0;
 						mUpdatingDialog.setMax(is.available());
-						File infoDir = new File(getCacheDir() + "/info");
+						File infoDir = new File(getCacheDir() + "/downinfo");
 						if(!infoDir.exists()) {
 							infoDir.mkdirs();
 						}
-						File localFile = new File(getCacheDir() + "/info/" + fileName);
+						File localFile = new File(getCacheDir() + "/downinfo/" + fileName);
 						if(!localFile.exists()) {
 							localFile.createNewFile();
 						}
@@ -759,7 +793,7 @@ public class MainActivity extends AbstractActivity {
 		int currLine = 0;
 		
 		private void addSaWareCode() throws Exception{
-			localFile = new File(getCacheDir() + "/info/sawarecode.txt");
+			localFile = new File(getCacheDir() + "/downinfo/sawarecode.txt");
 			totalLines = getLinesForFile(localFile);
 			currLine = 0;
 			mUpdatingDataDialog.setMax(totalLines);
@@ -826,7 +860,7 @@ public class MainActivity extends AbstractActivity {
 		}
 		
 		private void addStPara() throws Exception{
-			localFile = new File(getCacheDir() + "/info/stpara.txt");
+			localFile = new File(getCacheDir() + "/downinfo/stpara.txt");
 			totalLines = getLinesForFile(localFile);
 			currLine = 0;
 			mUpdatingDataDialog.setMax(totalLines);
@@ -878,7 +912,7 @@ public class MainActivity extends AbstractActivity {
 		}
 		
 		private void addSaColorCode() throws Exception{
-			localFile = new File(getCacheDir() + "/info/sacolorcode.txt");
+			localFile = new File(getCacheDir() + "/downinfo/sacolorcode.txt");
 			totalLines = getLinesForFile(localFile);
 			currLine = 0;
 			mUpdatingDataDialog.setMax(totalLines);
@@ -1052,7 +1086,7 @@ public class MainActivity extends AbstractActivity {
 		}
 		
 		private void addSawareColor() throws Exception{
-			localFile = new File(getCacheDir() + "/info/saware_color.txt");
+			localFile = new File(getCacheDir() + "/downinfo/saware_color.txt");
 			totalLines = getLinesForFile(localFile);
 			currLine = 0;
 			mUpdatingDataDialog.setMax(totalLines);
@@ -1095,7 +1129,7 @@ public class MainActivity extends AbstractActivity {
 		}
 		
 		private void addSaWareSize() throws Exception{
-			localFile = new File(getCacheDir() + "/info/saware_size.txt");
+			localFile = new File(getCacheDir() + "/downinfo/saware_size.txt");
 			totalLines = getLinesForFile(localFile);
 			currLine = 0;
 			mUpdatingDataDialog.setMax(totalLines);
@@ -1385,8 +1419,9 @@ public class MainActivity extends AbstractActivity {
 //				addSaWareType();
 //				addSaWareGroup();
 //				addSaSizeSet();
-				ImageSyncUtils.checkWareCodeInSaIndent(MainActivity.this);
-				ImageSyncUtils.checkSaOrderScore(MainActivity.this);
+//				ImageSyncUtils.checkWareCodeInSaIndent(MainActivity.this);
+//				ImageSyncUtils.checkSaOrderScore(MainActivity.this);
+				SaIndentUtils.checkSaIndents(MainActivity.this);
 				dismissDialog(DIALOG_ID_UPDATING_DATA);
 				AlertUtils.toastMsg(MainActivity.this, "资料已经更新");
 			} catch (Exception e) {

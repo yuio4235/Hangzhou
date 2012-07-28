@@ -226,8 +226,7 @@ public class LoginActivity extends AbstractActivity {
 		SERVER_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
 		USER_NAME = spp.getString("ftp_username", "dln");
 		PASSWORD = spp.getString("ftp_password", "dlnfeiyang");
-		Log.e("ftp_url", spp.getString("ftp_url", "dlndl.vicp.cc"));
-		
+		Log.e("ftp_url", REMOTE_HOST);
 		SharedPreferences accountSpp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
 		departNamtEt.setText(accountSpp.getString("deptname", ""));
 	}
@@ -282,10 +281,10 @@ public class LoginActivity extends AbstractActivity {
 			}
 			if("dln".equals(accountEt.getText().toString().trim())) {
 				if("dln87751870".equals(passwdEt.getText().toString().trim())) {
-					SharedPreferences sppp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
-					Editor editor = sppp.edit();
-					editor.putString("admin_user", "1001");
-					editor.commit();
+//					SharedPreferences sppp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
+//					Editor editor = sppp.edit();
+//					editor.putString("admin_user", "1001");
+//					editor.commit();
 					Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
 					startActivity(mainActivityIntent);
 					return;
@@ -362,12 +361,23 @@ public class LoginActivity extends AbstractActivity {
 		FTPClient ftp = null;
 		try {
 			ftp = new FTPClient();
+			Log.e(TAG, "server_host: " + SERVER_HOST + " username: " + USER_NAME + " passowrd: " + PASSWORD);
 			ftp.connect(SERVER_HOST);
 			boolean isLogined = ftp.login(USER_NAME, PASSWORD);
 			if(isLogined) {
+				Log.e(TAG, " ======== is logined ===========");
+			} else {
+				Log.e(TAG, " ======== not logined ==========");
+			}
+			if(isLogined) {
 				ftp.setControlEncoding("UTF-16LE");
-				ftp.changeWorkingDirectory(path);
-				FTPFile[] ftpFiles = ftp.listFiles();
+				if(ftp.changeWorkingDirectory(path)) {
+					Log.e(TAG, "==== working dir changed ====");
+				} else {
+					Log.e(TAG, "==== working dir  not changed ====");
+				}
+				
+//				FTPFile[] ftpFiles = ftp.listFiles();
 				InputStream is = ftp.retrieveFileStream(fileName);
 				if(is!=null) {
 					Log.e("===", "total file size: " + is.available());
@@ -403,9 +413,11 @@ public class LoginActivity extends AbstractActivity {
 			}
 		} catch (SocketException e) {
 			e.printStackTrace();
+			AlertUtils.toastMsg(LoginActivity.this, "下载文件， FTP服务器出现问题");
 			throw new Exception("SocketException");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			AlertUtils.toastMsg(LoginActivity.this, "当前下载的文件为： " + fileName + ", 文件没有找到");
 			throw new Exception("FileNotFoundException");
 		} catch (IOException e) {
 			e.printStackTrace();

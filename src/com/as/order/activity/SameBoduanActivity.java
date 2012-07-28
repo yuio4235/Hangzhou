@@ -60,7 +60,7 @@ public class SameBoduanActivity extends AbstractActivity {
 		mList = (ListView) findViewById(R.id.as_list);
 		
 		mList.addHeaderView(ListViewUtils.generateListViewHeader(new String[]{
-				"序号", "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "已订量"
+				"编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "已订量", "总金额"
 		}, SameBoduanActivity.this));
 		
 		setTextForTitle("同波段明细");
@@ -101,8 +101,10 @@ public class SameBoduanActivity extends AbstractActivity {
 		}
 		
 		listFooter = ListViewUtils.generateRow(new String[]{
-				"合计", "", "", "", "", "", "", "" + sumPrice, "" + sumWareNum
+				"合计", "", "", "", "", "", "",  "" + sumWareNum ,"" + sumPrice
 		}, SameBoduanActivity.this);
+		
+		mList.addFooterView(listFooter);
 		
 		mList.setAdapter(mAdapter);
 		
@@ -185,7 +187,7 @@ public class SameBoduanActivity extends AbstractActivity {
 						int serial = 0;
 						while(!cursor.isAfterLast()) {
 							MustOrderDAO dao = new MustOrderDAO();
-							dao.setSerialNo(++serial);
+							dao.setSerialNo(cursor.getInt(8)*cursor.getInt(9));
 							dao.setSpecNo(TextUtils.isEmpty(cursor.getString(0)) ? "" : cursor.getString(0));
 							dao.setDate3(TextUtils.isEmpty(cursor.getString(1)) ? "" : cursor.getString(1));
 							dao.setWave(TextUtils.isEmpty(cursor.getString(3)) ? "" : cursor.getString(3));

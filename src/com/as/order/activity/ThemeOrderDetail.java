@@ -41,6 +41,9 @@ public class ThemeOrderDetail extends AbstractActivity {
 	private View listHeader;
 	private View listFooter;
 	
+	private int sumPrice = 0;
+	private int sumWareNum = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,7 +62,6 @@ public class ThemeOrderDetail extends AbstractActivity {
 		setTextForLeftTitleBtn("返回");
 		setTextForTitle("主题明细");
 		
-		initData();
 	}
 	
 	private void initData() {
@@ -100,10 +102,15 @@ public class ThemeOrderDetail extends AbstractActivity {
 		}
 		
 		listHeader = ListViewUtils.generateListViewHeader(new String[]{
-				"序号", "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "订量"
+				 "编号", "上柜日期", "波段", "品类", "主题", "货号", "价格", "订量", "总金额"
+		}, ThemeOrderDetail.this);
+		
+		listFooter = ListViewUtils.generateRow(new String[]{
+				"合计", "", "", "", "", "", "",  "" + sumWareNum ,"" + sumPrice
 		}, ThemeOrderDetail.this);
 		
 		mList.addHeaderView(listHeader);
+		mList.addFooterView(listFooter);
 		mList.setAdapter(mAdapter);
 		
 		mList.setOnItemClickListener(new OnItemClickListener() {
@@ -129,6 +136,7 @@ public class ThemeOrderDetail extends AbstractActivity {
 		Intent intent = getIntent();
 		String style = intent.getStringExtra("style");
 		getData(style);
+		initData();
 		mAdapter.notifyDataSetChanged();
 	}
 	
@@ -182,7 +190,7 @@ public class ThemeOrderDetail extends AbstractActivity {
 						int serial = 0;
 						while(!cursor.isAfterLast()) {
 							MustOrderDAO dao = new MustOrderDAO();
-							dao.setSerialNo(++serial);
+							dao.setSerialNo(cursor.getInt(8)*cursor.getInt(9));
 							dao.setSpecNo(cursor.getString(0));
 							dao.setDate3(cursor.getString(1));
 							dao.setWave(cursor.getString(3));
@@ -192,6 +200,8 @@ public class ThemeOrderDetail extends AbstractActivity {
 							dao.setRetailPrice(cursor.getString(8));
 							dao.setWareNum(cursor.getInt(9));
 							mData.add(dao);
+							sumWareNum += dao.getWareNum();
+							sumPrice += cursor.getInt(9)*cursor.getInt(8);
 							cursor.moveToNext();
 						}
 					}
