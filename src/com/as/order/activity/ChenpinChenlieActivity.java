@@ -1,5 +1,6 @@
 package com.as.order.activity;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 
@@ -27,6 +28,7 @@ public class ChenpinChenlieActivity extends AbstractActivity {
 	private Button goPage;
 	
 	private Bitmap[] imgs;
+	private String[] imgNames;
 	private ImageView contentImgView;
 	
 	private int currIndex = 1;
@@ -64,7 +66,12 @@ public class ChenpinChenlieActivity extends AbstractActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		imgs = FileUtils.getBitmapsFileCode(ChenpinChenlieActivity.this, "CPCL");
+		imgNames = FileUtils.getBitmapFileNames(ChenpinChenlieActivity.this, "CPCL");
+		if(imgNames != null && imgNames.length > 0) {
+			Arrays.sort(imgNames);
+			
+			imgs = FileUtils.getBitmapsByNames(ChenpinChenlieActivity.this, imgNames);
+		}
 		
 		if(imgs != null && imgs.length > 0) {
 			pageInd.setText(1+"/"+imgs.length);
