@@ -234,11 +234,6 @@ public class ListViewUtils {
 		View fv = layoutInflater.inflate(R.layout.table_item_divider, null);
 		mLayout.addView(fv, dLp);
 		
-		TextView serialNoTv = makeTextView(dao.getSerialNo()+"", context);
-		mLayout.addView(serialNoTv, cellLp);
-		View v1 = makeDivideView(context);
-		mLayout.addView(v1, dLp);
-		
 		//±àºÅ¸ÄÎªpagenum
 		TextView specNoTv = makeTextView(dao.getHuohao(), context);
 		mLayout.addView(specNoTv, cellLp);
@@ -280,6 +275,11 @@ public class ListViewUtils {
 		mLayout.addView(wareNumTv, cellLp);
 		View v9 = makeDivideView(context);
 		mLayout.addView(v9, dLp);
+		
+		TextView serialNoTv = makeTextView(dao.getSerialNo()+"", context);
+		mLayout.addView(serialNoTv, cellLp);
+		View v1 = makeDivideView(context);
+		mLayout.addView(v1, dLp);
 		return mLayout;
 	}
 	
