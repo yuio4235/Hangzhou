@@ -16,6 +16,7 @@ import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -54,6 +55,7 @@ import com.as.order.service.IndentSyncService;
 import com.as.order.ui.AsProgressDialog;
 import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.DataInitialUtils;
+import com.as.ui.utils.FTPFileDonwloader;
 
 public class LoginActivity extends AbstractActivity {
 	
@@ -122,15 +124,10 @@ public class LoginActivity extends AbstractActivity {
 				Thread t = new Thread(){
 					public void run() {
 						Looper.prepare();
-						try {
-							for(String f : files) {
-								down_file(f, "/ORD/info");
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (Exception e) {
-							e.printStackTrace();
+						for(String f : files) {
+							down_file(f, "/ORD/info");
 						}
+//						FTPFileDonwloader.downloadFile(LoginActivity.this, "/ORD/info", "/info");
 						dismissDialog(ID_DOWNLOADING_DIALOG);
 						Message msg = mHandler.obtainMessage();
 						msg.what = MSG_DOWNLOAD_PIC;
@@ -145,11 +142,7 @@ public class LoginActivity extends AbstractActivity {
 				Thread tt = new Thread(){
 					public void run() {
 						Looper.prepare();
-						try {
-							down_pic();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						down_pic();
 						dismissDialog(ID_DOWNLOADING_DIALOG);
 						Message msg = mHandler.obtainMessage();
 						msg.what = MSG_INSERT_DATA;
@@ -357,33 +350,28 @@ public class LoginActivity extends AbstractActivity {
 		return null;
 	}
 	
-	public void down_file(String fileName, String path) throws Exception{
+	public void down_file(String fileName, String path){
 		FTPClient ftp = null;
 		try {
 			ftp = new FTPClient();
-			Log.e(TAG, "server_host: " + SERVER_HOST + " username: " + USER_NAME + " passowrd: " + PASSWORD);
 			ftp.connect(SERVER_HOST);
 			boolean isLogined = ftp.login(USER_NAME, PASSWORD);
 			if(isLogined) {
-				Log.e(TAG, " ======== is logined ===========");
-			} else {
-				Log.e(TAG, " ======== not logined ==========");
-			}
-			if(isLogined) {
-				ftp.setControlEncoding("UTF-16LE");
-				if(ftp.changeWorkingDirectory(path)) {
-					Log.e(TAG, "==== working dir changed ====");
-				} else {
-					Log.e(TAG, "==== working dir  not changed ====");
-				}
+//				ftp.setControlEncoding("UTF-16LE");
+				ftp.setControlEncoding("GB2312");
+				ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+				ftp.enterLocalPassiveMode();
+				ftp.changeWorkingDirectory(path);
 				
-//				FTPFile[] ftpFiles = ftp.listFiles();
+				FTPFile ftpFile = new FTPFile();
+				ftpFile.setName(fileName);
+				
 				InputStream is = ftp.retrieveFileStream(fileName);
 				if(is!=null) {
-					Log.e("===", "total file size: " + is.available());
+					Log.e("===", "file name: "+fileName+", size: " + ftpFile.getSize());
 //				int totalSize = is.available();
 					int currSize = 0;
-					mUpdatingDialog.setMax(is.available());
+					mUpdatingDialog.setMax(Integer.valueOf(ftpFile.getSize()+""));
 					File infoDir = new File(getCacheDir() + "/info");
 					if(!infoDir.exists()) {
 						infoDir.mkdirs();
@@ -414,14 +402,18 @@ public class LoginActivity extends AbstractActivity {
 		} catch (SocketException e) {
 			e.printStackTrace();
 			AlertUtils.toastMsg(LoginActivity.this, "下载文件， FTP服务器出现问题");
-			throw new Exception("SocketException");
+			showDialog(ID_DOWNLOADING_DIALOG);
+			Message msg = mHandler.obtainMessage();
+			msg.what = MSG_DOWNLOADING_FILE;
+			msg.sendToTarget();		
+//			throw new Exception("SocketException");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			AlertUtils.toastMsg(LoginActivity.this, "当前下载的文件为： " + fileName + ", 文件没有找到");
-			throw new Exception("FileNotFoundException");
+//			throw new Exception("FileNotFoundException");
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new Exception("IOException");
+//			throw new Exception("IOException");
 		} finally {
 			try {
 				if(ftp != null) {
@@ -433,48 +425,62 @@ public class LoginActivity extends AbstractActivity {
 		}
 	}
 	
-	public void down_pic() throws IOException{
+	public void down_pic(){
 		FTPClient ftp = new FTPClient();
-		ftp.connect(SERVER_HOST);
-		boolean isLogined = ftp.login(USER_NAME, PASSWORD);
-		if(isLogined) {
-			//downpic=>pic
-			//downpic新增
-			ftp.changeWorkingDirectory("/ORD/pic");
-			FTPFile[] files = ftp.listFiles();
-			File picDir = new File(getCacheDir() + "/pic");
-			if(!picDir.exists()) {
-				picDir.mkdirs();
-			}
-			for(FTPFile file : files) {
-				File pic = new File(picDir + "/" + file.getName());
-				Log.e("====", " file name: " + file.getName());
-				InputStream is = ftp.retrieveFileStream(file.getName());
-				OutputStream os = new FileOutputStream(pic);
-				
-				if(is == null) {
-					Log.e("===", "========= is null ==========");
+		try {
+			ftp.connect(SERVER_HOST);
+			boolean isLogined = ftp.login(USER_NAME, PASSWORD);
+			if(isLogined) {
+				//downpic=>pic
+				//downpic新增
+				ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+				ftp.enterLocalPassiveMode();
+				ftp.changeWorkingDirectory("/ORD/pic");
+				FTPFile[] files = ftp.listFiles();
+				File picDir = new File(getCacheDir() + "/pic");
+				if(!picDir.exists()) {
+					picDir.mkdirs();
 				}
-				int currSize = 0;
-				int totalSize = is.available();
-				mUpdatingDialog.setMax(totalSize);
-				
-				byte[] buff = new byte[1024];
-				int len;
-				while((len = is.read(buff)) != -1) {
-					os.write(buff, 0, len);
+				for(FTPFile file : files) {
+					File pic = new File(picDir + "/" + file.getName());
+					Log.e("====", " file name: " + file.getName());
+					InputStream is = ftp.retrieveFileStream(file.getName());
+					OutputStream os = new FileOutputStream(pic);
+					
+					if(is == null) {
+						Log.e("===", "========= is null ==========");
+					}
+					int currSize = 0;
+					int totalSize = is.available();
+					mUpdatingDialog.setMax(totalSize);
+					
+					byte[] buff = new byte[1024];
+					int len;
+					while((len = is.read(buff)) != -1) {
+						os.write(buff, 0, len);
 //					currSize += len;
-					Message msg = mHandler.obtainMessage();
-					currSize += len;
-					DownloadFileInfo fileInfo = new DownloadFileInfo(pic.getName(), "", totalSize, currSize);
-					msg.obj = fileInfo;
-					msg.what = MSG_UPDATE_DOWNLOAD_FILE_PROGRESS;
-					msg.sendToTarget();
+						Message msg = mHandler.obtainMessage();
+						currSize += len;
+						DownloadFileInfo fileInfo = new DownloadFileInfo(pic.getName(), "", totalSize, currSize);
+						msg.obj = fileInfo;
+						msg.what = MSG_UPDATE_DOWNLOAD_FILE_PROGRESS;
+						msg.sendToTarget();
+					}
+					os.close();
+					is.close();
+					ftp.completePendingCommand();
 				}
-				os.close();
-				is.close();
-				ftp.completePendingCommand();
 			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+//			dismissDialog(ID_DOWNLOADING_DIALOG);
+//			Message msg = mHandler.obtainMessage();
+//			msg.what = MSG_DOWNLOAD_PIC;
+//			msg.sendToTarget();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

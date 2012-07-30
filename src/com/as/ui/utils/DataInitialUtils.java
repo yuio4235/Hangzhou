@@ -8,8 +8,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class DataInitialUtils {
+	
+	private static final String TAG = "DataInitialUtils";
 
 	public static void initSaIndent(Context context, String user) {
 		resetSeqForSaIndent(context);
@@ -29,6 +32,7 @@ public class DataInitialUtils {
 				+" 	AND rtrim(saindent.colorcode) = rTrim(saWare_color.colorcode) "
 				+" 	AND rTrim(saIndent.DepartCode) = '"+user+"')"
 				+"	ORDER BY saWareCode.warecode,colorcode ";
+			Log.e(TAG, "sql: " + sql);
 			try {
 				db.execSQL(sql);
 				Editor ed = sp.edit();
