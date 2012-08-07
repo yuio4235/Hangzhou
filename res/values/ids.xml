@@ -128,4 +128,5 @@
     <item name="my_order_order_query" type="id">false</item>
     <item name="page_indicator" type="id">false</item>
     <item name="title_btn_home" type="id">false</item>
+    <item name="order_by_style_clear_btn" type="id">false</item>
 </resources>
