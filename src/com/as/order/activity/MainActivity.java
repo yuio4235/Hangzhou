@@ -66,6 +66,7 @@ import com.as.order.ui.AsProgressDialog;
 import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.Constant;
 import com.as.ui.utils.ImageSyncUtils;
+import com.as.ui.utils.NetWorkUtils;
 import com.as.ui.utils.SaIndentUtils;
 import com.as.ui.utils.UserUtils;
 
@@ -1518,6 +1519,11 @@ public class MainActivity extends AbstractActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if(NetWorkUtils.isNetAvailable(MainActivity.this)) {
+			NetWorkUtils.netWorkStatus = true;
+		} else {
+			NetWorkUtils.netWorkStatus = false;
+		}
 	}
 	
 	@Override

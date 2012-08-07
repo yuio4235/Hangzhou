@@ -50,6 +50,7 @@ import com.as.order.ui.OrderByStyleFooter;
 import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.FileUtils;
 import com.as.ui.utils.ListViewUtils;
+import com.as.ui.utils.NetWorkUtils;
 import com.as.ui.utils.UserUtils;
 
 public class OrderByStyleActivity extends AbstractActivity implements OnRatingBarChangeListener{
@@ -69,6 +70,7 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 	private Button dapeiBtn;
 	private Button waveBtn;
 	private Button themeBtn;
+	private Button clearBtn;
 	private int imgIndex = 0;
 	
 	private InputMethodManager inputMan;
@@ -129,9 +131,15 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 							rb.setRating(getScoreByWareCode());
 							displayImgs = FileUtils.getBitmapsFileCode(OrderByStyleActivity.this, /*swarecodeTv.getText().toString()*/c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
 							Log.e(TAG, "imgs count: " + displayImgs.length + " SPECNO: " + c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
-							if(displayImgs != null && displayImgs.length>0) {
-								displayIv.setImageBitmap(displayImgs[0]);
+							//-------------------------- start change for network status for image -------------------------------------
+							if(NetWorkUtils.netWorkStatus) {
+								if(displayImgs != null && displayImgs.length>0) {
+									displayIv.setImageBitmap(displayImgs[0]);
+								}
+							} else {
+								displayIv.setImageDrawable(getResources().getDrawable(R.drawable.test01));
 							}
+							//-------------------------- end change for network status for image -------------------------------------
 							showOperations();
 							header = getHeader();
 							initInfo();
@@ -326,6 +334,8 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		setTextForTitle(this.getString(R.string.main_order_by_style));
 
 		titleHomeBtn.setVisibility(Button.VISIBLE);
+		clearBtn = (Button) findViewById(R.id.order_by_style_clear_btn);
+		clearBtn.setOnClickListener(this);
 		
 		peimaBtn = (Button) findViewById(R.id.peima);
 		peimaBtn.setOnClickListener(this);
@@ -395,10 +405,15 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			break;
 			
 		case R.id.order_by_style_next_img_btn:
+			//-------------------------- start change for networks images -------------------------------
+			if(!NetWorkUtils.netWorkStatus) {
+				return;
+			}
 			if(displayImgs == null || displayImgs.length<=0) {
 				return;
 			}
 			displayIv.setImageBitmap(displayImgs[(++imgIndex)%(displayImgs.length)]);
+			//-------------------------- end change for networks images -------------------------------
 			break;
 			
 		case R.id.title_btn_right:
@@ -487,6 +502,9 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			Intent themeOrder = new Intent(OrderByStyleActivity.this, ThemeOrderActivity.class);
 			themeOrder.putExtra("style", tv07.getText().toString().trim());
 			startActivity(themeOrder);
+			break;
+			
+		case R.id.order_by_style_clear_btn:
 			break;
 			
 			default:
@@ -701,6 +719,17 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		}
 	}
 	
+	private void clear() {
+		if(allIndents == null || allIndents.size() == 0) {
+			return;
+		}
+		for(int i=1; i<=allIndents.size(); i++) {
+			LinearLayout currRow = (LinearLayout) orderByStyleList.getChildAt(i);
+			int columnIndex = 1;
+			int columnCount = currRow.getChildCount();
+		}
+	}
+	
 	private void peima() {
 		if(allIndents == null || allIndents.size() == 0) {
 			return;
@@ -733,6 +762,8 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		int currRowTotal = 0;
 		for(i=1; i<=allIndents.size(); i++) {
 			LinearLayout currRow = (LinearLayout) orderByStyleList.getChildAt(i);
+			//--- why here column index is 1 not 0?
+			//int the saindent table, size is started with s01
 			int columnIndex = 1;
 			int childCount = currRow.getChildCount();
 			currRowTotal = 0;
@@ -740,6 +771,7 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 				if(currRow.getChildAt(m) instanceof EditText) {
 					EditText et = (EditText)currRow.getChildAt(m);
 					try {
+						Log.e(TAG, "curr col index: " + columnIndex);
 						Field field = sasizeset.getClass().getDeclaredField("s" + (columnIndex < 10 ? "0" + columnIndex : columnIndex));
 						et.setText(field.getInt(sasizeset) + "");
 						currRowTotal += field.getInt(sasizeset);

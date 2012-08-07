@@ -13,10 +13,12 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.SocketException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPReply;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -55,7 +57,6 @@ import com.as.order.service.IndentSyncService;
 import com.as.order.ui.AsProgressDialog;
 import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.DataInitialUtils;
-import com.as.ui.utils.FTPFileDonwloader;
 
 public class LoginActivity extends AbstractActivity {
 	
@@ -112,6 +113,7 @@ public class LoginActivity extends AbstractActivity {
 	private static final int MSG_INSERT_PROGRESS_DIALG = 2005;
 	private static final int MSG_INSERT_DATA = 2006;
 	private static final int MSG_DOWNLOAD_PIC = 2007;
+	private static final int MSG_EXTRACT_PIC = 2008;
 	
 	private static final int MSG_INSERT_SAWARECODE = 3001;
 	private static final int MSG_INSERT_STPARA = 3002;
@@ -142,14 +144,32 @@ public class LoginActivity extends AbstractActivity {
 				Thread tt = new Thread(){
 					public void run() {
 						Looper.prepare();
-						down_pic();
+						//----- start change for zip file
+//						down_pic();
+						donw_zipPic();
+						//----- end change for zip file
 						dismissDialog(ID_DOWNLOADING_DIALOG);
+						Message msg = mHandler.obtainMessage();
+						msg.what = MSG_EXTRACT_PIC;
+						msg.sendToTarget();
+					};
+				};
+				tt.start();
+				break;
+				
+			case MSG_EXTRACT_PIC:
+				showDialog(ID_UPDATING_DATA_DIALOG);
+				Thread extractThread = new Thread(){
+					public void run() {
+						Looper.prepare();
+						extracFile();
+						dismissDialog(ID_UPDATING_DATA_DIALOG);
 						Message msg = mHandler.obtainMessage();
 						msg.what = MSG_INSERT_DATA;
 						msg.sendToTarget();
 					};
 				};
-				tt.start();
+				extractThread.start();
 				break;
 				
 			case MSG_SHOW_PROGRESS_DIALOG:
@@ -402,10 +422,10 @@ public class LoginActivity extends AbstractActivity {
 		} catch (SocketException e) {
 			e.printStackTrace();
 			AlertUtils.toastMsg(LoginActivity.this, "下载文件， FTP服务器出现问题");
-			showDialog(ID_DOWNLOADING_DIALOG);
-			Message msg = mHandler.obtainMessage();
-			msg.what = MSG_DOWNLOADING_FILE;
-			msg.sendToTarget();		
+//			showDialog(ID_DOWNLOADING_DIALOG);
+//			Message msg = mHandler.obtainMessage();
+//			msg.what = MSG_DOWNLOADING_FILE;
+//			msg.sendToTarget();		
 //			throw new Exception("SocketException");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -425,6 +445,48 @@ public class LoginActivity extends AbstractActivity {
 		}
 	}
 	
+	public void donw_zipPic() {
+		FTPClient ftp = new FTPClient();
+		try {
+			ftp.connect(SERVER_HOST);
+			boolean isLogined = ftp.login(USER_NAME, PASSWORD);
+			if(isLogined) {
+				ftp.setFileType(FTPClient.BINARY_FILE_TYPE);
+				ftp.enterLocalPassiveMode();
+				ftp.changeWorkingDirectory("/ORD/pic");
+				File picDir = new File(getCacheDir()+"/pic/");
+				if(!picDir.exists()) {
+					picDir.mkdirs();
+				}
+				InputStream is = ftp.retrieveFileStream("pic.zip");
+				int totalSize = is.available();
+				int currentSize = 0;
+				File outPicZipFile = new File(getCacheDir()+"/pic/pic.zip");
+				OutputStream os = new FileOutputStream(outPicZipFile);
+				int len;
+				byte[] buff = new byte[1024];
+				while((len = is.read(buff)) != -1) {
+					os.write(buff, 0, len);
+					currentSize += len;
+					
+					Log.e(TAG, "curr size: " + currentSize);
+					Message msg = mHandler.obtainMessage();
+					DownloadFileInfo fileInfo = new DownloadFileInfo("pic.zip", "", totalSize, currentSize);
+					msg.obj = fileInfo;
+					msg.what = MSG_UPDATE_DOWNLOAD_FILE_PROGRESS;
+					msg.sendToTarget();					
+				}
+				os.flush();
+				os.close();
+				is.close();
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void down_pic(){
 		FTPClient ftp = new FTPClient();
 		try {
@@ -437,6 +499,10 @@ public class LoginActivity extends AbstractActivity {
 				ftp.enterLocalPassiveMode();
 				ftp.changeWorkingDirectory("/ORD/pic");
 				FTPFile[] files = ftp.listFiles();
+				int imgCount = 0;
+				if(files != null) {
+					imgCount = files.length;
+				}
 				File picDir = new File(getCacheDir() + "/pic");
 				if(!picDir.exists()) {
 					picDir.mkdirs();
@@ -459,15 +525,17 @@ public class LoginActivity extends AbstractActivity {
 					while((len = is.read(buff)) != -1) {
 						os.write(buff, 0, len);
 //					currSize += len;
-						Message msg = mHandler.obtainMessage();
-						currSize += len;
-						DownloadFileInfo fileInfo = new DownloadFileInfo(pic.getName(), "", totalSize, currSize);
-						msg.obj = fileInfo;
-						msg.what = MSG_UPDATE_DOWNLOAD_FILE_PROGRESS;
-						msg.sendToTarget();
+						
+//						currSize += len;
 					}
 					os.close();
 					is.close();
+					currSize ++;
+					Message msg = mHandler.obtainMessage();
+					DownloadFileInfo fileInfo = new DownloadFileInfo(pic.getName(), "", imgCount, currSize);
+					msg.obj = fileInfo;
+					msg.what = MSG_UPDATE_DOWNLOAD_FILE_PROGRESS;
+					msg.sendToTarget();
 					ftp.completePendingCommand();
 				}
 			}
@@ -610,6 +678,50 @@ public class LoginActivity extends AbstractActivity {
 			this.path = path;
 			this.totalSize = totalSize;
 			this.currSize = currSize;
+		}
+	}
+	
+	private void extracFile() {
+		try {
+			File zipFile = new File(getCacheDir()+"/pic/pic.zip");
+			if(!zipFile.exists()) {
+				return;
+			}
+			ZipFile zipFiles = new ZipFile(getCacheDir()+"/pic/pic.zip");
+			mUpdatingDataDialog.setMax(zipFiles.size());
+			int fileIndex = 0;
+			ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFile));
+			ZipEntry zipEntry;
+			String szName = "";
+			
+			int len;
+			byte[] buff = new byte[1024];
+			while((zipEntry = inZip.getNextEntry()) != null) {
+				szName = zipEntry.getName();
+				if(!(szName.indexOf(".jpg") > 0)) {
+					continue;
+				}
+				File localEntryFile = new File(getCacheDir()+"/pic/" + szName);
+				if(!localEntryFile.exists()) {
+					localEntryFile.createNewFile();
+				}
+				OutputStream os = new FileOutputStream(localEntryFile);
+				while((len = inZip.read(buff)) != -1) {
+					os.write(buff, 0, len);
+				}
+				os.flush();
+				os.close();
+				DialogMessage dm = new DialogMessage(++fileIndex, "pic: " + szName);
+				Message msg = mHandler.obtainMessage();
+				msg.what = MSG_INSERT_PROGRESS_DIALG;
+				msg.obj = dm;
+				msg.sendToTarget();	
+			}
+			inZip.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
