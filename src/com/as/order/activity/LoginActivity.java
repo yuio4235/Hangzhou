@@ -235,8 +235,8 @@ public class LoginActivity extends AbstractActivity {
 		setTextForTitleRightBtn(this.getString(R.string.login));
 		
 		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(this);
-		REMOTE_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
-		SERVER_HOST = spp.getString("ftp_url", "dlndl.vicp.cc");
+		REMOTE_HOST = spp.getString("ftp_url", "172.16.0.2");
+		SERVER_HOST = spp.getString("ftp_url", "172.16.0.2");
 		USER_NAME = spp.getString("ftp_username", "dln");
 		PASSWORD = spp.getString("ftp_password", "dlnfeiyang");
 		Log.e("ftp_url", REMOTE_HOST);

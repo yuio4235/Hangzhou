@@ -1,6 +1,7 @@
 package com.as.ui.utils;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ public class AlertUtils {
 		TextView tv = (TextView) toastV.findViewById(R.id.toast_txt);
 		tv.setText(msg);
 		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setGravity(Gravity.CENTER, 0, -180);
 		toast.show();
 //		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 	}

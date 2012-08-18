@@ -276,13 +276,14 @@ public class DaLeiZongheAnalysisActivity extends AbstractActivity implements OnT
 //		    + where
 //		    + " And		saindent.[warenum] > 0 "
 //			+ " GROUP BY  sawarecode.waretypeid";
+		//change @ 2012-08-15 change b.id to b.waretypeid
 		String sql = ""
 			+" SELECT "
 			+" (select waretypename from sawaretype where rtrim(sawaretype.[waretypeid])  = rtrim(sawarecode.[waretypeid])) dalei, "
 			+" sum(saindent.[warenum]) amount, "
 			+" sum(saindent.[warenum]* retailprice) price,  "
 			+" count(distinct saindent.[warecode]) ware_cnt,  "
-			+" (Select count(warecode) From sawarecode B where rtrim(B.id) = Rtrim(sawarecode.id)) ware_all "
+			+" (Select count(warecode) From sawarecode B where rtrim(B.waretypeid) = Rtrim(sawarecode.waretypeid)) ware_all "
 			+" from saindent, sawarecode " 
 			+" where rtrim(saindent.[warecode]) = rtrim(sawarecode.[warecode]) "
 			+" and rtrim(saindent.[departcode]) = '"+UserUtils.getUserAccount(this)+"' "

@@ -116,7 +116,7 @@ public class SameBoduanActivity extends AbstractActivity {
 				if(position == 0) {
 					return;
 				}
-				MustOrderDAO dao = mData.get(position-1);
+				MustOrderDAO dao = mData.get(10*pageNum + position-1);
 				Intent intent = new Intent(SameBoduanActivity.this, OrderByStyleActivity.class);
 				intent.putExtra("style_code", dao.getSpecNo());
 				startActivity(intent);

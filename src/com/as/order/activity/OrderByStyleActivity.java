@@ -48,6 +48,7 @@ import com.as.db.provider.AsContent.SawarecodeColumns;
 import com.as.order.R;
 import com.as.order.ui.OrderByStyleFooter;
 import com.as.ui.utils.AlertUtils;
+import com.as.ui.utils.CommonDataUtils;
 import com.as.ui.utils.FileUtils;
 import com.as.ui.utils.ListViewUtils;
 import com.as.ui.utils.NetWorkUtils;
@@ -131,14 +132,17 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 							rb.setRating(getScoreByWareCode());
 							displayImgs = FileUtils.getBitmapsFileCode(OrderByStyleActivity.this, /*swarecodeTv.getText().toString()*/c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
 							Log.e(TAG, "imgs count: " + displayImgs.length + " SPECNO: " + c.getString(SaWareCode.CONTENT_SPECIFICATION_COLUMN));
-							//-------------------------- start change for network status for image -------------------------------------
-							if(NetWorkUtils.netWorkStatus) {
-								if(displayImgs != null && displayImgs.length>0) {
-									displayIv.setImageBitmap(displayImgs[0]);
-								}
-							} else {
-								displayIv.setImageDrawable(getResources().getDrawable(R.drawable.test01));
+							if(displayImgs != null && displayImgs.length>0) {
+								displayIv.setImageBitmap(displayImgs[0]);
 							}
+							//-------------------------- start change for network status for image -------------------------------------
+//							if(NetWorkUtils.netWorkStatus) {
+//								if(displayImgs != null && displayImgs.length>0) {
+//									displayIv.setImageBitmap(displayImgs[0]);
+//								}
+//							} else {
+//								displayIv.setImageDrawable(getResources().getDrawable(R.drawable.test01));
+//							}
 							//-------------------------- end change for network status for image -------------------------------------
 							showOperations();
 							header = getHeader();
@@ -313,7 +317,7 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 	
 	private void showOperations() {
 		nextImgBtn.setVisibility(Button.VISIBLE);
-		swarecodeTv.setVisibility(TextView.VISIBLE);
+//		swarecodeTv.setVisibility(TextView.VISIBLE);
 		displayIv.setVisibility(ImageView.VISIBLE);
 		orderByStyleList.setVisibility(ListView.VISIBLE);
 		dapeiBtn.setVisibility(Button.VISIBLE);
@@ -376,7 +380,9 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		
 		String intentStyleCode = getIntent().getStringExtra("style_code");
 		if(!TextUtils.isEmpty(intentStyleCode)) {
-			searchEt.setText(intentStyleCode);
+//			searchEt.setText(intentStyleCode);
+			String pageNum = CommonDataUtils.getPageNumByStyleCode(OrderByStyleActivity.this, intentStyleCode);
+			searchEt.setText(TextUtils.isEmpty(pageNum) ? intentStyleCode : pageNum);
 			Message searchMsg = mHandler.obtainMessage();
 			searchMsg.what = MSG_SEARCH_CODE;
 			searchMsg.sendToTarget();
@@ -406,9 +412,9 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			
 		case R.id.order_by_style_next_img_btn:
 			//-------------------------- start change for networks images -------------------------------
-			if(!NetWorkUtils.netWorkStatus) {
-				return;
-			}
+//			if(!NetWorkUtils.netWorkStatus) {
+//				return;
+//			}
 			if(displayImgs == null || displayImgs.length<=0) {
 				return;
 			}
@@ -505,6 +511,7 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			break;
 			
 		case R.id.order_by_style_clear_btn:
+			clear();
 			break;
 			
 			default:
@@ -635,7 +642,7 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 					sai.s03 = c.getInt(SaIndent.CONTENT_S03_COLUMN);
 					sai.s04 = c.getInt(SaIndent.CONTENT_S04_COLUMN);
 					sai.s05 = c.getInt(SaIndent.CONTENT_S05_COLUMN);
-					sai.s06 = c.getInt(SaIndent.CONTENT_S04_COLUMN);
+					sai.s06 = c.getInt(SaIndent.CONTENT_S06_COLUMN);
 					sai.s07 = c.getInt(SaIndent.CONTENT_S07_COLUMN);
 					sai.s08 = c.getInt(SaIndent.CONTENT_S08_COLUMN);
 					sai.s09 = c.getInt(SaIndent.CONTENT_S09_COLUMN);
@@ -675,8 +682,14 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 			
 			for(int m=0;m<childCount;m++) {
 				if(currentRow.getChildAt(m) instanceof EditText) {
+					Log.e(TAG, "curr child index: " + m);
 					EditText et = (EditText) currentRow.getChildAt(m);
-					wareNum += Integer.parseInt(et.getText().toString().trim());
+					try {
+						wareNum += Integer.parseInt(et.getText().toString().trim());
+					} catch (NumberFormatException e) {
+						wareNum += 0;
+						e.printStackTrace();
+					}
 					dataList.add(Integer.parseInt(et.getText().toString().trim()));
 				}
 			}
@@ -706,7 +719,6 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
 				e.printStackTrace();
-				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -723,11 +735,58 @@ public class OrderByStyleActivity extends AbstractActivity implements OnRatingBa
 		if(allIndents == null || allIndents.size() == 0) {
 			return;
 		}
-		for(int i=1; i<=allIndents.size(); i++) {
+		int i;
+		for(i=1; i<=allIndents.size(); i++) {
 			LinearLayout currRow = (LinearLayout) orderByStyleList.getChildAt(i);
-			int columnIndex = 1;
+			int columnIndex;
 			int columnCount = currRow.getChildCount();
+			for(columnIndex = 3; columnIndex<=columnCount-2; columnIndex+=2) {
+				if(currRow.getChildAt(columnIndex) instanceof EditText) {
+					EditText et = (EditText) currRow.getChildAt(columnIndex);
+					et.setText("0");
+				}
+				if(currRow.getChildAt(columnIndex) instanceof TextView) {
+					TextView tv = (TextView) currRow.getChildAt(columnIndex);
+					tv.setText("0");
+				}
+			}
 		}
+		LinearLayout lastRow = (LinearLayout) orderByStyleList.getChildAt(allIndents.size()+1);
+		for(i=3; i<lastRow.getChildCount(); i++) {
+			if(lastRow.getChildAt(i) instanceof TextView) {
+				TextView tv = (TextView) lastRow.getChildAt(i);
+				tv.setText("0");
+			}
+		}
+	}
+	
+	private void peimaByRefreshListView() {
+		if(allIndents == null || allIndents.size() == 0) {
+			return;
+		}
+		SQLiteDatabase db = AsProvider.getWriteableDatabase(OrderByStyleActivity.this);
+		String sql = " select flag from sawarecode where warecode = '"+swarecodeTv.getText().toString().trim()+"'";
+		Cursor cursor = db.rawQuery(sql, null);
+		String sizeGroup = "";
+		if(db != null && cursor!= null) {
+			try {
+				if(cursor.moveToFirst()) {
+					sizeGroup = cursor.getString(0);
+				}
+			} finally {
+				cursor.close();
+				db.close();
+			}
+		} else {
+			if(cursor != null) {
+				cursor.close();
+			}
+			
+			if(db != null) {
+				db.close();
+			}
+		}
+		SaSizeSet sasizeset = SaSizeSet.restoreSaSizeSetWithSiezeGroup(OrderByStyleActivity.this, sizeGroup);
 	}
 	
 	private void peima() {

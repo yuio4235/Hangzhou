@@ -246,6 +246,17 @@ public class IndexActivity extends Activity implements OnClickListener{
 			@Override
 			public void onPostDataComplete(ServerResponse response) {
 			}
+
+			@Override
+			public void onUpdateProgressMax(int value) {
+				
+			}
+
+			@Override
+			public void onUpdateProgressValue(int value) {
+				// TODO Auto-generated method stub
+				
+			}
 		}).execute(new JSONObject());
 	}
     

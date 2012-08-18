@@ -82,6 +82,9 @@ public class MyOrderActivity extends AbstractActivity implements OnTouchListener
 	private static final int OPT_WD = 1002;
 	private static final int OPT_ALL = 1003;
 	
+	private int mCurrentOpt = OPT_ALL;
+	private String mCurrentCondition = "";
+	
 	private int totalAmount = 0;
 	private int totalPrice = 0;
 	
@@ -248,26 +251,43 @@ public class MyOrderActivity extends AbstractActivity implements OnTouchListener
 		
 		String wareNumCon = "";
 		if(opt == OPT_ALL) {
+//			wareNumCon = "";
 			wareNumCon = "";
 		} else if(opt == OPT_YD) {
-			wareNumCon = " saindent.warenum > 0  and ";
+//			wareNumCon = " saindent.warenum > 0  and ";
+			wareNumCon = "  a.wareNum > 0 ";
 		} else if(opt == OPT_WD) {
-			wareNumCon = " saindent.warenum = 0 and ";
+//			wareNumCon = " saindent.warenum = 0 and ";
+			wareNumCon = " a.wareNum = 0 ";
 		}
 //		totalAmount = 0;
 //		totalPrice = 0;
 		mDataSet.clear();
-		String sql = " select saindent.[warecode], sum(saindent.[warenum]) wareNum, sawarecode.[specification], sawarecode.retailprice "
-				+ " from saindent, sawarecode "
-				+ " where "+wareNumCon+" saindent.[warecode] = sawarecode.[warecode] and saindent.[departcode] = ? " + (TextUtils.isEmpty(where) ? "" : where)
-				+ " group by saindent.[warecode] ";
+//		String sql = " select saindent.[warecode], sum(saindent.[warenum]) wareNum, sawarecode.[specification], sawarecode.retailprice "
+//				+ " from saindent, sawarecode "
+//				+ " where "+wareNumCon+" saindent.[warecode] = sawarecode.[warecode] and saindent.[departcode] = ? " + (TextUtils.isEmpty(where) ? "" : where)
+//				+ " group by saindent.[warecode] ";
+		
+		String sql =  "  select  a.[warecode], a.wareNum, a.specification, a.retailprice, a.style, a.state, a.waretypeid from  "
+				+ "   ( "
+				+ " select "
+				+ "        saindent.[warecode], sum(saindent.[warenum]) wareNum, sawarecode.[specification], sawarecode.retailprice, sawarecode.state, sawarecode.style, sawarecode.waretypeid "
+				+ " from  "
+				+ "      saindent, sawarecode "
+				+ "  where   "
+				+ "        saindent.[warecode] = sawarecode.[warecode] and saindent.[departcode] = ? "
+				+ "  group by saindent.[warecode] "
+				+ "  ) a "
+				+ " where 1=1 "
+				+ (TextUtils.isEmpty(wareNumCon) ? "" : " and " + wareNumCon)
+				+ (TextUtils.isEmpty(where) ? " " : where );
 		Log.e(TAG, "sql: " + sql);
 		SharedPreferences sp = getSharedPreferences("user_account", Context.MODE_PRIVATE);
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(this);
 		Cursor cursor = db.rawQuery(sql, new String[]{sp.getString("user_account", "")});
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
-				totalPage = (cursor.getCount()%10 == 0)? cursor.getCount()/8 : cursor.getCount()/8 + 1;
+				totalPage = (cursor.getCount()%8 == 0)? cursor.getCount()/8 : cursor.getCount()/8 + 1;
 				while(!cursor.isAfterLast()) {
 					MyOrderDAO dao = new MyOrderDAO();
 					dao.setSpecNo(cursor.getString(2));
@@ -349,7 +369,8 @@ public class MyOrderActivity extends AbstractActivity implements OnTouchListener
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initData("", OPT_ALL);
+		Log.e(TAG, "---------------- MyOrderActivity, current option: " + mCurrentOpt);
+		initData(mCurrentCondition, mCurrentOpt);
 		initInfo("", OPT_ALL);
 	}
 	
@@ -390,10 +411,16 @@ public class MyOrderActivity extends AbstractActivity implements OnTouchListener
 			break;
 			
 		case R.id.my_order_order_query:
+			mCurrentOpt = OPT_YD;
+			mCurrentCondition = getWhere();
+			pageNum = 0;
 			initData(getWhere(), OPT_YD);
 			break;
 			
 		case R.id.my_order_un_order_query:
+			mCurrentOpt = OPT_WD;
+			mCurrentCondition = getWhere();
+			pageNum = 0;
 			initData(getWhere(), OPT_WD);
 			break;
 			
@@ -483,15 +510,15 @@ public class MyOrderActivity extends AbstractActivity implements OnTouchListener
 	private String getWhere() {
 		StringBuffer sb = new StringBuffer();
 		if(!TextUtils.isEmpty(zhutiEt.getText().toString().trim()) && !zhutiEt.getText().toString().contains("全部")) {
-			sb.append(" and  sawarecode.style = '"+ zhutiEt.getText().toString().trim() +"' ");
+			sb.append(" and  a.style = '"+ zhutiEt.getText().toString().trim() +"' ");
 		}
 		
 		if(!TextUtils.isEmpty(boduanEt.getText().toString().trim()) && !boduanEt.getText().toString().contains("全部")) {
-			sb.append(" and sawarecode.state = '"+ CommonQueryUtils.getStateByName(MyOrderActivity.this, boduanEt.getText().toString().trim())+"' ");
+			sb.append(" and a.state = '"+ CommonQueryUtils.getStateByName(MyOrderActivity.this, boduanEt.getText().toString().trim())+"' ");
 		}
 		
 		if(!TextUtils.isEmpty(daleiEt.getText().toString().trim())  && !daleiEt.getText().toString().contains("全部")) {
-			sb.append(" and sawarecode.waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(MyOrderActivity.this, daleiEt.getText().toString().trim())+"'" );
+			sb.append(" and a.waretypeid = '"+CommonQueryUtils.getWareTypeIdByName(MyOrderActivity.this, daleiEt.getText().toString().trim())+"'" );
 		}
 		
 		return sb.toString();

@@ -4,11 +4,9 @@ package com.as.ui.utils;
 import java.lang.reflect.Field;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.text.TextUtils.TruncateAt;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.as.db.provider.AsContent.SaIndent;
-import com.as.db.provider.AsContent.SaIndentColumns;
+import com.as.db.provider.AsContent.SaSizeSet;
 import com.as.db.provider.AsContent.SaWareCode;
 import com.as.order.R;
 import com.as.order.dao.DapeiOrderDAO;
@@ -225,6 +223,64 @@ public class ListViewUtils {
 		View v = layoutInflater.inflate(R.layout.table_item_divider, null);
 		return v;
 	}
+
+	public static LinearLayout generateReviewItem(MustOrderDAO dao, Context context) {
+		LayoutInflater layoutInflater = LayoutInflater.from(context);
+		LinearLayout mLayout = new LinearLayout(context);
+		mLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.list_selector_background));
+		mLayout.setPadding(0, 0, 0, 0);
+		View fv = layoutInflater.inflate(R.layout.table_item_divider, null);
+		mLayout.addView(fv, dLp);
+		
+		TextView serialNoTv = makeTextView(dao.getSerialNo()+"", context);
+		mLayout.addView(serialNoTv, cellLp);
+		View v1 = makeDivideView(context);
+		mLayout.addView(v1, dLp);
+		
+		//编号改为pagenum
+		TextView specNoTv = makeTextView(dao.getHuohao(), context);
+		mLayout.addView(specNoTv, cellLp);
+		View v2 = makeDivideView(context);
+		mLayout.addView(v2, dLp);
+		
+		TextView date3Tv = makeTextView(dao.getDate3(), context);
+		mLayout.addView(date3Tv, cellLp);
+		View v3 = makeDivideView(context);
+		mLayout.addView(v3, dLp);
+		
+		TextView waveTv = makeTextView(dao.getWave(), context);
+		mLayout.addView(waveTv, cellLp);
+		View v4 = makeDivideView(context);
+		mLayout.addView(v4, dLp);
+		
+		TextView pinleiTv = makeTextView(dao.getWareType(), context);
+		mLayout.addView(pinleiTv, cellLp);
+		View v5 = makeDivideView(context);
+		mLayout.addView(v5, dLp);
+		
+		TextView themeTv = makeTextView(dao.getTheme(), context);
+		mLayout.addView(themeTv, cellLp);
+		View v6 = makeDivideView(context);
+		mLayout.addView(v6, dLp);
+		
+		//货号改为specification
+		TextView huohaoTv = makeTextView(dao.getSpecNo(), context);
+		mLayout.addView(huohaoTv, cellLp);
+		View v7 = makeDivideView(context);
+		mLayout.addView(v7, dLp);
+		
+		TextView priceTv = makeTextView(dao.getRetailPrice(), context);
+		mLayout.addView(priceTv, cellLp);
+		View v8 = makeDivideView(context);
+		mLayout.addView(v8, dLp);
+		
+		TextView wareNumTv = makeTextView(dao.getWareNum()+"", context);
+		mLayout.addView(wareNumTv, cellLp);
+		View v9 = makeDivideView(context);
+		mLayout.addView(v9, dLp);
+		
+		return mLayout;		
+	}
 	
 	public static LinearLayout generateMustOrderItem(MustOrderDAO dao, Context context) {
 		LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -336,6 +392,65 @@ public class ListViewUtils {
 		mLayout.addView(lv, dLp);
 		
 		return mLayout;
+	}
+	
+	public static LinearLayout generateEditTextBySizeSet(SaIndent saIndent, int sizeCount, Context ctx, SaSizeSet saSizeSet) {
+		LayoutInflater layoutInflater = LayoutInflater.from(ctx);
+		LinearLayout mLayout = new LinearLayout(ctx);
+		mLayout.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.list_selector_background));
+		mLayout.setPadding(0, 0, 0, 0);
+		View fv = layoutInflater.inflate(R.layout.table_item_divider, null);
+		mLayout.addView(fv, dLp);
+		//add color name
+		TextView colorTv = new TextView(ctx);
+		colorTv.setTextSize(15);
+		colorTv.setText(saIndent.colorName);
+		colorTv.setTextColor(ctx.getResources().getColor(R.color.ConversationVoiceTextColor));
+		colorTv.setGravity(Gravity.CENTER);
+		
+		int totalWareNum = 0;
+		
+		for(int i=1; i<=sizeCount; i++) {
+			try {
+				EditText tv = new EditText(ctx);
+				tv.setSelectAllOnFocus(true);
+				tv.setImeOptions(EditorInfo.IME_ACTION_DONE|EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+				tv.setTextSize(15);
+				Field field = saSizeSet.getClass().getDeclaredField("s" + (i<10?"0"+i:i));
+				int currSize = field.getInt(saSizeSet);
+				totalWareNum += currSize;
+				tv.setText(currSize+"");
+				tv.setTextColor(Color.BLACK);
+				tv.setGravity(Gravity.CENTER);
+				tv.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.mm_edit_single));
+				tv.setKeyListener(new DigitsKeyListener(false, false));
+				
+				View v = layoutInflater.inflate(R.layout.table_item_divider, null);
+				
+				mLayout.addView(tv, cellLp);
+				mLayout.addView(v, dLp);
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		TextView totalTv = new TextView(ctx);
+		totalTv.setTextSize(15);
+		totalTv.setText(totalWareNum + "");
+		totalTv.setTextColor(Color.BLACK);
+		totalTv.setGravity(Gravity.CENTER);
+		
+		mLayout.addView(totalTv, cellLp);
+		View lv = layoutInflater.inflate(R.layout.table_item_divider, null);
+		mLayout.addView(lv, dLp);
+		
+		return mLayout;		
 	}
 	
 	public static  LinearLayout generateEditText(SaIndent saIndent, int sizeCount, Context ctx) {

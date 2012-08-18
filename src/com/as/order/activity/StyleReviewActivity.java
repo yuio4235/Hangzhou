@@ -65,7 +65,10 @@ public class StyleReviewActivity extends AbstractActivity implements OnRatingBar
 			
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				return ListViewUtils.generateMustOrderItem(mData.get(pageNum*15+position), StyleReviewActivity.this);
+//				return ListViewUtils.generateMustOrderItem(mData.get(pageNum*15+position), StyleReviewActivity.this);
+				MustOrderDAO dao = mData.get(pageNum*10+position);
+				dao.setSerialNo(pageNum*10+position+1);
+				return ListViewUtils.generateReviewItem(dao, StyleReviewActivity.this);
 			}
 			
 			@Override
@@ -80,12 +83,12 @@ public class StyleReviewActivity extends AbstractActivity implements OnRatingBar
 			
 			@Override
 			public int getCount() {
-				if(mData.size() < 15) {
+				if(mData.size() < 10) {
 					return mData.size();
-				} else if((pageNum +1)*15 > mData.size()) {
-					return mData.size()%15;
+				} else if((pageNum +1)*10 > mData.size()) {
+					return mData.size()%10;
 				}
-				return 15;
+				return 10;
 			}
 		};
 		mList.setAdapter(mAdapter);
@@ -98,7 +101,7 @@ public class StyleReviewActivity extends AbstractActivity implements OnRatingBar
 					return;
 				}
 				Intent intent = new Intent(StyleReviewActivity.this, OrderByStyleActivity.class);
-				MustOrderDAO dao = mData.get(pageNum*15 + (position-1));
+				MustOrderDAO dao = mData.get(pageNum*10 + (position-1));
 				intent.putExtra("style_code", dao.getSpecNo()+"");
 				startActivity(intent);
 			}
@@ -116,6 +119,24 @@ public class StyleReviewActivity extends AbstractActivity implements OnRatingBar
 		switch(v.getId()) {
 		case R.id.title_btn_left:
 			finish();
+			break;
+			
+		case R.id.prev_page:
+			if(pageNum <= 0) {
+				return;
+			} else {
+				pageNum --;
+				mAdapter.notifyDataSetChanged();
+			}
+			break;
+			
+		case R.id.next_page:
+			if(pageNum >= totalPage -1) {
+				return;
+			} else {
+				pageNum ++;
+				mAdapter.notifyDataSetChanged();
+			}
 			break;
 			
 			default:
@@ -148,7 +169,7 @@ public class StyleReviewActivity extends AbstractActivity implements OnRatingBar
 						MustOrderDAO dao = new MustOrderDAO();
 						dao.setSpecNo(TextUtils.isEmpty(cursor.getString(0)) ? "" : cursor.getString(0));
 						dao.setDate3(TextUtils.isEmpty(cursor.getString(1)) ? "" : cursor.getString(1));
-						dao.setWave(TextUtils.isEmpty(cursor.getString(3)) ? "" : cursor.getString(3));
+						dao.setWave(TextUtils.isEmpty(cursor.getString(2)) ? "" : cursor.getString(3));
 						dao.setWareType(TextUtils.isEmpty(cursor.getString(5)) ? "" : cursor.getString(5));
 						dao.setTheme(TextUtils.isEmpty(cursor.getString(6)) ? "" : cursor.getString(6));
 						dao.setHuohao(TextUtils.isEmpty(cursor.getString(10)) ? "" : cursor.getString(10));
@@ -156,8 +177,9 @@ public class StyleReviewActivity extends AbstractActivity implements OnRatingBar
 						dao.setWareNum(cursor.getInt(9));
 						mData.add(dao);
 						cursor.moveToNext();
-						mAdapter.notifyDataSetChanged();
+//						mAdapter.notifyDataSetChanged();
 					}
+					mAdapter.notifyDataSetChanged();
 				} else {
 					mAdapter.notifyDataSetChanged();
 				}

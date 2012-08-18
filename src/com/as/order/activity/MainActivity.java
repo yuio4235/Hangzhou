@@ -12,11 +12,14 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.json.JSONArray;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -58,8 +61,10 @@ import com.as.db.provider.AsContent.SaWareType;
 import com.as.db.provider.AsContent.ShowSize;
 import com.as.order.R;
 import com.as.order.activity.LoginActivity.DialogMessage;
+import com.as.order.net.CommitOrderUpdateDataAsyncTask;
+import com.as.order.net.ResultListener;
+import com.as.order.net.ServerResponse;
 import com.as.order.preference.AsSettings;
-import com.as.order.preference.IndextSetting;
 import com.as.order.service.IndentSyncService;
 import com.as.order.sync.FileUploader;
 import com.as.order.ui.AsProgressDialog;
@@ -67,6 +72,7 @@ import com.as.ui.utils.AlertUtils;
 import com.as.ui.utils.Constant;
 import com.as.ui.utils.ImageSyncUtils;
 import com.as.ui.utils.NetWorkUtils;
+import com.as.ui.utils.OrderCommitAsyncTask;
 import com.as.ui.utils.SaIndentUtils;
 import com.as.ui.utils.UserUtils;
 
@@ -254,9 +260,17 @@ public class MainActivity extends AbstractActivity {
 //							msg.sendToTarget();
 //						}
 						dialog.dismiss();
-						Message msg = mHandler.obtainMessage();
-						msg.what = MSG_SHOW_LOADING;
-						msg.sendToTarget();
+						/*
+						 * change start @2012-8-18, for online confirmation
+						 */
+//						Message msg = mHandler.obtainMessage();
+//						msg.what = MSG_SHOW_LOADING;
+//						msg.sendToTarget();
+						Map<String, JSONArray> params = new HashMap<String, JSONArray>();
+						new OrderCommitAsyncTask(MainActivity.this, "http://172.16.0.2:8080/ProcessOrder.ashx", mListener).execute(params);
+						/*
+						 * change end @2012-8-18, for online confirmation
+						 */
 					}
 				});
 				adb1.setNegativeButton("取消", new OnClickListener() {
@@ -635,15 +649,28 @@ public class MainActivity extends AbstractActivity {
 			return mUpdatingDialog;
 			
 		case DIALOG_ID_UPDATING_DATA:
-			return mUpdatingDataDialog = new AsProgressDialog(MainActivity.this, R.style.AsDialog, "更新数据");
+			/*
+			 * start change @2012-8-18, split assign and return.
+			 */
+//			return mUpdatingDataDialog = new AsProgressDialog(MainActivity.this, R.style.AsDialog, "更新数据");
+			mUpdatingDataDialog = new AsProgressDialog(MainActivity.this, R.style.AsDialog, "更新数据");
+			return mUpdatingDataDialog;
+			/*
+			 * end change @2012-8-18, split assign and return.
+			 */
 			
 		case DIALOG_ID_COMMIT:
 //			mLoading = new ProgressDialog(this);
 //			mLoading.setMax(100);
 //			mLoading.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 //			mLoading.setTitle("订单确认");
-			mLoading = ProgressDialog.show(MainActivity.this, "", "", true);
+//			mLoading = ProgressDialog.show(MainActivity.this, "", "", true);
+//			mLoading.setMessage("正在确认,请稍后...");
+//			mLoading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			mLoading = new ProgressDialog(MainActivity.this);
 			mLoading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			mLoading.setTitle("订单确认");
+			mLoading.setMessage("正在确认,请稍后...");
 			return mLoading;
 		}
 		return null;
@@ -1532,4 +1559,88 @@ public class MainActivity extends AbstractActivity {
 		Log.e(TAG, "============================== stop sync ==================================");
 		super.onDestroy();
 	}
+	
+	private ResultListener mListener = new ResultListener() {
+		
+		@Override
+		public void onProgressMessage(String message) {
+		}
+		
+		@Override
+		public void onPostDataSuccess(ServerResponse response) {
+			dismissDialog(DIALOG_ID_COMMIT);
+			AlertUtils.toastMsg(MainActivity.this, "订单上传成功");
+			final SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+			String REMOTE_HOST = spp.getString(Constant.SP_FTP_HOST, Constant.DEFAULT_SP_FTP_HOST);
+			new CommitOrderUpdateDataAsyncTask(MainActivity.this, "http://"+REMOTE_HOST+":8080/ProcessOrder.ashx", new ResultListener() {
+				
+				@Override
+				public void onUpdateProgressValue(int value) {
+					
+				}
+				
+				@Override
+				public void onUpdateProgressMax(int value) {
+					
+				}
+				
+				@Override
+				public void onProgressMessage(String message) {
+					
+				}
+				
+				@Override
+				public void onPostDataSuccess(ServerResponse response) {
+					dismissDialog(DIALOG_ID_COMMIT);
+					AlertUtils.toastMsg(MainActivity.this, "订单确认成功");
+					Editor et = spp.edit();
+					et.putBoolean("order_commit", true);
+					et.putBoolean("order_locked", true);
+					et.commit();
+					stopSync();
+					finish();
+				}
+				
+				@Override
+				public void onPostDataStart() {
+					showDialog(DIALOG_ID_COMMIT);
+				}
+				
+				@Override
+				public void onPostDataError(ServerResponse response) {
+					dismissDialog(DIALOG_ID_COMMIT);
+					AlertUtils.toastMsg(MainActivity.this, "订单确认出错, " + response.message);
+				}
+				
+				@Override
+				public void onPostDataComplete(ServerResponse response) {
+					
+				}
+			}).execute(new String[]{UserUtils.getUserAccount(MainActivity.this)});
+		}
+		
+		@Override
+		public void onPostDataStart() {
+			showDialog(DIALOG_ID_COMMIT);
+		}
+		
+		@Override
+		public void onPostDataError(ServerResponse response) {
+			dismissDialog(DIALOG_ID_COMMIT);
+			AlertUtils.toastMsg(MainActivity.this, response.message);
+		}
+		
+		@Override
+		public void onPostDataComplete(ServerResponse response) {
+			dismissDialog(DIALOG_ID_COMMIT);
+		}
+
+		@Override
+		public void onUpdateProgressMax(int value) {
+		}
+
+		@Override
+		public void onUpdateProgressValue(int value) {
+		}
+	};
 }

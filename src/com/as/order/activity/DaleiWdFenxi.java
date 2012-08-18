@@ -211,7 +211,7 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 			+ (TextUtils.isEmpty(where) ? "" : " where 1=1 " + where)
 			+ " group by sawarecode.waretypeid  ";
 		
-		String sql1 = " Select sawaretype.WareTypeName,sum(unorder) zongkuanshu,sum(orderware) yd,sum(unorder)-sum(orderware) wd "
+		String sql1 = " Select sawaretype.waretypeid,  sawaretype.WareTypeName,sum(unorder) zongkuanshu,sum(orderware) yd,sum(unorder)-sum(orderware) wd "
 			+ " From (SELECT  sawarecode.waretypeid, "
 			+ "             count(distinct sawarecode.warecode) unorder, "
 			+ "            0 orderware "
@@ -247,10 +247,10 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 //		    + " Group By  sawarecode.id) A,type1 "
 //		    + " where   A.id = type1.ID "
 //		    + " Group By type1.Type1 ";
-		Log.e(TAG, "sql: " + sql);
+		Log.e(TAG, "sql: " + sql1);
 		
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(DaleiWdFenxi.this);
-		Cursor cursor = db.rawQuery(sql, null);
+		Cursor cursor = db.rawQuery(sql1, null);
 		try {
 			if(cursor != null && cursor.moveToFirst()) {
 				totalWare = 0;
@@ -258,9 +258,9 @@ public class DaleiWdFenxi extends AbstractActivity implements OnTouchListener{
 					DaleiWdDAO dao = new DaleiWdDAO();
 					dao.setWaretypeid(cursor.getString(0));
 					dao.setDalei(cursor.getString(1));
-					dao.setYd(cursor.getInt(2));
-					dao.setWd(cursor.getInt(3));
-					dao.setTotal(cursor.getInt(4));
+					dao.setYd(cursor.getInt(3));
+					dao.setWd(cursor.getInt(4));
+					dao.setTotal(cursor.getInt(2));
 					mDataSet.add(dao);
 					cursor.moveToNext();
 				}

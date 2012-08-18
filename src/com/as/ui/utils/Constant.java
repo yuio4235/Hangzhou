@@ -8,10 +8,10 @@ public class Constant {
 	public static final String SP_REG_URL = "reg_url";
 	public static final String SP_REPORT_URL = "report_url";
 	
-	public static final String DEFAULT_SP_FTP_HOST = "192.168.1.250";
+	public static final String DEFAULT_SP_FTP_HOST = "172.16.0.2";
 	public static final String DEFAULT_FTP_USERNAME = "dln";
 	public static final String DEFAULT_FTP_PASSWORD = "dlnfeiyang";
-	public static final String DEFAULT_REG_URL = "http://192.168.1.250:8080/orderRegister.ashx?macip=";
-	public static final String DEFAULT_REPORT_URL = "http://192.168.1.250:8090/main.aspx";
+	public static final String DEFAULT_REG_URL = "http://172.16.0.2:8080/orderRegister.ashx?macip=";
+	public static final String DEFAULT_REPORT_URL = "http://172.16.0.2:8090/main.aspx";
 	
 }

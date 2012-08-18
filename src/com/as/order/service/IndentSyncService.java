@@ -48,7 +48,7 @@ public class IndentSyncService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		SharedPreferences spp = PreferenceManager.getDefaultSharedPreferences(this);
-		p = Integer.valueOf(spp.getString("saindent_upload_time", "1"));
+		p = Integer.valueOf(spp.getString("saindent_upload_time", "20"));
 	}
 	
 	@Override

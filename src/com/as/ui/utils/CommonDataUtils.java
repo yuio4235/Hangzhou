@@ -42,6 +42,24 @@ public class CommonDataUtils {
 	
 	public static final String ALL_OPT = "=====È«²¿=====";
 	
+	public static String getPageNumByStyleCode(Context context, String specification) {
+		Cursor c = null;
+		try {
+			c = context.getContentResolver().query(AsContent.SaWareCode.CONTENT_URI, SaWareCode.CONTENT_PROJECTION, SawarecodeColumns.SPECIFICATION + " = ?", new String[]{specification}, null);
+			if(c != null && c.moveToFirst()) {
+				return c.getString(SaWareCode.CONTENT_PAGENUM_COLUMN);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		} finally {
+			if(c != null) {
+				c.close();
+			}
+		}
+		return "";
+	}
+	
 	//³ßÂë×é
 	public static String[] getSizeGroup(Context context) {
 		ArrayList<String> sizegroup = new ArrayList<String>();

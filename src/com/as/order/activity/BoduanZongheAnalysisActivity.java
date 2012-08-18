@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -150,7 +151,15 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 						dao.getAmount()+"",
 						formatter.format((((double)dao.getAmount()/sumAmount)*100))+"%",
 						dao.getPrice()+"",
-						formatter.format((((double)dao.getPrice()/totalPrice)*100))+"%"
+//						formatter.format((((double)dao.getPrice()/totalPrice)*100))+"%"
+						/**
+						 * change start
+						 * change @2012-08-15 change totalPrice to sumPrice
+						 */
+						formatter.format((((double)dao.getPrice()/sumPrice)*100))+"%"
+						/**
+						 * change end
+						 */
 				}, BoduanZongheAnalysisActivity.this);
 			}
 			
@@ -260,6 +269,8 @@ public class BoduanZongheAnalysisActivity extends AbstractActivity implements On
 			+ " and saindent.departcode = '"+UserUtils.getUserAccount(this)+"'"
 			+ (TextUtils.isEmpty(where) ? "" : " " + where )
 			+ " group by sawarecode.state";
+		
+		Log.e(TAG, "sql: " + sql);
 		SQLiteDatabase db = AsProvider.getWriteableDatabase(BoduanZongheAnalysisActivity.this);
 		Cursor cursor = db.rawQuery(sql, null);
 		try {

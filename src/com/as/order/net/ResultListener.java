@@ -7,4 +7,6 @@ public interface ResultListener {
 	void onPostDataError(ServerResponse response);
 	void onPostDataComplete(ServerResponse response);
 	void onProgressMessage(String message);
+	void onUpdateProgressValue(int value);
+	void onUpdateProgressMax(int value);
 }

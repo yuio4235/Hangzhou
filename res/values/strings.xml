@@ -38,5 +38,6 @@
     <string name="first_page">首页</string>
     <string name="last_page">尾页</string>
     <string name="app_query">查询</string>
+    <string name="exception_value_query_saindent">查询订单出错</string>
 
 </resources>
